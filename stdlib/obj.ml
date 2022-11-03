@@ -47,7 +47,7 @@ external add_offset : t -> Int32.t -> t = "caml_obj_add_offset"
 external with_tag : int -> t -> t = "caml_obj_with_tag"
 
 let first_non_constant_constructor_tag = 0
-let last_non_constant_constructor_tag = 245
+let last_non_constant_constructor_tag = 244
 
 let lazy_tag = 246
 let closure_tag = 247
@@ -59,6 +59,7 @@ let no_scan_tag = 251
 
 let abstract_tag = 251
 let string_tag = 252
+let byte_tag = 245
 let double_tag = 253
 let double_array_tag = 254
 let custom_tag = 255

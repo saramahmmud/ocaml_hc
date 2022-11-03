@@ -94,6 +94,42 @@ CAMLexport value caml_alloc_string (mlsize_t len)
   return result;
 }
 
+CAMLexport value caml_alloc_bytes (mlsize_t len)
+{
+  value result;
+  mlsize_t offset_index;
+  mlsize_t wosize = (len + sizeof (value)) / sizeof (value);
+
+  if (wosize <= Max_young_wosize) {
+    Alloc_small (result, wosize, Byte_tag);
+  }else{
+    result = caml_alloc_shr (wosize, Byte_tag);
+    result = caml_check_urgent_gc (result);
+  }
+  Field (result, wosize - 1) = 0;
+  offset_index = Bsize_wsize (wosize) - 1;
+  Byte (result, offset_index) = offset_index - len;
+  return result;
+}
+
+/*takes a mutable bytes value and returns an immutable string value*/
+CAMLexport value bytes_to_string (value b) {
+  mlsize_t len = caml_string_length (b);
+  value result = caml_alloc_string (len);
+  /*how do i get a const pointer to the byte? should i use bytes val or string val?*/
+  memcpy((char *)String_val(result), String_val(b), len);
+  return result;
+}
+
+/*takes an immutable string and returns the mutable bytes value 
+string ->  bytes*/
+CAMLexport value bytes_of_string (value s) {
+  mlsize_t len = caml_string_length (s);
+  value result = caml_alloc_bytes (len);
+  memcpy((char *)String_val(result), String_val(s), len);
+  return result;
+}
+
 /* [len] is a number of bytes (chars) */
 CAMLexport value caml_alloc_initialized_string (mlsize_t len, const char *p)
 {
