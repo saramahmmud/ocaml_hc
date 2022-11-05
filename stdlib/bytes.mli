@@ -783,3 +783,5 @@ external unsafe_blit_string :
   = "caml_blit_string" [@@noalloc]
 external unsafe_fill :
   bytes -> int -> int -> char -> unit = "caml_fill_bytes" [@@noalloc]
+external unsafe_to_string : bytes -> string = "bytes_to_string"
+external unsafe_of_string : string -> bytes = "bytes_of_string"
