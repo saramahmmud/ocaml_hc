@@ -118,8 +118,6 @@ let rec print_obj x =
     let tag = Obj.tag x in
     if tag = Obj.string_tag then
         printf "%S" (Obj.magic x : string)
-    else if tag = Obj.byte_tag then
-        printf "%S" (Obj.magic x : byte)
     else if tag = Obj.double_tag then
         printf "%.12g" (Obj.magic x : float)
     else if tag = Obj.double_array_tag then begin
