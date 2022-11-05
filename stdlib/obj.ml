@@ -59,7 +59,6 @@ let no_scan_tag = 251
 
 let abstract_tag = 251
 let string_tag = 252
-let byte_tag = 245
 let double_tag = 253
 let double_array_tag = 254
 let custom_tag = 255
