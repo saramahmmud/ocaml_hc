@@ -113,7 +113,7 @@ CAMLexport value caml_alloc_bytes (mlsize_t len)
 }
 
 /*takes a mutable bytes value and returns an immutable string value*/
-CAMLexport value bytes_to_string (value b) {
+CAMLprim value bytes_to_string (value b) {
   mlsize_t len = caml_string_length (b);
   value result = caml_alloc_string (len);
   /*how do i get a const pointer to the byte? should i use bytes val or string val?*/
@@ -123,7 +123,7 @@ CAMLexport value bytes_to_string (value b) {
 
 /*takes an immutable string and returns the mutable bytes value 
 string ->  bytes*/
-CAMLexport value bytes_of_string (value s) {
+CAMLprim value bytes_of_string (value s) {
   mlsize_t len = caml_string_length (s);
   value result = caml_alloc_bytes (len);
   memcpy((char *)String_val(result), String_val(s), len);
