@@ -75,7 +75,7 @@ CAMLprim value caml_create_bytes(value len)
   if (size > Bsize_wsize (Max_wosize) - 1){
     caml_invalid_argument("Bytes.create");
   }
-  return caml_alloc_string(size);
+  return caml_alloc_bytes(size);
 }
 
 
@@ -465,10 +465,10 @@ CAMLexport value caml_alloc_sprintf(const char * format, ...)
 
 CAMLprim value caml_string_of_bytes(value bv)
 {
-  return bv;
+  return bytes_to_string(bv);
 }
 
 CAMLprim value caml_bytes_of_string(value bv)
 {
-  return bv;
+  return bytes_of_string(bv);
 }

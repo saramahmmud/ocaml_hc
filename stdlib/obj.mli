@@ -89,7 +89,8 @@ val infix_tag : int
 val forward_tag : int
 val no_scan_tag : int
 val abstract_tag : int
-val string_tag : int   (* both [string] and [bytes] *)
+val byte_tag : int
+val string_tag : int
 val double_tag : int
 val double_array_tag : int
 val custom_tag : int
