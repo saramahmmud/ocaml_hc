@@ -215,7 +215,7 @@ typedef opcode_t * code_t;
    NOTE: Update stdlib/obj.ml whenever you change the tags.
  */
 
-#define Check_tag(x)
+#define Check_tag(x) {if (x == Forward_tag) caml_fatal_error("Forward not allowed");}
 
 /* Forward_tag: forwarding pointer that the GC may silently shortcut.
    See stdlib/lazy.ml. */

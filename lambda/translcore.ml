@@ -563,13 +563,16 @@ and transl_exp0 ~in_new_scope ~scopes e =
         (* A constant expr (of type <> float if [Config.flat_float_array] is
            true) gets compiled as itself. *)
          transl_exp ~scopes e
-      | `Float_that_cannot_be_shortcut ->
+      | `Float_that_cannot_be_shortcut
+      (*
           (* We don't need to wrap with Popaque: this forward
              block will never be shortcutted since it points to a float
              and Config.flat_float_array is true. *)
           Lprim(Pmakeblock(Obj.forward_tag, Immutable, None),
                 [transl_exp ~scopes e], of_location ~scopes e.exp_loc)
-      | `Identifier `Forward_value ->
+      *)
+      | `Identifier `Forward_value
+      (*
          (* CR-someday mshinwell: Consider adding a new primitive
             that expresses the construction of forward_tag blocks.
             We need to use [Popaque] here to prevent unsound
@@ -581,8 +584,7 @@ and transl_exp0 ~in_new_scope ~scopes e =
                        [transl_exp ~scopes e],
                        of_location ~scopes e.exp_loc)],
                 of_location ~scopes e.exp_loc)
-      | `Identifier `Other ->
-         transl_exp ~scopes e
+      *)
       | `Other ->
          (* other cases compile to a lazy block holding a function *)
          let fn = lfunction ~kind:Curried
@@ -593,6 +595,8 @@ and transl_exp0 ~in_new_scope ~scopes e =
                             ~body:(transl_exp ~scopes e) in
           Lprim(Pmakeblock(Config.lazy_tag, Mutable, None), [fn],
                 of_location ~scopes e.exp_loc)
+      | `Identifier `Other ->
+         transl_exp ~scopes e
       end
   | Texp_object (cs, meths) ->
       let cty = cs.cstr_type in
