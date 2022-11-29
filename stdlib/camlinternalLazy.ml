@@ -21,7 +21,7 @@ exception Undefined
 
 let raise_undefined = Obj.repr (fun () -> raise Undefined)
 
-external _make_forward : Obj.t -> Obj.t -> unit = "caml_obj_make_forward"
+external make_forward : Obj.t -> Obj.t -> unit = "caml_obj_make_forward"
 
 (* Assume [blk] is a block with tag lazy *)
 let force_lazy_block (blk : 'arg lazy_t) =
@@ -29,7 +29,7 @@ let force_lazy_block (blk : 'arg lazy_t) =
   Obj.set_field (Obj.repr blk) 0 raise_undefined;
   try
     let result = closure () in
-    Obj.set_field (Obj.repr blk) 0 (Obj.repr (fun () -> result));
+    make_forward (Obj.repr blk) (Obj.repr result);
     result
   with e ->
     Obj.set_field (Obj.repr blk) 0 (Obj.repr (fun () -> raise e));
@@ -41,7 +41,7 @@ let force_val_lazy_block (blk : 'arg lazy_t) =
   let closure = (Obj.obj (Obj.field (Obj.repr blk) 0) : unit -> 'arg) in
   Obj.set_field (Obj.repr blk) 0 raise_undefined;
   let result = closure () in
-  Obj.set_field (Obj.repr blk) 0 (Obj.repr (fun () -> result));
+  make_forward (Obj.repr blk) (Obj.repr result);
   result
 
 
