@@ -675,10 +675,6 @@ value caml_interprete(code_t prog, asize_t prog_size)
       tag_t tag = *pc++;
       mlsize_t i;
       value block;
-      if (tag == 245 || tag == 248)
-        tag = Object_tag;
-      else if (tag == 244 || tag == 247)
-        tag = Closure_tag;
       if (wosize <= Max_young_wosize) {
         Alloc_small(block, wosize, tag);
         Field(block, 0) = accu;
@@ -694,10 +690,6 @@ value caml_interprete(code_t prog, asize_t prog_size)
     Instruct(MAKEBLOCK1): {
       tag_t tag = *pc++;
       value block;
-      if (tag == 245 || tag == 248)
-        tag = Object_tag;
-      else if (tag == 244 || tag == 247)
-        tag = Closure_tag;
       Alloc_small(block, 1, tag);
       Field(block, 0) = accu;
       accu = block;
@@ -706,10 +698,6 @@ value caml_interprete(code_t prog, asize_t prog_size)
     Instruct(MAKEBLOCK2): {
       tag_t tag = *pc++;
       value block;
-      if (tag == 245 || tag == 248)
-        tag = Object_tag;
-      else if (tag == 244 || tag == 247)
-        tag = Closure_tag;
       Alloc_small(block, 2, tag);
       Field(block, 0) = accu;
       Field(block, 1) = sp[0];
@@ -720,10 +708,6 @@ value caml_interprete(code_t prog, asize_t prog_size)
     Instruct(MAKEBLOCK3): {
       tag_t tag = *pc++;
       value block;
-      if (tag == 245 || tag == 248)
-        tag = Object_tag;
-      else if (tag == 244 || tag == 247)
-        tag = Closure_tag;
       Alloc_small(block, 3, tag);
       Field(block, 0) = accu;
       Field(block, 1) = sp[0];
