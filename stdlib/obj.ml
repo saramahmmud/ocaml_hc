@@ -52,7 +52,7 @@ let last_non_constant_constructor_tag = 245
 let lazy_tag = 246
 let closure_tag = 244
 let object_tag = 245
-let infix_tag = 249
+let infix_tag = 247
 let forward_tag = 250
 
 let no_scan_tag = 251
