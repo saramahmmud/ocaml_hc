@@ -370,6 +370,8 @@ static void intern_rec(value *dest)
       if (size == 0) {
         v = Atom(tag);
       } else {
+          if (tag == 245 || tag == 248) /* Final Object_tag value */
+          tag = Object_tag; /* Current Object_tag value */
         v = Val_hp(intern_dest);
         if (intern_obj_table != NULL) intern_obj_table[obj_counter++] = v;
         *intern_dest = Make_header(size, tag, intern_color);
