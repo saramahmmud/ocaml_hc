@@ -215,6 +215,8 @@ typedef opcode_t * code_t;
    NOTE: Update stdlib/obj.ml whenever you change the tags.
  */
 
+#define Check_tag(x)
+
 /* Forward_tag: forwarding pointer that the GC may silently shortcut.
    See stdlib/lazy.ml. */
 #define Forward_tag 250
