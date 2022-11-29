@@ -285,6 +285,7 @@ CAMLextern value caml_hash_variant(char const * tag);
 #define Data_abstract_val(v) ((void*) Op_val(v))
 
 /* Strings. */
+#define Byte_tag 250
 #define String_tag 252
 #ifdef CAML_SAFE_STRING
 #define String_val(x) ((const char *) Bp_val(x))
