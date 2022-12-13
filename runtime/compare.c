@@ -191,6 +191,18 @@ static intnat do_compare_val(struct compare_stack* stk,
         if (t2 == Forward_tag) { v2 = Forward_val (v2); continue; }
         if (t1 == Infix_tag) t1 = Closure_tag;
         if (t2 == Infix_tag) t2 = Closure_tag;
+        if (((t1 == Byte_tag) && (t2 == String_tag)) || ((t1 == String_tag) && (t2 == Byte_tag))) { 
+          mlsize_t len1, len2;
+          int res;
+          if (v1 == v2) goto next_item;
+          len1 = caml_string_length(v1);
+          len2 = caml_string_length(v2);
+          res = memcmp(String_val(v1), String_val(v2), len1 <= len2 ? len1 : len2);
+          if (res < 0) return LESS;
+          if (res > 0) return GREATER;
+          if (len1 != len2) return len1 - len2;
+          goto next_item;
+        }
         if (t1 != t2)
             return (intnat)t1 - (intnat)t2;
     }
@@ -200,7 +212,7 @@ static intnat do_compare_val(struct compare_stack* stk,
         v2 = Forward_val (v2);
         continue;
     }
-    case String_tag: {
+    case Byte_tag: case String_tag: {
       mlsize_t len1, len2;
       int res;
       if (v1 == v2) break;

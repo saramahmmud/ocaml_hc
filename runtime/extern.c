@@ -736,7 +736,7 @@ static void extern_rec(value v)
     }
     /* Output the contents of the object */
     switch(tag) {
-    case String_tag: {
+    case Byte_tag: case String_tag: {
       mlsize_t len = caml_string_length(v);
       extern_string(v, len);
       size_32 += 1 + (len + 4) / 4;

@@ -80,7 +80,7 @@ CAMLexport char * caml_format_exception(value exn)
         snprintf(intbuf, sizeof(intbuf),
                  "%" ARCH_INTNAT_PRINTF_FORMAT "d", Long_val(v));
         add_string(&buf, intbuf);
-      } else if (Tag_val(v) == String_tag) {
+      } else if ((Tag_val(v) == String_tag) || (Tag_val(v) == Byte_tag)) {
         add_char(&buf, '"');
         add_string(&buf, String_val(v));
         add_char(&buf, '"');
