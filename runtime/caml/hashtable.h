@@ -19,8 +19,8 @@ struct HashTable {
 };
 
 /* Hash table to store hash-consed values*/
-extern HashTable* caml_hc_table;
+extern HashTable* hc_table;
 
 HashTable* create_table(int size);
-void ht_insert(HashTable* table, value block);
-value ht_search(HashTable* table, value block);
+void ht_insert(HashTable* table, value pointer);
+value ht_search(HashTable* table, value pointer);

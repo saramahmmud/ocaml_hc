@@ -44,7 +44,7 @@ void ht_insert(HashTable* table, value pointer) {
         value hash_val = string_to_hash_val(string, table->size);
         Ht_item* item = create_item(pointer, hash_val);
 
-        intnat index = abs(hash_val) % table->size;
+        int index = abs(hash_val) % table->size;
         Ht_item* cur_item = table->items[index];
         if (cur_item == NULL) {
             // If the index is empty, insert the item
@@ -63,6 +63,8 @@ value ht_search(HashTable* table, value pointer) {
     // Searches for a value in the hashtable and returns the stored pointer if it exists
     // returns the OCaml value encoding of false if it doesn't exist.
     value existing_pointer;
+    value* data = caml_stat_alloc_noexc(sizeof(value));
+    *data = Val_false;
     if (Tag_val(pointer) == String_tag){
         const char* string = String_val(pointer);
         value hash_val = string_to_hash_val(string, table->size);
@@ -70,29 +72,62 @@ value ht_search(HashTable* table, value pointer) {
         Ht_item* item = table->items[index];
 
         if (item != NULL) {
-            value* data;
+            //if data is set
             if (caml_ephemeron_get_data(item->eph, data)){
-                if (*data == hash_val)
+                //and data is the same as the hash_val
+                if (*data == hash_val){
+                    //return the pointer
                     if (caml_ephemeron_get_key(item->eph, 0, &existing_pointer)){
                         return existing_pointer;
                     }
-            }
-            else{
-                return Val_false;
-            }
-        }
-        else {
-            while (item->next != NULL) {
-                item = item->next;
-                value* data;
-                if (caml_ephemeron_get_data(item->eph, data)){
-                    if (*data == hash_val)
-                        if (caml_ephemeron_get_key(item->eph, 0, &existing_pointer)){
-                        return existing_pointer;
+                    else{
+                        //If the key (pointer) has been collected, keep searching linked list for now
+                        while (item->next != NULL) {
+                            item = item->next;
+                            //if data is set
+                            if (caml_ephemeron_get_data(item->eph, data)){
+                                //and data is the same as the hash_val
+                                if (*data == hash_val){
+                                    //return the pointer
+                                    if (caml_ephemeron_get_key(item->eph, 0, &existing_pointer)){
+                                        return existing_pointer;
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
                 else{
-                    return Val_false;
+                    //If the hash_val isn't the same, keep searching linked list
+                    while (item->next != NULL) {
+                        item = item->next;
+                        //if data is set
+                        if (caml_ephemeron_get_data(item->eph, data)){
+                            //and data is the same as the hash_val
+                            if (*data == hash_val){
+                                //return the pointer
+                                if (caml_ephemeron_get_key(item->eph, 0, &existing_pointer)){
+                                    return existing_pointer;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            else{
+                //If the data (hash_val) has been collected???, keep searching linked list for now
+                while (item->next != NULL) {
+                    item = item->next;
+                    //if data is set
+                    if (caml_ephemeron_get_data(item->eph, data)){
+                        //and data is the same as the hash_val
+                        if (*data == hash_val){
+                            //return the pointer
+                            if (caml_ephemeron_get_key(item->eph, 0, &existing_pointer)){
+                                return existing_pointer;
+                            }
+                        }
+                    }
                 }
             }
         }
