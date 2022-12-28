@@ -1,19 +1,10 @@
 #include "mlvalues.h"
 
-typedef struct Ht_item Ht_item;
-
-struct Ht_item {
-    value eph;
-    Ht_item* next;
-};
-
 typedef struct HashTable HashTable;
 
 struct HashTable {
-    /* Contains an array of pointers to items
-    Ht_item** items == Ht_item* *items == Ht_item* items[0]
-    */
-    Ht_item** items;
+    /* Hash table items are stored in the heap but marked as generational global roots*/
+    value items;
     int size;
     int count;
 };
@@ -21,6 +12,7 @@ struct HashTable {
 /* Hash table to store hash-consed values*/
 extern HashTable* hc_table;
 
+/*The hashTable is stored outside of the heap with pointers to hashtable items in the heap*/
 HashTable* create_table(int size);
 void ht_insert(HashTable* table, value pointer);
 value ht_search(HashTable* table, value pointer);

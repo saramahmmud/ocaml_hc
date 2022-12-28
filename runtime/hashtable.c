@@ -1,3 +1,4 @@
+#include "caml/alloc.h"
 #include "caml/compare.h"
 #include "caml/hashtable.h"
 #include "caml/memory.h"
@@ -15,24 +16,25 @@ value string_to_hash_val(const char* string, int size) {
 HashTable* create_table(int size) {
     // Creates a new HashTable of size 'size' in bytes
     HashTable* table = (HashTable*) caml_stat_alloc_noexc (sizeof(HashTable));
+    value item_array = caml_alloc_small (size, 0);
+    caml_register_generational_global_root(&item_array);
+    for (int i=0; i<size; i++)
+        Field(item_array, i) = Val_unit;
+    table->items = item_array;
     table->size = size;
     table->count = 0;
-    table->items = (Ht_item**) caml_stat_alloc_noexc (size * sizeof(Ht_item*));
-    for (int i=0; i<table->size; i++)
-        table->items[i] = NULL;
     return table;
 };
 
-Ht_item* create_item(value eph_key, value eph_data) {
-    // Creates a pointer to a new hash table item
-    Ht_item* item = (Ht_item*) caml_stat_alloc_noexc (sizeof(Ht_item));
+value create_item(value eph_key, value eph_data) {
+    // Creates a new hash table item
 
     value ephemeron = caml_ephemeron_create(1);
+    value item = (value) caml_alloc_small (2, 0);
     caml_ephemeron_set_key(ephemeron, 0, eph_key);
     caml_ephemeron_set_data(ephemeron, eph_data);
-
-    item->eph = ephemeron;
-    item->next = NULL;
+    Field(item, 0) = ephemeron;
+    Field(item, 1) = Val_unit;
 
     return item;
 }
@@ -42,18 +44,18 @@ void ht_insert(HashTable* table, value pointer) {
     if (Tag_val(pointer) == String_tag){
         const char* string = String_val(pointer);
         value hash_val = string_to_hash_val(string, table->size);
-        Ht_item* item = create_item(pointer, hash_val);
+        value item = create_item(pointer, hash_val);
 
         int index = abs(hash_val) % table->size;
-        Ht_item* cur_item = table->items[index];
-        if (cur_item == NULL) {
+        value cur_item = Field(table->items, index);
+        if (cur_item == Val_unit) {
             // If the index is empty, insert the item
-            table->items[index] = item;
+            Field(table->items, index) = item;
         } else {
             // If the index is not empty, insert the item at the end of the linked list
-            while (cur_item->next != NULL)
-                cur_item = cur_item->next;
-            cur_item->next = item;
+            while (Field(cur_item, 1) != Val_unit)
+                cur_item = Field(cur_item, 1);
+            Field(cur_item, 1) = item;
         }
         table->count++;
     }
@@ -63,33 +65,33 @@ value ht_search(HashTable* table, value pointer) {
     // Searches for a value in the hashtable and returns the stored pointer if it exists
     // returns the OCaml value encoding of false if it doesn't exist.
     value existing_pointer;
-    value* data = caml_stat_alloc_noexc(sizeof(value));
-    *data = Val_false;
+    value data = caml_alloc_small(sizeof(value), 0);
+    data = Val_unit;
     if (Tag_val(pointer) == String_tag){
         const char* string = String_val(pointer);
         value hash_val = string_to_hash_val(string, table->size);
         int index = abs(hash_val) % table->size;
-        Ht_item* item = table->items[index];
+        value item = Field(table->items, index);
 
-        if (item != NULL) {
+        if (item != Val_unit) {
             //if data is set
-            if (caml_ephemeron_get_data(item->eph, data)){
+            if (caml_ephemeron_get_data(Field(item, 0), &data)){
                 //and data is the same as the hash_val
-                if (*data == hash_val){
+                if (data == hash_val){
                     //return the pointer
-                    if (caml_ephemeron_get_key(item->eph, 0, &existing_pointer)){
+                    if (caml_ephemeron_get_key(Field(item, 0), 0, &existing_pointer)){
                         return existing_pointer;
                     }
                     else{
                         //If the key (pointer) has been collected, keep searching linked list for now
-                        while (item->next != NULL) {
-                            item = item->next;
+                        while (Field(item, 1) != Val_unit) {
+                            item = Field(item, 1);
                             //if data is set
-                            if (caml_ephemeron_get_data(item->eph, data)){
+                            if (caml_ephemeron_get_data(Field(item, 0), &data)){
                                 //and data is the same as the hash_val
-                                if (*data == hash_val){
+                                if (data == hash_val){
                                     //return the pointer
-                                    if (caml_ephemeron_get_key(item->eph, 0, &existing_pointer)){
+                                    if (caml_ephemeron_get_key(Field(item, 0), 0, &existing_pointer)){
                                         return existing_pointer;
                                     }
                                 }
@@ -99,14 +101,14 @@ value ht_search(HashTable* table, value pointer) {
                 }
                 else{
                     //If the hash_val isn't the same, keep searching linked list
-                    while (item->next != NULL) {
-                        item = item->next;
+                    while (Field(item, 1) != Val_unit) {
+                        item = Field(item, 1);
                         //if data is set
-                        if (caml_ephemeron_get_data(item->eph, data)){
+                        if (caml_ephemeron_get_data(Field(item, 0), &data)){
                             //and data is the same as the hash_val
-                            if (*data == hash_val){
+                            if (data == hash_val){
                                 //return the pointer
-                                if (caml_ephemeron_get_key(item->eph, 0, &existing_pointer)){
+                                if (caml_ephemeron_get_key(Field(item, 0), 0, &existing_pointer)){
                                     return existing_pointer;
                                 }
                             }
@@ -116,14 +118,14 @@ value ht_search(HashTable* table, value pointer) {
             }
             else{
                 //If the data (hash_val) has been collected???, keep searching linked list for now
-                while (item->next != NULL) {
-                    item = item->next;
+                while (Field(item, 1) != Val_unit) {
+                    item = Field(item, 1);
                     //if data is set
-                    if (caml_ephemeron_get_data(item->eph, data)){
+                    if (caml_ephemeron_get_data(Field(item, 0), &data)){
                         //and data is the same as the hash_val
-                        if (*data == hash_val){
+                        if (data == hash_val){
                             //return the pointer
-                            if (caml_ephemeron_get_key(item->eph, 0, &existing_pointer)){
+                            if (caml_ephemeron_get_key(Field(item, 0), 0, &existing_pointer)){
                                 return existing_pointer;
                             }
                         }
