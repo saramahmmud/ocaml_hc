@@ -73,7 +73,7 @@ value ht_search(HashTable* table, value pointer) {
         int index = abs(hash_val) % table->size;
         value item = Field(table->items, index);
 
-        if (item != Val_unit) {
+        while (item != Val_unit) {
             //if data is set
             if (caml_ephemeron_get_data(Field(item, 0), &data)){
                 //and data is the same as the hash_val
@@ -82,56 +82,10 @@ value ht_search(HashTable* table, value pointer) {
                     if (caml_ephemeron_get_key(Field(item, 0), 0, &existing_pointer)){
                         return existing_pointer;
                     }
-                    else{
-                        //If the key (pointer) has been collected, keep searching linked list for now
-                        while (Field(item, 1) != Val_unit) {
-                            item = Field(item, 1);
-                            //if data is set
-                            if (caml_ephemeron_get_data(Field(item, 0), &data)){
-                                //and data is the same as the hash_val
-                                if (data == hash_val){
-                                    //return the pointer
-                                    if (caml_ephemeron_get_key(Field(item, 0), 0, &existing_pointer)){
-                                        return existing_pointer;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                else{
-                    //If the hash_val isn't the same, keep searching linked list
-                    while (Field(item, 1) != Val_unit) {
-                        item = Field(item, 1);
-                        //if data is set
-                        if (caml_ephemeron_get_data(Field(item, 0), &data)){
-                            //and data is the same as the hash_val
-                            if (data == hash_val){
-                                //return the pointer
-                                if (caml_ephemeron_get_key(Field(item, 0), 0, &existing_pointer)){
-                                    return existing_pointer;
-                                }
-                            }
-                        }
-                    }
                 }
             }
-            else{
-                //If the data (hash_val) has been collected???, keep searching linked list for now
-                while (Field(item, 1) != Val_unit) {
-                    item = Field(item, 1);
-                    //if data is set
-                    if (caml_ephemeron_get_data(Field(item, 0), &data)){
-                        //and data is the same as the hash_val
-                        if (data == hash_val){
-                            //return the pointer
-                            if (caml_ephemeron_get_key(Field(item, 0), 0, &existing_pointer)){
-                                return existing_pointer;
-                            }
-                        }
-                    }
-                }
-            }
+            //if data is not set, check the next item
+            item = Field(item, 1);
         }
     }
     return Val_false;
