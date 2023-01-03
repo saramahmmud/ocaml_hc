@@ -27,10 +27,24 @@ HashTable* create_table(int size) {
 };
 
 value create_item(value eph_key, value eph_data) {
-    // Creates a new hash table item
+    /* Creates a new hash table item which is represented
+    as an OCaml value with 2 fields.
 
+    The tag is 0 to indicate that it is a structured block 
+    where each field is a value.
+    
+    The first field is an OCaml ephmeron which has one key (weak 
+    pointer) which is the pointer to the hash-consed value and 
+    one data (strong pointer) which is the hash value of the
+    hash-consed value.
+
+    The second field is a pointer to the 'next' item in the
+    hash table, forming a linked list. This is used to resolve 
+    collisions.
+    */ 
     value ephemeron = caml_ephemeron_create(1);
     value item = (value) caml_alloc_small (2, 0);
+    //caml_register_generational_global_root(&item); // Do I need this?
     caml_ephemeron_set_key(ephemeron, 0, eph_key);
     caml_ephemeron_set_data(ephemeron, eph_data);
     Field(item, 0) = ephemeron;
@@ -62,8 +76,10 @@ void ht_insert(HashTable* table, value pointer) {
 }
 
 value ht_search(HashTable* table, value pointer) {
-    // Searches for a value in the hashtable and returns the stored pointer if it exists
-    // returns the OCaml value encoding of false if it doesn't exist.
+    /* Searches for a value in the hashtable and returns the 
+    stored pointer if it exists.
+    Returns the OCaml value encoding of false if it doesn't exist.
+    */
     value existing_pointer;
     value data = caml_alloc_small(sizeof(value), 0);
     data = Val_unit;
