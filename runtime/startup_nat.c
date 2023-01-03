@@ -30,6 +30,7 @@
 #include "caml/freelist.h"
 #include "caml/gc.h"
 #include "caml/gc_ctrl.h"
+#include "caml/hashtable.h"
 #include "caml/intext.h"
 #include "caml/memory.h"
 #include "caml/misc.h"
@@ -157,6 +158,7 @@ value caml_startup_common(char_os **argv, int pooling)
     if (caml_termination_hook != NULL) caml_termination_hook(NULL);
     return Val_unit;
   }
+  hc_table = create_table(10);
   res = caml_start_program(Caml_state);
   caml_terminate_signals();
   return res;

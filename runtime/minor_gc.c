@@ -22,6 +22,7 @@
 #include "caml/finalise.h"
 #include "caml/gc.h"
 #include "caml/gc_ctrl.h"
+#include "caml/hashtable.h"
 #include "caml/major_gc.h"
 #include "caml/memory.h"
 #include "caml/minor_gc.h"
@@ -187,6 +188,7 @@ static value oldify_todo_list = 0;
    Forward_tag, and No_scan_tag are contiguous. */
 
 void caml_oldify_one (value v, value *p)
+/* p is just the pointer to v */
 {
   value result;
   header_t hd;
@@ -194,40 +196,65 @@ void caml_oldify_one (value v, value *p)
   tag_t tag;
 
  tail_call:
+ /* If is block (bottom bit is 0) and is in the minor heap*/
   if (Is_block (v) && Is_young (v)){
+    /* Caml_state->young_ptr is where the next allocation in minor heap will take place
+    hp_val is a pointer to the header */
     CAMLassert ((value *) Hp_val (v) >= Caml_state->young_ptr);
+    /* hd is the header*/
     hd = Hd_val (v);
     if (hd == 0){         /* If already forwarded */
       *p = Field (v, 0);  /*  then forward pointer is first field. */
     }else{
+      /* checks colour is 0 and wosize is 1...max young wosize*/
       CAMLassert_young_header(hd);
       tag = Tag_hd (hd);
       if (tag < Infix_tag){
+        /* closure, object, lazy , or anything else well-formed??*/
         value field0;
 
         sz = Wosize_hd (hd);
         result = caml_alloc_shr_for_minor_gc (sz, tag, hd);
-        *p = result;
-        field0 = Field (v, 0);
-        Hd_val (v) = 0;            /* Set forward flag */
-        Field (v, 0) = result;     /*  and forward pointer. */
+        *p = result; /* the pointer now points into the major heap?*/
+        field0 = Field (v, 0); /*field0 is the first field of the value*/
+        Hd_val (v) = 0;            /* Set forward flag, setting entire header to 0, show that this value has been forwarded to the major heap now */
+        Field (v, 0) = result;     /*  and forward pointer. Make the first field be the pointer into the major heap */
         if (sz > 1){
           Field (result, 0) = field0;
           Field (result, 1) = oldify_todo_list;    /* Add this block */
           oldify_todo_list = v;                    /*  to the "to do" list. */
         }else{
-          CAMLassert (sz == 1);
-          p = &Field (result, 0);
-          v = field0;
+          CAMLassert (sz == 1); /* if sz==1 there are no pointers to follow in this block*/
+          p = &Field (result, 0); /*set the pointer to point tothe first field of the block in the major heap*/
+          v = field0; 
           goto tail_call;
         }
+      }else if (tag == String_tag){
+        /* string */
+        /* Check if string is in hc_table*/
+        result = ht_search(hc_table, v);
+
+        /* if string is not in the hc_table*/
+        if (result == (Val_false)) {
+          sz = Wosize_hd (hd);
+          result = caml_alloc_shr_for_minor_gc (sz, tag, hd); /*allocate a block in major heap of same size, tag and header*/
+          for (i = 0; i < sz; i++) Field (result, i) = Field (v, i); /*copy all fields across*/
+          /* add the new pointer to table*/
+          ht_insert(hc_table, result);
+        }
+
+        Hd_val (v) = 0;            /* Set forward flag (set entire header to 0) to show the value has been forwarded*/
+        Field (v, 0) = result;     /*  and forward pointer. (Change the first field to point into the major heap) */
+        *p = result; /* point the pointer to the value in the major heap too*/
+
       }else if (tag >= No_scan_tag){
+        /* byte, abstract, double, double array, custom */
         sz = Wosize_hd (hd);
-        result = caml_alloc_shr_for_minor_gc (sz, tag, hd);
-        for (i = 0; i < sz; i++) Field (result, i) = Field (v, i);
-        Hd_val (v) = 0;            /* Set forward flag */
-        Field (v, 0) = result;     /*  and forward pointer. */
-        *p = result;
+        result = caml_alloc_shr_for_minor_gc (sz, tag, hd); /*allocate a block in major heap of same size, tag and header*/
+        for (i = 0; i < sz; i++) Field (result, i) = Field (v, i); /*copy all fields across*/
+        Hd_val (v) = 0;            /* Set forward flag (set entire header to 0) to show the value has been forwarded*/
+        Field (v, 0) = result;     /*  and forward pointer. (Change the first field to point into the major heap) */
+        *p = result; /* point the pointer to the value in the major heap too*/
       }else if (tag == Infix_tag){
         mlsize_t offset = Infix_offset_hd (hd);
         caml_oldify_one (v - offset, p);   /* Cannot recurse deeper than 1. */
