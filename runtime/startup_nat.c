@@ -58,7 +58,6 @@ static void init_static(void)
 
   char * caml_code_area_start, * caml_code_area_end;
   int i;
-
   caml_init_atom_table ();
 
   for (i = 0; caml_data_segments[i].begin != 0; i++) {
@@ -109,7 +108,6 @@ value caml_startup_common(char_os **argv, int pooling)
   char_os * exe_name, * proc_self_exe;
   value res;
   char tos;
-
   /* Initialize the domain */
   caml_init_domain();
   /* Determine options */
@@ -158,7 +156,6 @@ value caml_startup_common(char_os **argv, int pooling)
     if (caml_termination_hook != NULL) caml_termination_hook(NULL);
     return Val_unit;
   }
-  hc_table = create_table(10);
   res = caml_start_program(Caml_state);
   caml_terminate_signals();
   return res;
@@ -178,6 +175,8 @@ void caml_startup(char_os **argv)
 
 void caml_main(char_os **argv)
 {
+  printf("\n\nStartUp_Nat\n\n");
+  fflush(stdout);
   caml_startup(argv);
 }
 

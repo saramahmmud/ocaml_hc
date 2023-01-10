@@ -34,6 +34,8 @@
 #include "caml/memprof.h"
 #include "caml/eventlog.h"
 
+#include <pthread.h>
+pthread_mutex_t table_mutex;
 /* Pointers into the minor heap.
    [Caml_state->young_base]
        The [malloc] block that contains the heap.
@@ -63,7 +65,7 @@
 */
 
 struct generic_table CAML_TABLE_STRUCT(char);
-
+value hc_table;
 void caml_alloc_minor_tables ()
 {
   Caml_state->ref_table =
@@ -232,8 +234,10 @@ void caml_oldify_one (value v, value *p)
       }else if (tag == String_tag){
         /* string */
         /* Check if string is in hc_table*/
+	printf("\n olidfying %s \n", String_val(v));
         result = ht_search(hc_table, v);
 
+	printf("search result= %ld", result);
         /* if string is not in the hc_table*/
         if (result == (Val_false)) {
           sz = Wosize_hd (hd);
@@ -246,6 +250,8 @@ void caml_oldify_one (value v, value *p)
         Hd_val (v) = 0;            /* Set forward flag (set entire header to 0) to show the value has been forwarded*/
         Field (v, 0) = result;     /*  and forward pointer. (Change the first field to point into the major heap) */
         *p = result; /* point the pointer to the value in the major heap too*/
+
+        printf("done");
 
       }else if (tag >= No_scan_tag){
         /* byte, abstract, double, double array, custom */

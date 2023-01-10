@@ -12,9 +12,9 @@ struct HashTable {
 };
 
 /* Hash table to store hash-consed values*/
-extern HashTable* hc_table;
+extern value hc_table;
 
 /*The hashTable is stored outside of the heap*/
-HashTable* create_table(int size);
-void ht_insert(HashTable* table, value pointer);
-value ht_search(HashTable* table, value pointer);
+value create_table(int size);
+void ht_insert(value table, value pointer);
+value ht_search(value table, value pointer);

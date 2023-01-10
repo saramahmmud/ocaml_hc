@@ -42,6 +42,7 @@
 #include "caml/fix_code.h"
 #include "caml/freelist.h"
 #include "caml/gc_ctrl.h"
+#include "caml/hashtable.h"
 #include "caml/instrtrace.h"
 #include "caml/interp.h"
 #include "caml/intext.h"
@@ -453,7 +454,7 @@ extern void caml_install_invalid_parameter_handler();
 #endif
 
 /* Main entry point when loading code from a file */
-
+//HashTable* hc_table;
 CAMLexport void caml_main(char_os **argv)
 {
   int fd, pos;
@@ -463,7 +464,10 @@ CAMLexport void caml_main(char_os **argv)
   char * req_prims;
   char_os * shared_lib_path, * shared_libs;
   char_os * exe_name, * proc_self_exe;
-
+  
+  printf("\n\nStartUp_Byte\n\n");
+  fflush(stdout);
+  
   /* Initialize the domain */
   caml_init_domain();
 
@@ -546,6 +550,8 @@ CAMLexport void caml_main(char_os **argv)
   caml_init_stack (caml_init_max_stack_wsz);
   caml_init_atom_table();
   caml_init_backtrace();
+  hc_table = create_table(10);
+  caml_register_global_root(&hc_table);
   /* Initialize the interpreter */
   caml_interprete(NULL, 0);
   /* Initialize the debugger, if needed */
@@ -595,6 +601,7 @@ CAMLexport void caml_main(char_os **argv)
     }
     caml_fatal_uncaught_exception(Caml_state->exn_bucket);
   }
+  printf("\nEND\n");fflush(stdout);
 }
 
 /* Main entry point when code is linked in as initialized data */

@@ -55,7 +55,7 @@ static uintnat marked_words, heap_wsz_at_cycle_start;
 uintnat caml_major_heap_increment;
 CAMLexport char *caml_heap_start;
 char *caml_gc_sweep_hp;
-int caml_gc_phase;        /* always Phase_mark, Pase_clean,
+int caml_gc_phase;        /* always Phase_mark, Phase_clean,
                              Phase_sweep, or Phase_idle */
 uintnat caml_allocated_words;
 uintnat caml_dependent_size, caml_dependent_allocated;
@@ -940,6 +940,9 @@ void caml_major_collection_slice (intnat howmuch)
   double p, dp, filt_p, spend;
   intnat computed_work;
   int i;
+  #include <stdio.h>
+  printf("\n\nMAJORMAJOR\n\n");
+  fflush(stdout);
   /*
      Free memory at the start of the GC cycle (garbage + free list) (assumed):
                  FM = Caml_state->stat_heap_wsz * caml_percent_free
