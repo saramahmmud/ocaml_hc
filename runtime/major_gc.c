@@ -940,9 +940,7 @@ void caml_major_collection_slice (intnat howmuch)
   double p, dp, filt_p, spend;
   intnat computed_work;
   int i;
-  #include <stdio.h>
-  printf("\n\nMAJORMAJOR\n\n");
-  fflush(stdout);
+
   /*
      Free memory at the start of the GC cycle (garbage + free list) (assumed):
                  FM = Caml_state->stat_heap_wsz * caml_percent_free

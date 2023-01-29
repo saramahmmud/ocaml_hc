@@ -465,9 +465,6 @@ CAMLexport void caml_main(char_os **argv)
   char_os * shared_lib_path, * shared_libs;
   char_os * exe_name, * proc_self_exe;
   
-  printf("\n\nStartUp_Byte\n\n");
-  fflush(stdout);
-  
   /* Initialize the domain */
   caml_init_domain();
 
