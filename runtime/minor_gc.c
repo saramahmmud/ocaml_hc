@@ -234,12 +234,16 @@ void caml_oldify_one (value v, value *p)
       }else if (tag == String_tag){
         /* string */
         /* Check if string is in hc_table*/
-	printf("\n olidfying %s \n", String_val(v));
+	      if (debug) printf("\nolidfying %s\n", String_val(v));
         result = ht_search(hc_table, v);
 
-	printf("search result= %ld", result);
+        if (result != Val_false){
+          if (debug) printf("search result= %s\n", String_val(result));
+        }
+	        
         /* if string is not in the hc_table*/
         if (result == (Val_false)) {
+          if (debug) printf("string not found\n");
           sz = Wosize_hd (hd);
           result = caml_alloc_shr_for_minor_gc (sz, tag, hd); /*allocate a block in major heap of same size, tag and header*/
           for (i = 0; i < sz; i++) Field (result, i) = Field (v, i); /*copy all fields across*/
@@ -251,7 +255,7 @@ void caml_oldify_one (value v, value *p)
         Field (v, 0) = result;     /*  and forward pointer. (Change the first field to point into the major heap) */
         *p = result; /* point the pointer to the value in the major heap too*/
 
-        printf("done");
+        if (debug) printf("done");
 
       }else if (tag >= No_scan_tag){
         /* byte, abstract, double, double array, custom */

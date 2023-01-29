@@ -14,6 +14,8 @@ struct HashTable {
 /* Hash table to store hash-consed values*/
 extern value hc_table;
 
+extern int debug;
+
 /*The hashTable is stored outside of the heap*/
 value create_table(int size);
 void ht_insert(value table, value pointer);

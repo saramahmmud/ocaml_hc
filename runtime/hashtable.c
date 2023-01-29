@@ -4,45 +4,49 @@
 #include "caml/memory.h"
 #include "caml/mlvalues.h"
 #include "caml/weak.h"
+#include "caml/gc.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
+#include <string.h>
 
-value string_to_hash_val(const char* string, int size) {
-    CAMLparam0();
+int debug = 0;
+
+long string_to_hash_val(const char* string, int size) {
     uintnat i = 0;
     for (int j=0; string[j]; j++)
         i += string[j];
-    CAMLreturn(Val_long(i));
+    return (long) i;
 }
 
 value create_table(int size) {
     CAMLparam0();
     // Creates a new HashTable of size 'size' in bytes
-    //HashTable* table = (HashTable*) caml_stat_alloc_noexc (sizeof(HashTable));
+    // HashTable* table = (HashTable*) caml_stat_alloc_noexc (sizeof(HashTable));
     CAMLlocal2(table, item_array);
-    //CAMLlocalN(item_array, size);
-    item_array = caml_alloc(size, 0);
+    if (debug) printf("\n\nCreating Table\n\n");
+    item_array = (value) caml_alloc_shr_for_minor_gc(size, 0, Make_header(2, 0, Caml_white));
     for (int i=0; i<size; i++) {
-      Store_field(item_array, i, Val_unit);
+      Field(item_array, i) =Val_unit;
     }
- 
-    table = caml_alloc(3, 0);
+
+    table = (value) caml_alloc_shr_for_minor_gc(3, 0, Make_header(2, 0, Caml_white));  
+
+    Field(table, 0) = item_array;
+    //Store_field(table, 0, item_array);
+    Field(table, 1) = Val_int(size);
+    //Store_field(table, 1, Val_int(size));
+    Field(table, 2) = Val_int(0);
+    //Store_field(table, 2, Val_int(0));
     
-    printf("\n\nCreating Table\n\n");
-    fflush(stdout);
-   
-    //Field(table, 0) = item_array;
-    Store_field(table, 0, item_array);
-    //Field(table, 1) = Val_int(size);
-    Store_field(table, 1, Val_int(size));
-    //Field(table, 2) = Val_int(0);
-    Store_field(table, 2, Val_int(0));
-    for (int ind = 0; ind<10; ind++){
-        //printf("\n index: %d, item: %ld", ind, Field(table->items, ind));
-	printf("\n index: %d, item: %ld", ind, Field(Field(table, 0), ind));
-	fflush(stdout);
+    if (debug) {
+      for (int ind = 0; ind<size; ind++){
+        printf("\n index: %d, item: %ld", ind, Field(Field(table, 0), ind));
+        fflush(stdout);
+      }
+      printf("\n\n table size,  count: %d, %d \n\n", Int_val(Field(table, 1)), Int_val(Field(table, 2)));fflush(stdout);
     }
+
     CAMLreturn(table);
 };
 
@@ -67,96 +71,104 @@ value create_item(value eph_key, value eph_data) {
     ephemeron = caml_ephemeron_create(1);
     caml_ephemeron_set_key(ephemeron, 0, eph_key);
     caml_ephemeron_set_data(ephemeron, eph_data);
-    item = caml_alloc_small (2, 0);
+    item = caml_alloc_shr_for_minor_gc(2, 0, Make_header(2, 0, Caml_white));
     Field(item, 0) = ephemeron;
     Field(item, 1) = Val_unit;
    
     
-    printf("\n\n creating item: %ld, ephemeron: %ld, next: %ld, eph_key: %s\n\n", item, Field(item, 0), Field(item, 1), String_val(eph_key));
-    fflush(stdout);
+    if (debug) {
+      printf("creating item: %ld, ephemeron: %ld, next: %ld, eph_key: %s\n", item, Field(item, 0), Field(item, 1), String_val(eph_key));
+      fflush(stdout);
+    }
     CAMLreturn(item);
 }
 
 void ht_insert(value table, value pointer) {
   CAMLparam2(table, pointer);
-  CAMLlocal3(hash_val, item, cur_item);
-    // Inserts a new item into the hash table
-  //printf("\n\n table count: %d \n\n", table->count);
-  printf("\n\n table count: %ld \n\n", Field(table, 2));fflush(stdout);
+  CAMLlocal2(item, cur_item);
+  long hash_val;
+  // Inserts a new item into the hash table
+  if (debug) {
+    printf("table count: %d \n", Int_val(Field(table, 2)));
+    fflush(stdout);
+  }
   if ((Tag_val(pointer) == String_tag)){
-        const char* string = String_val(pointer);
-	int index;
-        //value hash_val = string_to_hash_val(string, table->size);
-	hash_val = string_to_hash_val(string, Field(table, 1));
-        item = create_item(pointer, hash_val);
-	index = abs(hash_val) % Field(table, 1);
-	// int index = abs(hash_val) % table->size;
-        //value cur_item = Field(table->items, index);
-	cur_item = Field(Field(table, 0), index);
-	
-	//insert the item at the front of the linked list
-        //Field(item, 1) = cur_item;
-	caml_modify(&Field(item, 1), cur_item);
-	//Field(table->items, index) = item;
-	//Field(Field(table, 0), index) = item;
-	caml_modify(&Field(Field(table, 0), index), item);  
-	
-	printf("\n\ninserting item %ld at index %d\n\n", item, index);
-	//printf("\n\nget field at index %d: %ld\n\n", index, Field(table->items, index));
-	printf("\n\nget field at index %d: %ld\n\n", index, Field(Field(table, 0), index));
-        caml_modify(&Field(table, 2), Val_int(Int_val(Field(table, 2))+1));
+    const char* string = String_val(pointer);
+    int index;
+    hash_val = string_to_hash_val(string, Int_val(Field(table, 1)));
+    item = create_item(pointer, hash_val);
+    index = abs(hash_val) % Int_val(Field(table, 1));
+    cur_item = Field(Field(table, 0), index);
+    
+
+    caml_modify(&Field(item, 1), cur_item);
+    caml_modify(&Field(Field(table, 0), index), item);  
+    
+    if (debug) {
+      printf("inserting item %ld at index %d\n", item, index);
+      printf("get field at index %d: %ld\n", index, Field(Field(table, 0), index));
     }
+
+    caml_modify(&Field(table, 2), Val_int(Int_val(Field(table, 2))+1));
+
+    }
+  if (debug) printf("inserted\n");
   CAMLreturn0;
 }
 
 value ht_search(value table, value pointer) {
-  
   CAMLparam2(table, pointer);
-  CAMLlocal4(existing_pointer, data, hash_val, item);
-    /* Searches for a value in the hashtable and returns the 
-    stored pointer if it exists.
-    Returns the OCaml value encoding of false if it doesn't exist.
-    */
-  printf("\nsearch_function\n");
-  existing_pointer = caml_alloc(1, 0);
-  printf("\nstored field1\n");
-  Store_field(existing_pointer, 0, Val_unit);
+  CAMLlocal4(existing_pointer, data,item, saras_test);
+  long hash_val;
+  /* Searches for a value in the hashtable and returns the 
+  stored pointer if it exists.
+  Returns the OCaml value encoding of false if it doesn't exist.
+  */
+  if (debug) {
+    printf("\nsearch_function\n");
+    printf("\nTable size, count: %d, %d\n", Int_val(Field(table, 1)), Int_val(Field(table, 2)));
+  }
+
+  existing_pointer = caml_alloc_shr_for_minor_gc(1, 0, Make_header(1, 0, Caml_white));
+  Field(existing_pointer, 0) = Val_unit;
   
-  data = caml_alloc(1, 0);
+  data = caml_alloc_shr_for_minor_gc(1, 0, Make_header(1, 0, Caml_white));
   Field(data, 0) = Val_unit;
-  printf("\nstored field1\n");
 
     if (Tag_val(pointer) == String_tag){
         const char* string = String_val(pointer);
-	//value hash_val = string_to_hash_val(string, table->size);
-        //int index = abs(hash_val) % table->size;
-        //value item = Field(table->items, index);
-	int index;
-	printf("searching: %s", string);
-	hash_val = string_to_hash_val(string, Field(table, 1));
-	index = abs(hash_val) % Field(table, 1);
+        int index;
+        hash_val = string_to_hash_val(string, Int_val(Field(table, 1)));
+        index = abs(hash_val) % Int_val(Field(table, 1));
         item = Field(Field(table, 0), index);
 	
-	printf("\n\nsearching for item: %ld\n\n", pointer);
-	for (int ind = 0; ind<10; ind++){
-	  //printf("\n index: %d, item: %ld", ind, Field(table->items, ind));
-	  printf("\n index: %d, item: %ld", ind, Field(Field(table, 0), ind));
-	}
+        if (debug) {
+          printf("\n\nsearching for string %s, pointer %lx\n\n", string, pointer);
+          for (int ind = 0; ind<Int_val(Field(table, 1)); ind++){
+            printf("index: %d, item: %ld\n", ind, Field(Field(table, 0), ind));
+          }
+        }
 	
         while (item != Val_unit) {
-	  printf("\n\nseach starting at index %d with  item: %ld\n\n", index, item);
-	  fflush(stdout);
-            //if data is set
+            // if data is set
             if (caml_ephemeron_get_data(Field(item, 0), &data)){
-                //and data is the same as the hash_val
+                // and data is the same as the hash_val
                 if (data == hash_val){
-                    //return the pointer
+                  if (debug) printf("eph data = hash_val\n");
+                    // if the key is set
                     if (caml_ephemeron_get_key(Field(item, 0), 0, &existing_pointer)){
-		      CAMLreturn(existing_pointer);
+                        if (debug) printf("eph key found: %s\n", String_val(existing_pointer));
+                        // and the key matches the string we are searching for
+                        if (!strcmp(String_val(existing_pointer), string)){
+                          if (debug) printf("strings match\n");
+                          // return the pointer
+                          CAMLreturn(existing_pointer);
+                        }
+		                    
                     }
                 }
             }
-            //if data is not set, check the next item
+            // otherwise, check the next item
             item = Field(item, 1);
         }
     }
