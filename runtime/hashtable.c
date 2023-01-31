@@ -1,5 +1,6 @@
+#define CAML_INTERNALS //is this needed?
+
 #include "caml/alloc.h"
-#include "caml/compare.h"
 #include "caml/hashtable.h"
 #include "caml/memory.h"
 #include "caml/mlvalues.h"
@@ -10,7 +11,7 @@
 #include <assert.h>
 #include <string.h>
 
-int debug = 1;
+int debug = 0;
 
 long string_to_hash_val(const char* string, int size) {
     uintnat i = 0;
