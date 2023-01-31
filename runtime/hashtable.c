@@ -10,7 +10,7 @@
 #include <assert.h>
 #include <string.h>
 
-int debug = 0;
+int debug = 1;
 
 long string_to_hash_val(const char* string, int size) {
     uintnat i = 0;
@@ -41,7 +41,7 @@ value create_table(int size) {
     
     if (debug) {
       for (int ind = 0; ind<size; ind++){
-        printf("\n index: %d, item: %ld", ind, Field(Field(table, 0), ind));
+        printf("\n index: %d, item: %lx", ind, Field(Field(table, 0), ind));
         fflush(stdout);
       }
       printf("\n\n table size,  count: %d, %d \n\n", Int_val(Field(table, 1)), Int_val(Field(table, 2)));fflush(stdout);
@@ -77,7 +77,7 @@ value create_item(value eph_key, value eph_data) {
    
     
     if (debug) {
-      printf("creating item: %ld, ephemeron: %ld, next: %ld, eph_key: %s\n", item, Field(item, 0), Field(item, 1), String_val(eph_key));
+      printf("creating item: %lx, ephemeron: %lx, next: %lx, eph_key: %s\n", item, Field(item, 0), Field(item, 1), String_val(eph_key));
       fflush(stdout);
     }
     CAMLreturn(item);
@@ -105,8 +105,8 @@ void ht_insert(value table, value pointer) {
     caml_modify(&Field(Field(table, 0), index), item);  
     
     if (debug) {
-      printf("inserting item %ld at index %d\n", item, index);
-      printf("get field at index %d: %ld\n", index, Field(Field(table, 0), index));
+      printf("inserting item %lx at index %d\n", item, index);
+      printf("get field at index %d: %lx\n", index, Field(Field(table, 0), index));
     }
 
     caml_modify(&Field(table, 2), Val_int(Int_val(Field(table, 2))+1));
@@ -145,7 +145,7 @@ value ht_search(value table, value pointer) {
         if (debug) {
           printf("\n\nsearching for string %s, pointer %lx\n\n", string, pointer);
           for (int ind = 0; ind<Int_val(Field(table, 1)); ind++){
-            printf("index: %d, item: %ld\n", ind, Field(Field(table, 0), ind));
+            printf("index: %d, item: %lx\n", ind, Field(Field(table, 0), ind));
           }
         }
 	
