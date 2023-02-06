@@ -13,11 +13,28 @@
 
 int debug = 0;
 
-long string_to_hash_val(const char* string, int size) {
+long string_to_hash_val(value string) {
+    mlsize_t length = caml_string_length(string);
     uintnat i = 0;
-    for (int j=0; string[j]; j++)
-        i += string[j];
+    for (int j=0; j<length; j++)
+        i += Byte_u(string, j);
     return (long) i;
+}
+
+int caml_compare_strings(value s1, value s2){
+    mlsize_t len1 = caml_string_length(s1);
+    mlsize_t len2 = caml_string_length(s2);
+
+    if (len1!=len2){
+      return 0;
+    }
+
+    for (mlsize_t i=0; i<len1; i++){
+      if (Byte_u(s1, i) != Byte_u(s2, i)){
+         return 0;
+      }
+    }
+    return 1;
 }
 
 value create_table(int size) {
@@ -94,9 +111,8 @@ void ht_insert(value table, value pointer) {
     fflush(stdout);
   }
   if ((Tag_val(pointer) == String_tag)){
-    const char* string = String_val(pointer);
     int index;
-    hash_val = string_to_hash_val(string, Int_val(Field(table, 1)));
+    hash_val = string_to_hash_val(pointer);
     item = create_item(pointer, hash_val);
     index = abs(hash_val) % Int_val(Field(table, 1));
     cur_item = Field(Field(table, 0), index);
@@ -137,14 +153,13 @@ value ht_search(value table, value pointer) {
   Field(data, 0) = Val_unit;
 
     if (Tag_val(pointer) == String_tag){
-        const char* string = String_val(pointer);
         int index;
-        hash_val = string_to_hash_val(string, Int_val(Field(table, 1)));
+        hash_val = string_to_hash_val(pointer);
         index = abs(hash_val) % Int_val(Field(table, 1));
         item = Field(Field(table, 0), index);
 	
         if (debug) {
-          printf("\n\nsearching for string %s, pointer %lx\n\n", string, pointer);
+          printf("\n\nsearching for string %s, pointer %lx\n\n", String_val(pointer), pointer);
           for (int ind = 0; ind<Int_val(Field(table, 1)); ind++){
             printf("index: %d, item: %lx\n", ind, Field(Field(table, 0), ind));
           }
@@ -160,7 +175,7 @@ value ht_search(value table, value pointer) {
                     if (caml_ephemeron_get_key(Field(item, 0), 0, &existing_pointer)){
                         if (debug) printf("eph key found: %s\n", String_val(existing_pointer));
                         // and the key matches the string we are searching for
-                        if (!strcmp(String_val(existing_pointer), string)){
+                        if (caml_compare_strings(existing_pointer, pointer)){
                           if (debug) printf("strings match\n");
                           // return the pointer
                           CAMLreturn(existing_pointer);
