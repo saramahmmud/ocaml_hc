@@ -38,24 +38,20 @@ int caml_compare_strings(value s1, value s2){
 }
 
 value create_table(int size) {
-    CAMLparam0();
     // Creates a new HashTable of size 'size' in bytes
-    // HashTable* table = (HashTable*) caml_stat_alloc_noexc (sizeof(HashTable));
+    CAMLparam0();
     CAMLlocal2(table, item_array);
     if (debug) printf("\n\nCreating Table\n\n");
+
     item_array = (value) caml_alloc_shr_for_minor_gc(size, 0, Make_header(2, 0, Caml_white));
     for (int i=0; i<size; i++) {
       Field(item_array, i) =Val_unit;
     }
 
     table = (value) caml_alloc_shr_for_minor_gc(3, 0, Make_header(2, 0, Caml_white));  
-
     Field(table, 0) = item_array;
-    //Store_field(table, 0, item_array);
     Field(table, 1) = Val_int(size);
-    //Store_field(table, 1, Val_int(size));
     Field(table, 2) = Val_int(0);
-    //Store_field(table, 2, Val_int(0));
     
     if (debug) {
       for (int ind = 0; ind<size; ind++){
@@ -69,7 +65,6 @@ value create_table(int size) {
 };
 
 value create_item(value eph_key, value eph_data) {
-    CAMLparam2(eph_key, eph_data);
     /* Creates a new hash table item which is represented
     as an OCaml value with 2 fields.
     
@@ -85,6 +80,7 @@ value create_item(value eph_key, value eph_data) {
     hash table, forming a linked list. This is used to resolve 
     collisions.
     */
+    CAMLparam2(eph_key, eph_data);
     CAMLlocal2(ephemeron, item);
     ephemeron = caml_ephemeron_create(1);
     caml_ephemeron_set_key(ephemeron, 0, eph_key);
