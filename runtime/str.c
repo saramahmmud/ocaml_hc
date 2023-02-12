@@ -68,6 +68,11 @@ CAMLprim value caml_create_string(value len)
   return caml_alloc_string(size);
 }
 
+CAMLprim value caml_prim_copy_string(value s)
+{
+  return caml_copy_string(String_val(s));
+}
+
 /* [len] is a value that represents a number of bytes (chars) */
 CAMLprim value caml_create_bytes(value len)
 {
@@ -465,10 +470,12 @@ CAMLexport value caml_alloc_sprintf(const char * format, ...)
 
 CAMLprim value caml_string_of_bytes(value bv)
 {
+  Tag_val(bv) = String_tag;
   return bv;
 }
 
 CAMLprim value caml_bytes_of_string(value bv)
 {
+  Tag_val(bv) = Byte_tag;
   return bv;
 }
