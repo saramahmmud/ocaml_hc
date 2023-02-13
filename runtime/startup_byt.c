@@ -42,6 +42,7 @@
 #include "caml/fix_code.h"
 #include "caml/freelist.h"
 #include "caml/gc_ctrl.h"
+#include "caml/hashtable.h"
 #include "caml/instrtrace.h"
 #include "caml/interp.h"
 #include "caml/intext.h"
@@ -463,7 +464,7 @@ CAMLexport void caml_main(char_os **argv)
   char * req_prims;
   char_os * shared_lib_path, * shared_libs;
   char_os * exe_name, * proc_self_exe;
-
+  
   /* Initialize the domain */
   caml_init_domain();
 
@@ -543,6 +544,8 @@ CAMLexport void caml_main(char_os **argv)
                 caml_init_max_percent_free, caml_init_major_window,
                 caml_init_custom_major_ratio, caml_init_custom_minor_ratio,
                 caml_init_custom_minor_max_bsz, caml_init_policy);
+  hc_table = create_table(10);
+  caml_register_global_root(&hc_table);
   caml_init_stack (caml_init_max_stack_wsz);
   caml_init_atom_table();
   caml_init_backtrace();
