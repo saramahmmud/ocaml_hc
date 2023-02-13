@@ -30,8 +30,8 @@ external unsafe_get : bytes -> int -> char = "%bytes_unsafe_get"
 external unsafe_set : bytes -> int -> char -> unit = "%bytes_unsafe_set"
 external unsafe_fill : bytes -> int -> int -> char -> unit
                      = "caml_fill_bytes" [@@noalloc]
-external unsafe_to_string : bytes -> string = "%bytes_to_string"
-external unsafe_of_string : string -> bytes = "%bytes_of_string"
+external to_string : bytes -> string = "%bytes_to_string"
+external of_string : string -> bytes = "%bytes_of_string"
 
 external unsafe_blit : bytes -> int -> bytes -> int -> int -> unit
                      = "caml_blit_bytes" [@@noalloc]
@@ -58,9 +58,6 @@ let copy s =
   unsafe_blit s 0 r 0 len;
   r
 
-let to_string b = unsafe_to_string (copy b)
-let of_string s = copy (unsafe_of_string s)
-
 let sub s ofs len =
   if ofs < 0 || len < 0 || ofs > length s - len
   then invalid_arg "String.sub / Bytes.sub"
@@ -70,7 +67,7 @@ let sub s ofs len =
     r
   end
 
-let sub_string b ofs len = unsafe_to_string (sub b ofs len)
+let sub_string b ofs len = to_string (sub b ofs len)
 
 (* addition with an overflow check *)
 let (++) a b =

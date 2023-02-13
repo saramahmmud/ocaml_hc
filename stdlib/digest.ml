@@ -26,14 +26,14 @@ external channel: in_channel -> int -> t = "caml_md5_chan"
 let string str =
   unsafe_string str 0 (String.length str)
 
-let bytes b = string (Bytes.unsafe_to_string b)
+let bytes b = string (Bytes.to_string b)
 
 let substring str ofs len =
   if ofs < 0 || len < 0 || ofs > String.length str - len
   then invalid_arg "Digest.substring"
   else unsafe_string str ofs len
 
-let subbytes b ofs len = substring (Bytes.unsafe_to_string b) ofs len
+let subbytes b ofs len = substring (Bytes.to_string b) ofs len
 
 let file filename =
   let ic = open_in_bin filename in
@@ -57,7 +57,7 @@ let to_hex d =
     Bytes.unsafe_set result (i*2) (char_hex (x lsr 4));
     Bytes.unsafe_set result (i*2+1) (char_hex (x land 0x0f));
   done;
-  Bytes.unsafe_to_string result
+  Bytes.to_string result
 
 let from_hex s =
   if String.length s <> 32 then invalid_arg "Digest.from_hex";
@@ -73,4 +73,4 @@ let from_hex s =
   for i = 0 to 15 do
     Bytes.set result i (Char.chr (byte (2 * i)));
   done;
-  Bytes.unsafe_to_string result
+  Bytes.to_string result

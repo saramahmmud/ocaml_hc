@@ -40,7 +40,7 @@ let rev_char_set char_set =
     Bytes.set char_set' i
       (char_of_int (int_of_char (String.get char_set i) lxor 0xFF));
   done;
-  Bytes.unsafe_to_string char_set'
+  Bytes.to_string char_set'
 
 (* Return true if a `c' is in `char_set'. *)
 let is_in_char_set char_set c =
@@ -1343,7 +1343,7 @@ let fix_padding padty width str =
     | Zeros ->
       String.blit str 0 res (width - len) len
     end;
-    Bytes.unsafe_to_string res
+    Bytes.to_string res
 
 (* Add '0' padding to int, int32, nativeint or int64 string representation. *)
 let fix_int_precision prec str =
@@ -1354,16 +1354,16 @@ let fix_int_precision prec str =
     let res = Bytes.make (prec + 1) '0' in
     Bytes.set res 0 c;
     String.blit str 1 res (prec - len + 2) (len - 1);
-    Bytes.unsafe_to_string res
+    Bytes.to_string res
   | '0' when prec + 2 > len && len > 1 && (str.[1] = 'x' || str.[1] = 'X') ->
     let res = Bytes.make (prec + 2) '0' in
     Bytes.set res 1 str.[1];
     String.blit str 2 res (prec - len + 4) (len - 2);
-    Bytes.unsafe_to_string res
+    Bytes.to_string res
   | '0' .. '9' | 'a' .. 'f' | 'A' .. 'F' when prec > len ->
     let res = Bytes.make prec '0' in
     String.blit str 0 res (prec - len) len;
-    Bytes.unsafe_to_string res
+    Bytes.to_string res
   | _ ->
     str
 
@@ -1373,7 +1373,7 @@ let string_to_caml_string str =
   let l = String.length str in
   let res = Bytes.make (l + 2) '\"' in
   String.unsafe_blit str 0 res 1 l;
-  Bytes.unsafe_to_string res
+  Bytes.to_string res
 
 (* Generate the format_int/int32/nativeint/int64 first argument
    from an int_conv. *)
@@ -1443,7 +1443,7 @@ let transform_int_alt iconv s =
           if !left = 0 then (put '_'; left := 3); decr left; put c
       | c -> put c
     done;
-    Bytes.unsafe_to_string buf
+    Bytes.to_string buf
   | _ -> s
 
 (* Convert an integer to a string according to a conversion. *)
@@ -1494,7 +1494,7 @@ let format_caml_char c =
   let l = String.length str in
   let res = Bytes.make (l + 2) '\'' in
   String.unsafe_blit str 0 res 1 l;
-  Bytes.unsafe_to_string res
+  Bytes.to_string res
 
 (* Convert a format type to string *)
 let string_of_fmtty fmtty =

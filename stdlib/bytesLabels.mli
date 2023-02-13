@@ -367,8 +367,8 @@ val ends_with :
     always-correct {!to_string} and {!of_string} instead.
 *)
 
-val unsafe_to_string : bytes -> string
-(** Unsafely convert a byte sequence into a string.
+(**val unsafe_to_string : bytes -> string
+ Unsafely convert a byte sequence into a string.
 
     To reason about the use of [unsafe_to_string], it is convenient to
     consider an "ownership" discipline. A piece of code that
@@ -443,8 +443,8 @@ let bytes_length (s : bytes) =
    closure is fully applied and returns ownership.
 *)
 
-val unsafe_of_string : string -> bytes
-(** Unsafely convert a shared string to a byte sequence that should
+(**val unsafe_of_string : string -> bytes
+ Unsafely convert a shared string to a byte sequence that should
     not be mutated.
 
     The same ownership discipline that makes [unsafe_to_string]
