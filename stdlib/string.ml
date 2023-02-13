@@ -34,8 +34,8 @@ external unsafe_fill : bytes -> int -> int -> char -> unit
 
 module B = Bytes
 
-let bts = B.unsafe_to_string
-let bos = B.unsafe_of_string
+let bts = B.to_string
+let bos = B.of_string
 
 let make n c =
   B.make n c |> bts

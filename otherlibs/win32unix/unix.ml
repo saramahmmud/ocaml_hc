@@ -301,10 +301,10 @@ let single_write fd buf ofs len =
   else unsafe_single_write fd buf ofs len
 
 let write_substring fd buf ofs len =
-  write fd (Bytes.unsafe_of_string buf) ofs len
+  write fd (Bytes.of_string buf) ofs len
 
 let single_write_substring fd buf ofs len =
-  single_write fd (Bytes.unsafe_of_string buf) ofs len
+  single_write fd (Bytes.of_string buf) ofs len
 
 (* Interfacing with the standard input/output library *)
 
@@ -740,10 +740,10 @@ let sendto fd buf ofs len flags addr =
   else unsafe_sendto fd buf ofs len flags addr
 
 let send_substring fd buf ofs len flags =
-  send fd (Bytes.unsafe_of_string buf) ofs len flags
+  send fd (Bytes.of_string buf) ofs len flags
 
 let sendto_substring fd buf ofs len flags addr =
-  sendto fd (Bytes.unsafe_of_string buf) ofs len flags addr
+  sendto fd (Bytes.of_string buf) ofs len flags addr
 
 type socket_bool_option =
     SO_DEBUG

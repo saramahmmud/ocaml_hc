@@ -151,7 +151,7 @@ let input_all ic =
     match Stdlib.input_char ic with
     | exception End_of_file ->
         (* EOF reached, buffer is completely filled *)
-        Bytes.unsafe_to_string buf
+        Bytes.to_string buf
     | c ->
         (* EOF not reached *)
         let rec loop buf ofs =

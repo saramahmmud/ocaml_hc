@@ -170,7 +170,7 @@ let add_substring b s offset len =
   b.position <- new_position
 
 let add_subbytes b s offset len =
-  add_substring b (Bytes.unsafe_to_string s) offset len
+  add_substring b (Bytes.to_string s) offset len
 
 let add_string b s =
   let len = String.length s in
@@ -179,7 +179,7 @@ let add_string b s =
   Bytes.unsafe_blit_string s 0 b.buffer b.position len;
   b.position <- new_position
 
-let add_bytes b s = add_string b (Bytes.unsafe_to_string s)
+let add_bytes b s = add_string b (Bytes.to_string s)
 
 let add_buffer b bs =
   add_subbytes b bs.buffer 0 bs.position

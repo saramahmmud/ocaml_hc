@@ -42,7 +42,7 @@ let timed_write fd buff ofs len timeout =
   else raise (Unix_error(ETIMEDOUT, "timed_write", ""))
 
 let timed_write_substring fd buff ofs len timeout =
-  timed_write fd (Bytes.unsafe_of_string buff) ofs len timeout
+  timed_write fd (Bytes.of_string buff) ofs len timeout
 
 let pipe = Unix.pipe
 

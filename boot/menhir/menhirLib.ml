@@ -2588,7 +2588,7 @@ let pack (a : int array) : t =
 
     (* Done. *)
 
-    k, Bytes.unsafe_to_string s
+    k, Bytes.to_string s
 
   end
   else begin (* k > 8 *)
@@ -2620,7 +2620,7 @@ let pack (a : int array) : t =
 
     (* Done. *)
 
-    k, Bytes.unsafe_to_string s
+    k, Bytes.to_string s
 
   end
 

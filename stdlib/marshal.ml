@@ -64,4 +64,4 @@ let from_bytes buff ofs =
 let from_string buff ofs =
   (* Bytes.unsafe_of_string is safe here, as the produced byte
      sequence is never mutated *)
-  from_bytes (Bytes.unsafe_of_string buff) ofs
+  from_bytes (Bytes.of_string buff) ofs
