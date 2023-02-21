@@ -470,6 +470,41 @@ static void intern_rec(value *dest)
         len = read64u();
         goto read_string;
 #endif
+      case CODE_BYTE8:
+        len = read8u();
+        size = (len + sizeof(value)) / sizeof(value);
+        v = Val_hp(intern_dest);
+        if (intern_obj_table != NULL) intern_obj_table[obj_counter++] = v;
+        *intern_dest = Make_header(size, Byte_tag, intern_color);
+        intern_dest += 1 + size;
+        Field(v, size - 1) = 0;
+        ofs_ind = Bsize_wsize(size) - 1;
+        Byte(v, ofs_ind) = ofs_ind - len;
+        readblock((char *)String_val(v), len);
+      case CODE_BYTE32:
+        len = read32u();
+        size = (len + sizeof(value)) / sizeof(value);
+        v = Val_hp(intern_dest);
+        if (intern_obj_table != NULL) intern_obj_table[obj_counter++] = v;
+        *intern_dest = Make_header(size, Byte_tag, intern_color);
+        intern_dest += 1 + size;
+        Field(v, size - 1) = 0;
+        ofs_ind = Bsize_wsize(size) - 1;
+        Byte(v, ofs_ind) = ofs_ind - len;
+        readblock((char *)String_val(v), len);
+#ifdef ARCH_SIXTYFOUR
+      case CODE_BYTE64:
+        len = read64u();
+        size = (len + sizeof(value)) / sizeof(value);
+        v = Val_hp(intern_dest);
+        if (intern_obj_table != NULL) intern_obj_table[obj_counter++] = v;
+        *intern_dest = Make_header(size, Byte_tag, intern_color);
+        intern_dest += 1 + size;
+        Field(v, size - 1) = 0;
+        ofs_ind = Bsize_wsize(size) - 1;
+        Byte(v, ofs_ind) = ofs_ind - len;
+        readblock((char *)String_val(v), len);
+#endif
       case CODE_DOUBLE_LITTLE:
       case CODE_DOUBLE_BIG:
         v = Val_hp(intern_dest);
