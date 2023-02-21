@@ -564,6 +564,28 @@ Caml_inline void extern_string(value v, mlsize_t len)
   }
   writeblock(String_val(v), len);
 }
+#include <assert.h>
+Caml_inline void extern_byte(value v, mlsize_t len)
+{
+  
+  assert(0);
+  if (len < 0x100) {
+    writecode8(CODE_BYTE8, len);
+  } else {
+#ifdef ARCH_SIXTYFOUR
+    if (len > 0xFFFFFB && (extern_flags & COMPAT_32))
+      extern_failwith("output_value: byte cannot be read back on "
+                      "32-bit platform");
+    if (len < (uintnat)1 << 32)
+      writecode32(CODE_BYTE32, len);
+    else
+      writecode64(CODE_BYTE64, len);
+#else
+    writecode32(CODE_BYTE32, len);
+#endif
+  }
+  writeblock(String_val(v), len);
+}
 
 /* Marshaling FP numbers */
 
@@ -736,7 +758,15 @@ static void extern_rec(value v)
     }
     /* Output the contents of the object */
     switch(tag) {
-    case Byte_tag: case String_tag: {
+    case Byte_tag: {
+      mlsize_t len = caml_string_length(v);
+      extern_byte(v, len);
+      size_32 += 1 + (len + 4) / 4;
+      size_64 += 1 + (len + 8) / 8;
+      extern_record_location(v, h);
+      break;
+    }
+    case String_tag: {
       mlsize_t len = caml_string_length(v);
       extern_string(v, len);
       size_32 += 1 + (len + 4) / 4;
