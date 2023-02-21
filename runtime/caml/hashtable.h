@@ -20,3 +20,4 @@ extern int debug;
 value create_table(int size);
 void ht_insert(value table, value pointer);
 value ht_search(value table, value pointer);
+void caml_display_string(value s);

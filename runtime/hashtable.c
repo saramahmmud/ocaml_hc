@@ -13,28 +13,47 @@
 
 int debug = 0;
 
+void caml_display_string(value s) {
+    CAMLparam1(s);
+    mlsize_t length = caml_string_length(s);
+    for (int j = 0; j < length; j++) {
+      fprintf(stderr, "%d ", Byte_u(s, j));
+    }
+    fprintf(stderr, "\n");
+
+    for (int j = 0; j < length; j++) {
+      fprintf(stderr, "%c", Byte_u(s, j));
+    }
+    fprintf(stderr, "\n");
+    fflush(stderr);
+    CAMLreturn0;
+}
+
 long string_to_hash_val(value string) {
+    CAMLparam1(string);
     mlsize_t length = caml_string_length(string);
     uintnat i = 0;
-    for (int j=0; j<length; j++)
+    for (int j=0; j<length; j++) {
         i += Byte_u(string, j);
-    return (long) i;
+    }
+    CAMLreturnT(long, (long)i);
 }
 
 int caml_compare_strings(value s1, value s2){
+    CAMLparam2(s1, s2);
     mlsize_t len1 = caml_string_length(s1);
     mlsize_t len2 = caml_string_length(s2);
 
     if (len1!=len2){
-      return 0;
+      CAMLreturnT(int, 0);
     }
 
     for (mlsize_t i=0; i<len1; i++){
       if (Byte_u(s1, i) != Byte_u(s2, i)){
-         return 0;
+         CAMLreturnT(int, 0);
       }
     }
-    return 1;
+    CAMLreturnT(int, 1);
 }
 
 value create_table(int size) {
@@ -89,6 +108,8 @@ value create_item(value eph_key, value eph_data) {
     Field(item, 0) = ephemeron;
     Field(item, 1) = Val_unit;
    
+    //fprintf(stderr, "Adding: "); 
+    //caml_display_string(eph_key);
     
     if (debug) {
       printf("creating item: %lx, ephemeron: %lx, next: %lx, eph_key: %s\n", item, Field(item, 0), Field(item, 1), String_val(eph_key));
@@ -109,8 +130,9 @@ void ht_insert(value table, value pointer) {
   if ((Tag_val(pointer) == String_tag)){
     int index;
     hash_val = string_to_hash_val(pointer);
-    item = create_item(pointer, hash_val);
     index = abs(hash_val) % Int_val(Field(table, 1));
+    //fprintf(stderr, "Index: %d, ", index);
+    item = create_item(pointer, hash_val);
     cur_item = Field(Field(table, 0), index);
     
 
