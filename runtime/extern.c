@@ -567,8 +567,6 @@ Caml_inline void extern_string(value v, mlsize_t len)
 #include <assert.h>
 Caml_inline void extern_byte(value v, mlsize_t len)
 {
-  
-  assert(0);
   if (len < 0x100) {
     writecode8(CODE_BYTE8, len);
   } else {
@@ -956,7 +954,7 @@ CAMLprim value caml_output_value_to_bytes(value v, value flags)
   /* PR#4030: it is prudent to save extern_output_first before allocating
      the result, as in caml_output_val */
   blk = extern_output_first;
-  res = caml_alloc_string(header_len + data_len);
+  res = caml_alloc_bytes(header_len + data_len);
   ofs = 0;
   memcpy(&Byte(res, ofs), header, header_len);
   ofs += header_len;
@@ -973,7 +971,30 @@ CAMLprim value caml_output_value_to_bytes(value v, value flags)
 
 CAMLprim value caml_output_value_to_string(value v, value flags)
 {
-  return caml_output_value_to_bytes(v,flags);
+  char header[32];
+  int header_len;
+  intnat data_len, ofs;
+  value res;
+  struct output_block * blk, * nextblk;
+
+  init_extern_output();
+  data_len = extern_value(v, flags, header, &header_len);
+  /* PR#4030: it is prudent to save extern_output_first before allocating
+     the result, as in caml_output_val */
+  blk = extern_output_first;
+  res = caml_alloc_string(header_len + data_len);
+  ofs = 0;
+  memcpy(&Byte(res, ofs), header, header_len);
+  ofs += header_len;
+  while (blk != NULL) {
+    intnat n = blk->end - blk->data;
+    memcpy(&Byte(res, ofs), blk->data, n);
+    ofs += n;
+    nextblk = blk->next;
+    caml_stat_free(blk);
+    blk = nextblk;
+  }
+  return res;
 }
 
 CAMLexport intnat caml_output_value_to_block(value v, value flags,

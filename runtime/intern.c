@@ -481,6 +481,7 @@ static void intern_rec(value *dest)
         ofs_ind = Bsize_wsize(size) - 1;
         Byte(v, ofs_ind) = ofs_ind - len;
         readblock((char *)String_val(v), len);
+        break;
       case CODE_BYTE32:
         len = read32u();
         size = (len + sizeof(value)) / sizeof(value);
@@ -492,6 +493,7 @@ static void intern_rec(value *dest)
         ofs_ind = Bsize_wsize(size) - 1;
         Byte(v, ofs_ind) = ofs_ind - len;
         readblock((char *)String_val(v), len);
+        break;
 #ifdef ARCH_SIXTYFOUR
       case CODE_BYTE64:
         len = read64u();
@@ -504,6 +506,7 @@ static void intern_rec(value *dest)
         ofs_ind = Bsize_wsize(size) - 1;
         Byte(v, ofs_ind) = ofs_ind - len;
         readblock((char *)String_val(v), len);
+        break;
 #endif
       case CODE_DOUBLE_LITTLE:
       case CODE_DOUBLE_BIG:
