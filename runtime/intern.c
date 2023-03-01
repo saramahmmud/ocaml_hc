@@ -367,7 +367,6 @@ static void intern_rec(value *dest)
       tag = code & 0xF;
       size = (code >> 4) & 0x7;
     read_block:
-      Check_tag(tag);
       if (size == 0) {
         v = Atom(tag);
       } else {

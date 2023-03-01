@@ -51,7 +51,7 @@ type 'a t = 'a CamlinternalLazy.t
 
 exception Undefined = CamlinternalLazy.Undefined
 
-external _make_forward : 'a -> 'a lazy_t = "caml_lazy_make_forward"
+external make_forward : 'a -> 'a lazy_t = "caml_lazy_make_forward"
 
 external force : 'a t -> 'a = "%lazy_force"
 
@@ -64,11 +64,10 @@ let from_fun (f : unit -> 'arg) =
   (Obj.obj x : 'arg t)
 
 let from_val (v : 'arg) =
-  (*let t = Obj.tag (Obj.repr v) in
+  let t = Obj.tag (Obj.repr v) in
   if t = Obj.forward_tag || t = Obj.lazy_tag || t = Obj.double_tag then begin
     make_forward v
-  end else *)
-  begin
+  end else begin
     (Obj.magic v : 'arg t)
   end
 
