@@ -43,6 +43,7 @@ _build
 /Makefile.build_config
 /Makefile.config
 /autom4te.cache
+bug.ml
 /ocamlc
 /config.cache
 /ocaml-*.cache
