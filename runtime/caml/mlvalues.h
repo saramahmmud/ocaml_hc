@@ -195,7 +195,7 @@ bits  63        (64-P) (63-P)        10 9     8 7   0
 #endif
 
 /* The lowest tag for blocks containing no value. */
-#define No_scan_tag 251
+#define No_scan_tag 249
 
 
 /* 1- If tag < No_scan_tag : a tuple of fields.  */
@@ -219,7 +219,7 @@ typedef opcode_t * code_t;
 
 /* Forward_tag: forwarding pointer that the GC may silently shortcut.
    See stdlib/lazy.ml. */
-#define Forward_tag 250
+#define Forward_tag 248
 #define Forward_val(v) Field(v, 0)
 
 /* If tag == Infix_tag : an infix header inside a closure */
