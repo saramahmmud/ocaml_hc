@@ -541,6 +541,26 @@ Caml_inline void extern_header(mlsize_t sz, tag_t tag)
   }
 }
 
+Caml_inline void extern_bytes(value v, mlsize_t len)
+{
+  if (len < 0x100) {
+    writecode8(CODE_BYTES8, len);
+  } else {
+#ifdef ARCH_SIXTYFOUR
+    if (len > 0xFFFFFB && (extern_flags & COMPAT_32))
+      extern_failwith("output_value: bytes cannot be read back on "
+                      "32-bit platform");
+    if (len < (uintnat)1 << 32)
+      writecode32(CODE_BYTES32, len);
+    else
+      writecode64(CODE_BYTES64, len);
+#else
+    writecode32(CODE_BYTE32, len);
+#endif
+  }
+  writeblock(String_val(v), len);
+}
+
 /* Marshaling strings */
 
 Caml_inline void extern_string(value v, mlsize_t len)
@@ -736,6 +756,14 @@ static void extern_rec(value v)
     }
     /* Output the contents of the object */
     switch(tag) {
+    case Bytes_tag : {
+      mlsize_t len = caml_string_length(v);
+      extern_bytes(v, len);
+      size_32 += 1 + (len + 4) / 4;
+      size_64 += 1 + (len + 8) / 8;
+      extern_record_location(v, h);
+      break;
+    }
     case String_tag: {
       mlsize_t len = caml_string_length(v);
       extern_string(v, len);
@@ -926,7 +954,7 @@ CAMLprim value caml_output_value_to_bytes(value v, value flags)
   /* PR#4030: it is prudent to save extern_output_first before allocating
      the result, as in caml_output_val */
   blk = extern_output_first;
-  res = caml_alloc_string(header_len + data_len);
+  res = caml_alloc_bytes(header_len + data_len);
   ofs = 0;
   memcpy(&Byte(res, ofs), header, header_len);
   ofs += header_len;
@@ -943,7 +971,30 @@ CAMLprim value caml_output_value_to_bytes(value v, value flags)
 
 CAMLprim value caml_output_value_to_string(value v, value flags)
 {
-  return caml_output_value_to_bytes(v,flags);
+    char header[32];
+  int header_len;
+  intnat data_len, ofs;
+  value res;
+  struct output_block * blk, * nextblk;
+
+  init_extern_output();
+  data_len = extern_value(v, flags, header, &header_len);
+  /* PR#4030: it is prudent to save extern_output_first before allocating
+     the result, as in caml_output_val */
+  blk = extern_output_first;
+  res = caml_alloc_string(header_len + data_len);
+  ofs = 0;
+  memcpy(&Byte(res, ofs), header, header_len);
+  ofs += header_len;
+  while (blk != NULL) {
+    intnat n = blk->end - blk->data;
+    memcpy(&Byte(res, ofs), blk->data, n);
+    ofs += n;
+    nextblk = blk->next;
+    caml_stat_free(blk);
+    blk = nextblk;
+  }
+  return res;
 }
 
 CAMLexport intnat caml_output_value_to_block(value v, value flags,
