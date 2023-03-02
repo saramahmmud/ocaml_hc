@@ -106,7 +106,7 @@ CAMLprim value caml_obj_block(value tag, value size)
     Closinfo_val(res) = Make_closinfo(0, 2); /* does not allocate */
     break;
   }
-  case String_tag: {
+  case Bytes_tag: case String_tag: {
     /* For [String_tag], the initial content does not matter. However,
        the length of the string is encoded using the last byte of the
        block. For this reason, the blocks with [String_tag] cannot be

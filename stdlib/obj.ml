@@ -110,7 +110,7 @@ struct
       if (is_block slot) && (tag slot) = object_tag then field slot 0
       else invalid_arg "Obj.extension_constructor"
     in
-      if (tag name) = string_tag then (obj slot : t)
+      if (((tag name) = string_tag) || ((tag name) = bytes_tag))then (obj slot : t)
       else invalid_arg "Obj.extension_constructor"
 
   let [@inline always] name (slot : t) =

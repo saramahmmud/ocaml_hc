@@ -88,7 +88,7 @@ static void check_block (header_t *hp)
   check_head (v);
   switch (Tag_hp (hp)){
   case Abstract_tag: break;
-  case String_tag:
+  case Bytes_tag: case String_tag:
     break;
   case Double_tag:
     CAMLassert (Wosize_val (v) == Double_wosize);

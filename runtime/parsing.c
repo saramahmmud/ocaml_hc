@@ -128,7 +128,7 @@ static void print_token(struct parser_tables *tables, int state, value tok)
     v = Field(tok, 0);
     if (Is_long(v))
       fprintf(stderr, "%" ARCH_INTNAT_PRINTF_FORMAT "d", Long_val(v));
-    else if (Tag_val(v) == String_tag)
+    else if ((Tag_val(v) == String_tag) || (Tag_val(v) == Bytes_tag))
       fprintf(stderr, "%s", String_val(v));
     else if (Tag_val(v) == Double_tag)
       fprintf(stderr, "%g", Double_val(v));

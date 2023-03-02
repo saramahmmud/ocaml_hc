@@ -179,7 +179,7 @@ static struct ev_info *process_debug_events(code_t code_start,
       }
 
       if (Is_block(Field(ev, EV_DEFNAME)) &&
-          Tag_val(Field(ev, EV_DEFNAME)) == String_tag) {
+          ((Tag_val(Field(ev, EV_DEFNAME)) == String_tag) || (Tag_val(Field(ev, EV_DEFNAME)) == Bytes_tag))) {
         const char *dname = String_val(Field(ev, EV_DEFNAME));
         events[j].ev_defname = caml_stat_strdup_noexc(dname);
         if (events[j].ev_defname == NULL)

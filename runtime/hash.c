@@ -213,7 +213,7 @@ CAMLprim value caml_hash(value count, value limit, value seed, value obj)
     }
     else {
       switch (Tag_val(v)) {
-      case String_tag:
+      case Bytes_tag: case String_tag:
         h = caml_hash_mix_string(h, v);
         num--;
         break;

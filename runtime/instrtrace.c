@@ -203,6 +203,17 @@ caml_trace_value_file (value v, code_t prog, asize_t proglen, FILE * f)
       fprintf (f, "=closure[s%d,cod%ld]",
                s, (long) ((code_t) (Code_val (v)) - prog));
       goto displayfields;
+    case Bytes_tag:
+      l = caml_string_length (v);
+      fprintf (f, "=bytes[s%dL%d]'", s, l);
+      for (i = 0; i < ((l>0x1f)?0x1f:l) ; i++) {
+        if (isprint ((int) Byte (v, i)))
+          putc (Byte (v, i), f);
+        else
+          putc ('?', f);
+      };
+      fprintf (f, "'");
+      goto displayfields;
     case String_tag:
       l = caml_string_length (v);
       fprintf (f, "=string[s%dL%d]'", s, l);
