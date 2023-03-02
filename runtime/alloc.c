@@ -94,11 +94,36 @@ CAMLexport value caml_alloc_string (mlsize_t len)
   return result;
 }
 
+CAMLexport value caml_alloc_bytes (mlsize_t len)
+{
+  value result;
+  mlsize_t offset_index;
+  mlsize_t wosize = (len + sizeof (value)) / sizeof (value);
+
+  if (wosize <= Max_young_wosize) {
+    Alloc_small (result, wosize, Bytes_tag);
+  }else{
+    result = caml_alloc_shr (wosize, Bytes_tag);
+    result = caml_check_urgent_gc (result);
+  }
+  Field (result, wosize - 1) = 0;
+  offset_index = Bsize_wsize (wosize) - 1;
+  Byte (result, offset_index) = offset_index - len;
+  return result;
+}
+
 /* [len] is a number of bytes (chars) */
 CAMLexport value caml_alloc_initialized_string (mlsize_t len, const char *p)
 {
   value result = caml_alloc_string (len);
   memcpy((char *)String_val(result), p, len);
+  return result;
+}
+
+CAMLexport value caml_alloc_initialized_bytes (mlsize_t len, char *p)
+{
+  value result = caml_alloc_bytes (len);
+  memcpy((char *)String_val(result), (const char*)p, len);
   return result;
 }
 
