@@ -463,6 +463,24 @@ CAMLexport value caml_alloc_sprintf(const char * format, ...)
 #endif
 }
 
+CAMLprim value caml_safe_bytes_to_string(value bv)
+{
+  value res;
+  mlsize_t len;
+  len = caml_string_length(bv);
+  res = caml_alloc_initialized_string(len, String_val(bv));
+  return res;
+}
+
+CAMLprim value caml_safe_bytes_of_string(value s)
+{
+  value res;
+  mlsize_t len;
+  len = caml_string_length(s);
+  res = caml_alloc_initialized_bytes(len, (char *)String_val(s));
+  return res;
+}  
+
 CAMLprim value caml_string_of_bytes(value bv)
 {
   return bv;
