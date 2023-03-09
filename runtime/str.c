@@ -75,7 +75,7 @@ CAMLprim value caml_create_bytes(value len)
   if (size > Bsize_wsize (Max_wosize) - 1){
     caml_invalid_argument("Bytes.create");
   }
-  return caml_alloc_string(size);
+  return caml_alloc_bytes(size);
 }
 
 
