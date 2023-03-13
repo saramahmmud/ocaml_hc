@@ -474,11 +474,13 @@ CAMLprim value caml_safe_bytes_to_string(value bv)
 
 CAMLprim value caml_safe_bytes_of_string(value s)
 {
+  CAMLparam1(s);
   value res;
   mlsize_t len;
   len = caml_string_length(s);
-  res = caml_alloc_initialized_bytes(len, (char *)String_val(s));
-  return res;
+  res = caml_alloc_bytes (len);
+  memcpy((char *)String_val(res), String_val(s), len);
+  CAMLreturn(res);
 }  
 
 CAMLprim value caml_string_of_bytes(value bv)

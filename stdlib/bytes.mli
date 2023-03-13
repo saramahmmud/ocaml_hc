@@ -90,13 +90,8 @@ val copy : bytes -> bytes
 (** Return a new byte sequence that contains the same bytes as the
     argument. *)
 
-val of_string : string -> bytes
-(** Return a new byte sequence that contains the same bytes as the
-    given string. *)
-
-val to_string : bytes -> string
-(** Return a new string that contains the same bytes as the given byte
-    sequence. *)
+external to_string : bytes -> string = "caml_safe_bytes_to_string"
+external of_string : string -> bytes = "caml_safe_bytes_of_string"
 
 val sub : bytes -> int -> int -> bytes
 (** [sub s pos len] returns a new byte sequence of length [len],
