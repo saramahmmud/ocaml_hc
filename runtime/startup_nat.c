@@ -30,6 +30,7 @@
 #include "caml/freelist.h"
 #include "caml/gc.h"
 #include "caml/gc_ctrl.h"
+#include "caml/hashtable.h"
 #include "caml/intext.h"
 #include "caml/memory.h"
 #include "caml/misc.h"
@@ -137,6 +138,10 @@ value caml_startup_common(char_os **argv, int pooling)
                 caml_init_max_percent_free, caml_init_major_window,
                 caml_init_custom_major_ratio, caml_init_custom_minor_ratio,
                 caml_init_custom_minor_max_bsz, caml_init_policy);
+  if (!hc_table){
+    hc_table = create_table(10);
+    caml_register_global_root(&hc_table);
+  }
   init_static();
   caml_init_signals();
 #ifdef _WIN32

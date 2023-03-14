@@ -22,6 +22,7 @@
 #include "caml/finalise.h"
 #include "caml/gc.h"
 #include "caml/gc_ctrl.h"
+#include "caml/hashtable.h"
 #include "caml/major_gc.h"
 #include "caml/memory.h"
 #include "caml/minor_gc.h"
@@ -62,6 +63,7 @@
 */
 
 struct generic_table CAML_TABLE_STRUCT(char);
+value hc_table;
 
 void caml_alloc_minor_tables ()
 {
@@ -221,6 +223,32 @@ void caml_oldify_one (value v, value *p)
           v = field0;
           goto tail_call;
         }
+      }else if (tag == String_tag){
+        /* string */
+        /* Check if string is in hc_table*/
+	      if (debug) fprintf(stderr, "\nolidfying %s\n", String_val(v));
+        result = ht_search(hc_table, v);
+
+        if (result != Val_false){
+          if (debug) fprintf(stderr, "search result= %s\n", String_val(result));
+        }
+	        
+        /* if string is not in the hc_table*/
+        if (result == (Val_false)) {
+          if (debug) fprintf(stderr, "string not found\n");
+          sz = Wosize_hd (hd);
+          result = caml_alloc_shr_for_minor_gc (sz, tag, hd); /*allocate a block in major heap of same size, tag and header*/
+          for (i = 0; i < sz; i++) Field (result, i) = Field (v, i); /*copy all fields across*/
+          /* add the new pointer to table*/
+          ht_insert(hc_table, result);
+        }
+
+        Hd_val (v) = 0;            /* Set forward flag (set entire header to 0) to show the value has been forwarded*/
+        Field (v, 0) = result;     /*  and forward pointer. (Change the first field to point into the major heap) */
+        *p = result; /* point the pointer to the value in the major heap too*/
+
+        if (debug) fprintf(stderr, "done");
+
       }else if (tag >= No_scan_tag){
         sz = Wosize_hd (hd);
         result = caml_alloc_shr_for_minor_gc (sz, tag, hd);

@@ -9,7 +9,7 @@
 #include <assert.h>
 #include <string.h>
 
-int debug = 1;
+int debug = 0;
 
 void caml_display_string(value s) {
     CAMLparam1(s);
@@ -157,7 +157,7 @@ value ht_search(value table, value pointer) {
   Returns the OCaml value encoding of false if it doesn't exist.
   */
   if (debug) {
-    fprintf(stderr, "\nsearch_function\n");
+    fprintf(stderr, "\nsearch_function, %p\n",(void *) table);
     fprintf(stderr, "\nTable size: %d\n", Int_val(Field(table, 1)));
     fflush(stderr);
     fprintf(stderr, "\nTable count: %d\n", Int_val(Field(table, 2)));
