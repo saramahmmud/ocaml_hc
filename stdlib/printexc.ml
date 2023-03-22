@@ -27,6 +27,8 @@ let field x i =
     sprintf "%d" (Obj.magic f : int)           (* can also be a char *)
   else if Obj.tag f = Obj.string_tag then
     sprintf "%S" (Obj.magic f : string)
+  else if Obj.tag f = Obj.bytes_tag then
+    sprintf "%S" (Bytes.to_string (Obj.magic f : bytes))
   else if Obj.tag f = Obj.double_tag then
     string_of_float (Obj.magic f : float)
   else
