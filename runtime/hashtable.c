@@ -1,4 +1,5 @@
 #include "caml/alloc.h"
+#include "caml/hash.h"
 #include "caml/hashtable.h"
 #include "caml/memory.h"
 #include "caml/mlvalues.h"
@@ -10,15 +11,17 @@
 #include <string.h>
 
 int debug = 0;
+uint32_t SEED = 0x4242421;
 
 void caml_display_string(value s) {
     CAMLparam1(s);
     mlsize_t length = caml_string_length(s);
+    /*
     for (int j = 0; j < length; j++) {
       fprintf(stderr, "%d ", Byte_u(s, j));
     }
     fprintf(stderr, "\n");
-
+    */
     for (int j = 0; j < length; j++) {
       fprintf(stderr, "%c", Byte_u(s, j));
     }
@@ -73,9 +76,10 @@ value create_table(int size) {
     if (debug) {
       for (int ind = 0; ind<size; ind++){
         fprintf(stderr, "\n index: %d, item: %lx", ind, Field(Field(table, 0), ind));
-        fflush(stdout);
+        fflush(stderr);
       }
-      fprintf(stderr, "\n\n table size,  count: %d, %d \n\n", Int_val(Field(table, 1)), Int_val(Field(table, 2)));fflush(stdout);
+      fprintf(stderr, "\n\n table size,  count: %d, %d \n\n", Int_val(Field(table, 1)), Int_val(Field(table, 2)));
+      fflush(stderr);
     }
 
     CAMLreturn(table);
@@ -104,13 +108,12 @@ value create_item(value eph_key, value eph_data) {
     item = caml_alloc_shr_for_minor_gc(2, 0, Make_header(2, 0, Caml_white));
     Field(item, 0) = ephemeron;
     Field(item, 1) = Val_unit;
-   
-    //fprintf(stderr, "Adding: "); 
-    //caml_display_string(eph_key);
     
     if (debug) {
+      fprintf(stderr, "Created ephemeron %lx : ", ephemeron); 
+      caml_display_string(eph_key);
       fprintf(stderr, "creating item: %lx, ephemeron: %lx, next: %lx, eph_key: %s\n", item, Field(item, 0), Field(item, 1), String_val(eph_key));
-      fflush(stdout);
+      fflush(stderr);
     }
     CAMLreturn(item);
 }
@@ -118,17 +121,16 @@ value create_item(value eph_key, value eph_data) {
 void ht_insert(value table, value pointer) {
   CAMLparam2(table, pointer);
   CAMLlocal2(item, cur_item);
-  long hash_val;
+  uint32_t hash_val;
   // Inserts a new item into the hash table
   if (debug) {
     fprintf(stderr, "table count: %d \n", Int_val(Field(table, 2)));
-    fflush(stdout);
+    fflush(stderr);
   }
   if ((Tag_val(pointer) == String_tag)){
     int index;
-    hash_val = string_to_hash_val(pointer);
-    index = abs(hash_val) % Int_val(Field(table, 1));
-    //fprintf(stderr, "Index: %d, ", index);
+    hash_val = caml_hash_mix_string(SEED, pointer);
+    index = abs(hash_val % Int_val(Field(table, 1)));
     item = create_item(pointer, hash_val);
     cur_item = Field(Field(table, 0), index);
     
@@ -150,8 +152,8 @@ void ht_insert(value table, value pointer) {
 
 value ht_search(value table, value pointer) {
   CAMLparam2(table, pointer);
-  CAMLlocal3(existing_pointer, data,item);
-  long hash_val;
+  CAMLlocal4(existing_pointer, data,item, prev);
+  uint32_t hash_val;
   /* Searches for a value in the hashtable and returns the 
   stored pointer if it exists.
   Returns the OCaml value encoding of false if it doesn't exist.
@@ -173,8 +175,8 @@ value ht_search(value table, value pointer) {
 
     if (Tag_val(pointer) == String_tag){
         int index;
-        hash_val = string_to_hash_val(pointer);
-        index = abs(hash_val) % Int_val(Field(table, 1));
+        hash_val = caml_hash_mix_string(SEED, pointer);
+        index = abs(hash_val % Int_val(Field(table, 1)));
         item = Field(Field(table, 0), index);
 	
         if (debug) {
@@ -183,7 +185,7 @@ value ht_search(value table, value pointer) {
             fprintf(stderr, "index: %d, item: %lx\n", ind, Field(Field(table, 0), ind));
           }*/
         }
-	
+        prev = Val_unit;
         while (item != Val_unit) {
             // if data is set
             if (caml_ephemeron_get_data(Field(item, 0), &data)){
@@ -201,9 +203,18 @@ value ht_search(value table, value pointer) {
                         }
 		                    
                     }
-                }
+              }
+            }
+            else {
+              if (prev != Val_unit) {
+                caml_modify(&Field(prev, 1), Field(item, 1));
+              }
+              else {
+                caml_modify(&Field(Field(table, 0), index), Field(item, 1));
+              }
             }
             // otherwise, check the next item
+            prev = item;
             item = Field(item, 1);
         }
     }
