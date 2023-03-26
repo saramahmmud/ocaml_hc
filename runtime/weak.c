@@ -119,6 +119,8 @@ CAMLexport value caml_ephemeron_create (mlsize_t len)
   if (size < CAML_EPHE_FIRST_KEY || size > Max_wosize)
     caml_invalid_argument ("Weak.create");
   res = caml_alloc_shr (size, Abstract_tag);
+  /*fprintf(stderr, "Creating ephemeron, Size: %li, Is_young %i\n", size, Is_young(res));
+  fflush(stderr);*/
   for (i = 1; i < size; i++) Field (res, i) = caml_ephe_none;
   Field (res, CAML_EPHE_LINK_OFFSET) = caml_ephe_list_head;
   caml_ephe_list_head = res;

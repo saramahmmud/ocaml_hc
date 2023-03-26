@@ -414,6 +414,8 @@ Caml_inline uintnat new_tracked(uintnat n_samples, uintnat wosize,
   struct tracked *t;
   if (!realloc_entries(&local->entries, 1))
     return Invalid_index;
+  /*fprintf(stderr, "New tracked item\n");
+  fflush(stderr);*/
   local->entries.len++;
   t = &local->entries.t[local->entries.len - 1];
   t->block = block;
@@ -580,6 +582,8 @@ value caml_memprof_handle_postponed_exn(void)
        the indices cannot shift, but it is still possible that
        [caml_memprof_stop] got called during the callback,
        invalidating all the entries. */
+    /*fprintf(stderr, "Running caml_memprof_handle_postponed_exn\n");
+    fflush(stderr);*/
     res = run_alloc_callback_exn(i);
     if (Is_exception_result(res)) goto end;
     if (local->entries.len == 0)
@@ -758,7 +762,8 @@ static void maybe_track_block(value block, uintnat n_samples,
 
   callstack = capture_callstack_postponed();
   if (callstack == 0) return;
-
+  /*fprintf(stderr, "In maybe_track_block, Block is %lx, Tag is %i, Size is %li, Is_young %i\n", block, Tag_val(block), wosize, Is_young(block));
+  fflush(stderr);*/
   new_tracked(n_samples, wosize, src, Is_young(block), block, callstack);
   check_action_pending();
 }
