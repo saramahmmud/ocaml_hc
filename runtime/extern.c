@@ -756,7 +756,7 @@ static void extern_rec(value v)
     }
     /* Output the contents of the object */
     switch(tag) {
-    case String_tag: case Bytes_tag : {
+    case Bytes_tag : {
       mlsize_t len = caml_string_length(v);
       extern_bytes(v, len);
       size_32 += 1 + (len + 4) / 4;
@@ -764,14 +764,14 @@ static void extern_rec(value v)
       extern_record_location(v, h);
       break;
     }
-    /*case String_tag: {
+    case String_tag: {
       mlsize_t len = caml_string_length(v);
       extern_string(v, len);
       size_32 += 1 + (len + 4) / 4;
       size_64 += 1 + (len + 8) / 8;
       extern_record_location(v, h);
       break;
-    }*/
+    }
     case Double_tag: {
       CAMLassert(sizeof(double) == 8);
       extern_double(v);
