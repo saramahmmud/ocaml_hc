@@ -163,14 +163,19 @@ let rec add_utf_16le_uchar b u =
 
 let add_substring b s offset len =
   if offset < 0 || len < 0 || offset > String.length s - len
-  then invalid_arg "Buffer.add_substring/add_subbytes";
+  then invalid_arg "Buffer.add_substring";
   let new_position = b.position + len in
   if new_position > b.length then resize b len;
   Bytes.unsafe_blit_string s offset b.buffer b.position len;
   b.position <- new_position
 
 let add_subbytes b s offset len =
-  add_substring b (Bytes.unsafe_to_string s) offset len
+  if offset < 0 || len < 0 || offset > Bytes.length s - len
+  then invalid_arg "Buffer.add_subbytes";
+  let new_position = b.position + len in
+  if new_position > b.length then resize b len;
+  Bytes.unsafe_blit s offset b.buffer b.position len;
+  b.position <- new_position
 
 let add_string b s =
   let len = String.length s in
@@ -179,7 +184,12 @@ let add_string b s =
   Bytes.unsafe_blit_string s 0 b.buffer b.position len;
   b.position <- new_position
 
-let add_bytes b s = add_string b (Bytes.unsafe_to_string s)
+let add_bytes b s =
+  let len = Bytes.length s in
+  let new_position = b.position + len in
+  if new_position > b.length then resize b len;
+  Bytes.unsafe_blit s 0 b.buffer b.position len;
+  b.position <- new_position
 
 let add_buffer b bs =
   add_subbytes b bs.buffer 0 bs.position
