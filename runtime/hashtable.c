@@ -127,10 +127,10 @@ void ht_insert(value table, value pointer) {
     fprintf(stderr, "table count: %d \n", Int_val(Field(table, 2)));
     fflush(stderr);
   }
-  if ((Tag_val(pointer) == String_tag)){
+  if (Tag_val(pointer) == String_tag){
     int index;
     hash_val = caml_hash_mix_string(SEED, pointer);
-    index = abs(hash_val % Int_val(Field(table, 1)));
+    index = abs((int)(hash_val % Int_val(Field(table, 1))));
     item = create_item(pointer, hash_val);
     cur_item = Field(Field(table, 0), index);
     
@@ -176,7 +176,7 @@ value ht_search(value table, value pointer) {
     if (Tag_val(pointer) == String_tag){
         int index;
         hash_val = caml_hash_mix_string(SEED, pointer);
-        index = abs(hash_val % Int_val(Field(table, 1)));
+        index = abs((int)(hash_val % Int_val(Field(table, 1))));
         item = Field(Field(table, 0), index);
 	
         if (debug) {
