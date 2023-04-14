@@ -92,6 +92,7 @@ val copy : bytes -> bytes
 
 external to_string : bytes -> string = "caml_safe_bytes_to_string"
 external of_string : string -> bytes = "caml_safe_bytes_of_string"
+external to_string_tag : bytes -> string = "caml_unsafe_string_of_bytes"
 
 val sub : bytes -> int -> int -> bytes
 (** [sub s pos len] returns a new byte sequence of length [len],

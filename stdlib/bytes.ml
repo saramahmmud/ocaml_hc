@@ -34,6 +34,7 @@ external unsafe_to_string : bytes -> string = "%bytes_to_string"
 external unsafe_of_string : string -> bytes = "%bytes_of_string"
 external to_string : bytes -> string = "caml_safe_bytes_to_string"
 external of_string : string -> bytes = "caml_safe_bytes_of_string"
+external to_string_tag : bytes -> string = "caml_unsafe_string_of_bytes"
 external unsafe_blit : bytes -> int -> bytes -> int -> int -> unit
                      = "caml_blit_bytes" [@@noalloc]
 external unsafe_blit_string : string -> int -> bytes -> int -> int -> unit
