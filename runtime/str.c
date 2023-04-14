@@ -485,6 +485,12 @@ CAMLprim value caml_safe_bytes_of_string(value s)
   CAMLreturn(res);
 }  
 
+CAMLprim value caml_unsafe_string_of_bytes(value bv)
+{
+  Tag_val(bv) = String_tag;
+  return bv;
+}
+
 CAMLprim value caml_string_of_bytes(value bv)
 {
   return bv;
