@@ -469,7 +469,7 @@ let input_line chan =
       ignore(unsafe_input chan beg 0 (-n));
       scan (beg :: accu) (len - n)
     end
-  in bytes_unsafe_to_string (scan [] 0)
+  in bytes_to_string_tag (scan [] 0)
 
 external input_byte : in_channel -> int = "caml_ml_input_char"
 external input_binary_int : in_channel -> int = "caml_ml_input_int"
