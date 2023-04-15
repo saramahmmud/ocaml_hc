@@ -42,7 +42,7 @@ let store c =
   incr bufpos
 
 let get_string () =
-  let s = Bytes.sub_string !buffer 0 !bufpos in buffer := initial_buffer; s
+  let s = Bytes.to_string (Bytes.unsafe_of_string (Bytes.sub_string !buffer 0 !bufpos)) in buffer := initial_buffer; s
 
 (* The lexer *)
 
