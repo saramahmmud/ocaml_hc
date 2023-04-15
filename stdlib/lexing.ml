@@ -198,7 +198,7 @@ let sub_lexeme lexbuf i1 i2 =
 let sub_lexeme_opt lexbuf i1 i2 =
   if i1 >= 0 then begin
     let len = i2-i1 in
-    Some (Bytes.sub_string lexbuf.lex_buffer i1 len)
+    Some (Bytes.to_string_tag (Bytes.unsafe_of_string (Bytes.sub_string lexbuf.lex_buffer i1 len)))
   end else begin
     None
   end
