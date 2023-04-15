@@ -146,12 +146,12 @@ let input_all ic =
   let buf = Bytes.create initial_size in
   let nread = read_upto ic buf 0 initial_size in
   if nread < initial_size then (* EOF reached, buffer partially filled *)
-    Bytes.sub_string buf 0 nread
+    Bytes.to_string (Bytes.unsafe_of_string (Bytes.sub_string buf 0 nread))
   else begin (* nread = initial_size, maybe EOF reached *)
     match Stdlib.input_char ic with
     | exception End_of_file ->
         (* EOF reached, buffer is completely filled *)
-        Bytes.to_string_tag buf
+        Bytes.to_string buf
     | c ->
         (* EOF not reached *)
         let rec loop buf ofs =
@@ -161,7 +161,7 @@ let input_all ic =
              [Sys.max_string_length] *)
           let r = read_upto ic buf ofs rem in
           if r < rem then (* EOF reached *)
-            Bytes.sub_string buf 0 (ofs + r)
+            Bytes.to_string (Bytes.unsafe_of_string (Bytes.sub_string buf 0 (ofs + r)))
           else (* r = rem *)
             loop buf (ofs + rem)
         in
