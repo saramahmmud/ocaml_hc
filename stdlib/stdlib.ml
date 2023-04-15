@@ -210,6 +210,7 @@ external string_blit : string -> int -> bytes -> int -> int -> unit
 external bytes_blit : bytes -> int -> bytes -> int -> int -> unit
                         = "caml_blit_bytes" [@@noalloc]
 external bytes_unsafe_to_string : bytes -> string = "%bytes_to_string"
+external bytes_to_string_tag : bytes -> string = "caml_unsafe_string_of_bytes"
 
 let ( ^ ) s1 s2 =
   let l1 = string_length s1 and l2 = string_length s2 in
@@ -438,7 +439,7 @@ let really_input ic s ofs len =
 let really_input_string ic len =
   let s = bytes_create len in
   really_input ic s 0 len;
-  bytes_unsafe_to_string s
+  bytes_to_string_tag s
 
 external input_scan_line : in_channel -> int = "caml_ml_input_scan_line"
 
