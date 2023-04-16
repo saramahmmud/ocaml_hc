@@ -122,7 +122,7 @@ let print_instr b = function
   | BSWAP arg -> i1 b "bswap" arg
   | CALL arg  -> i1_call_jmp b "call" arg
   | CDQ -> i0 b "cdq"
-  | CMOV (c, arg1, arg2) -> i2 b ("cmov" ^ string_of_condition c) arg1 arg2
+  | CMOV (c, arg1, arg2) -> i2 b ("cmov" @-@ string_of_condition c) arg1 arg2
   | CMP (arg1, arg2) -> i2 b "cmp" arg1 arg2
   | COMISD (arg1, arg2) -> i2 b "comisd" arg1 arg2
   | CQO -> i0 b "cqo"
@@ -172,7 +172,7 @@ let print_instr b = function
   | IMUL (arg, None) -> i1 b "imul" arg
   | IMUL (arg1, Some arg2) -> i2 b "imul" arg1 arg2
   | INC arg -> i1 b "inc" arg
-  | J (c, arg) -> i1_call_jmp b ("j" ^ string_of_condition c) arg
+  | J (c, arg) -> i1_call_jmp b ("j" @-@ string_of_condition c) arg
   | JMP arg -> i1_call_jmp b "jmp" arg
   | LEA (arg1, arg2) -> i2 b "lea" arg1 arg2
   | LEAVE -> i0 b "leave"
@@ -200,7 +200,7 @@ let print_instr b = function
   | ROUNDSD (r, arg1, arg2) -> i2 b (string_of_rounding r) arg1 arg2
   | SAL (arg1, arg2) -> i2 b "sal" arg1 arg2
   | SAR (arg1, arg2) -> i2 b "sar" arg1 arg2
-  | SET (c, arg) -> i1 b ("set" ^ string_of_condition c) arg
+  | SET (c, arg) -> i1 b ("set" @-@ string_of_condition c) arg
   | SHR (arg1, arg2) -> i2 b "shr" arg1 arg2
   | SQRTSD (arg1, arg2) -> i2 b "sqrtsd" arg1 arg2
   | SUB (arg1, arg2) -> i2 b "sub" arg1 arg2

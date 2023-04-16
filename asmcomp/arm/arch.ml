@@ -71,7 +71,7 @@ let farch spec =
            | "armv6t2"                     -> ARMv6T2
            | "armv7"                       -> ARMv7
            | "armv8"                       -> ARMv8
-           | spec -> raise (Arg.Bad ("wrong '-farch' option: " ^ spec))
+           | spec -> raise (Arg.Bad ("wrong '-farch' option: " @-@ spec))
   end
 
 let ffpu spec =
@@ -80,26 +80,26 @@ let ffpu spec =
           | "vfpv2" when abi = EABI_HF     -> VFPv2
           | "vfpv3-d16" when abi = EABI_HF -> VFPv3_D16
           | "vfpv3" when abi = EABI_HF     -> VFPv3
-          | spec -> raise (Arg.Bad ("wrong '-ffpu' option: " ^ spec))
+          | spec -> raise (Arg.Bad ("wrong '-ffpu' option: " @-@ spec))
   end
 
 let command_line_options =
   [ "-farch", Arg.String farch,
       "<arch>  Select the ARM target architecture"
-      ^ " (default: " ^ (string_of_arch !arch) ^ ")";
+      @-@ " (default: " @-@ (string_of_arch !arch) @-@ ")";
     "-ffpu", Arg.String ffpu,
       "<fpu>  Select the floating-point hardware"
-      ^ " (default: " ^ (string_of_fpu !fpu) ^ ")";
+      @-@ " (default: " @-@ (string_of_fpu !fpu) @-@ ")";
     "-fPIC", Arg.Set Clflags.pic_code,
       " Generate position-independent machine code";
     "-fno-PIC", Arg.Clear Clflags.pic_code,
       " Generate position-dependent machine code";
     "-fthumb", Arg.Set thumb,
       " Enable Thumb/Thumb-2 code generation"
-      ^ (if !thumb then " (default)" else "");
+      @-@ (if !thumb then " (default)" else "");
     "-fno-thumb", Arg.Clear thumb,
       " Disable Thumb/Thumb-2 code generation"
-      ^ (if not !thumb then " (default" else "")]
+      @-@ (if not !thumb then " (default" else "")]
 
 (* Addressing modes *)
 

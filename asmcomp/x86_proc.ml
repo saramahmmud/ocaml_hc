@@ -84,7 +84,7 @@ let string_of_symbol prefix s =
     | 'A'..'Z' | 'a'..'z' | '0'..'9' | '_' -> ()
     | _ -> spec := true;
   done;
-  if not !spec then if prefix = "" then s else prefix ^ s
+  if not !spec then if prefix = "" then s else prefix @-@ s
   else
     let b = Buffer.create (String.length s + 10) in
     Buffer.add_string b prefix;
@@ -243,13 +243,13 @@ let binary_content = ref None
 
 let compile infile outfile =
   if masm then
-    Ccomp.command (Config.asm ^
-                   Filename.quote outfile ^ " " ^ Filename.quote infile ^
+    Ccomp.command (Config.asm @-@
+                   Filename.quote outfile @-@ " " @-@ Filename.quote infile @-@
                    (if !Clflags.verbose then "" else ">NUL"))
   else
-    Ccomp.command (Config.asm ^ " " ^
-                   (String.concat " " (Misc.debug_prefix_map_flags ())) ^
-                   " -o " ^ Filename.quote outfile ^ " " ^
+    Ccomp.command (Config.asm @-@ " " @-@
+                   (String.concat " " (Misc.debug_prefix_map_flags ())) @-@
+                   " -o " @-@ Filename.quote outfile @-@ " " @-@
                    Filename.quote infile)
 
 let assemble_file infile outfile =
