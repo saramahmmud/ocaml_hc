@@ -42,7 +42,7 @@ let directories env =
   Actions_helpers.words_of_variable env Ocaml_variables.directories
 
 let directory_flags env =
-  let f dir = ("-I " ^ dir) in
+  let f dir = ("-I " @-@ dir) in
   let l = List.map f (directories env) in
   String.concat " " l
 
@@ -203,7 +203,7 @@ let cmas_need_dynamic_loading directories libraries =
     with End_of_file
        | Sys_error _ ->
          begin try close_in ic with Sys_error _ -> () end;
-         Some (Error ("Corrupt or non-CMA file: " ^ library))
+         Some (Error ("Corrupt or non-CMA file: " @-@ library))
   in
   List.find_map loads_c_code (String.words libraries)
 
@@ -222,7 +222,7 @@ let compile_program (compiler : Ocaml_compilers.compiler) log env =
   let expected_exit_status =
     Ocaml_tools.expected_exit_status env (compiler :> Ocaml_tools.tool) in
   let module_names =
-    (binary_modules compiler#target env) ^ " " ^
+    (binary_modules compiler#target env) @-@ " " @-@
     (String.concat " " (List.map Ocaml_filetypes.make_filename modules)) in
   let what = Printf.sprintf "Compiling program %s from modules %s"
     program_file module_names in
@@ -233,7 +233,7 @@ let compile_program (compiler : Ocaml_compilers.compiler) log env =
   let compile_flags =
     if compile_only then " -c " else ""
   in
-  let output = if compile_only then "" else "-o " ^ program_file in
+  let output = if compile_only then "" else "-o " @-@ program_file in
   let libraries = libraries compiler#target env in
   let cmas_need_dynamic_loading =
     if not Config.supports_shared_libraries &&
@@ -301,7 +301,7 @@ let compile_module compiler module_ log env =
     libraries compiler#target env;
     backend_default_flags env compiler#target;
     backend_flags env compiler#target;
-    "-c " ^ module_;
+    "-c " @-@ module_;
   ] in
   let exit_status =
     Actions_helpers.run_cmd
@@ -375,7 +375,7 @@ let setup_tool_build_env tool log env =
   let tool_directory_suffix =
     Environments.safe_lookup Ocaml_variables.compiler_directory_suffix env in
   let tool_directory_name =
-    tool#directory ^ tool_directory_suffix in
+    tool#directory @-@ tool_directory_suffix in
   let build_dir = Filename.concat
     (Environments.safe_lookup
       Builtin_variables.test_build_directory_prefix env)
@@ -405,7 +405,7 @@ let setup_compiler_build_env (compiler : Ocaml_compilers.compiler) log env =
     let default_prog_file = get_program_file compiler#target env in
     let env = Environments.add_if_undefined prog_var default_prog_file env in
     let prog_file = Environments.safe_lookup prog_var env in
-    let prog_output_file = prog_file ^ ".output" in
+    let prog_output_file = prog_file @-@ ".output" in
     let env = match prog_output_var with
       | None -> env
       | Some outputvar ->
@@ -518,7 +518,7 @@ let env_with_lib_unix env =
   let newlibs =
     match Environments.lookup Ocaml_variables.caml_ld_library_path env with
     | None -> libunixdir
-    | Some libs -> libunixdir ^ " " ^ libs
+    | Some libs -> libunixdir @-@ " " @-@ libs
   in
   Environments.add Ocaml_variables.caml_ld_library_path newlibs env
 
@@ -611,8 +611,8 @@ let mklib log env =
   let commandline =
   [
     Ocaml_commands.ocamlrun_ocamlmklib;
-    "-ocamlc '" ^ ocamlc_command ^ "'";
-    "-o " ^ program
+    "-ocamlc '" @-@ ocamlc_command @-@ "'";
+    "-o " @-@ program
   ] @ modules env in
   let expected_exit_status = 0 in
   let exit_status =
@@ -638,7 +638,7 @@ let finalise_codegen_cc test_basename _log env =
     Filename.make_filename test_basename "s"
   in
   let archmod = Ocaml_files.asmgen_archmod in
-  let modules = test_module ^ " " ^ archmod in
+  let modules = test_module @-@ " " @-@ archmod in
   let program = Filename.make_filename test_basename "out" in
   let env = Environments.add_bindings
   [
@@ -664,7 +664,7 @@ let finalise_codegen_msvc test_basename log env =
   if exit_status=expected_exit_status
   then begin
     let archmod = Ocaml_files.asmgen_archmod in
-    let modules = obj ^ " " ^ archmod in
+    let modules = obj @-@ " " @-@ archmod in
     let program = Filename.make_filename test_basename "out" in
     let env = Environments.add_bindings
     [
@@ -702,7 +702,7 @@ let run_codegen log env =
   [
     Ocaml_commands.ocamlrun_codegen;
     flags env;
-    "-S " ^ testfile
+    "-S " @-@ testfile
   ] in
   let expected_exit_status =
     Actions_helpers.exit_status_of_variable env
@@ -746,8 +746,8 @@ let run_cc log env =
   [
     Ocamltest_config.cc;
     Ocamltest_config.cflags;
-    "-I" ^ Ocaml_directories.runtime;
-    output_exe ^ program;
+    "-I" @-@ Ocaml_directories.runtime;
+    output_exe @-@ program;
     Environments.safe_lookup Builtin_variables.arguments env;
   ] @ modules env in
   let expected_exit_status = 0 in
@@ -771,7 +771,7 @@ let cc = Actions.make "cc" run_cc
 
 let run_expect_once input_file principal log env =
   let expect_flags = Sys.safe_getenv "EXPECT_FLAGS" in
-  let repo_root = "-repo-root " ^ Ocaml_directories.srcdir in
+  let repo_root = "-repo-root " @-@ Ocaml_directories.srcdir in
   let principal_flag = if principal then "-principal" else "" in
   let commandline =
   [
@@ -874,7 +874,7 @@ let compare_programs backend comparison_tool log env =
 let make_bytecode_programs_comparison_tool =
   let ocamlrun = Ocaml_files.ocamlrun in
   let cmpbyt = Ocaml_files.cmpbyt in
-  let tool_name = ocamlrun ^ " " ^ cmpbyt in
+  let tool_name = ocamlrun @-@ " " @-@ cmpbyt in
   Filecompare.make_comparison_tool tool_name ""
 
 let native_programs_comparison_tool = Filecompare.default_comparison_tool
@@ -908,10 +908,10 @@ let compile_module compiler compilername compileroutput log env
     (Ocaml_filetypes.action_of_filetype module_filetype) filename
       (expected_exit_status) in
   let compile_commandline input_file output_file optional_flags =
-    let compile = "-c " ^ input_file in
+    let compile = "-c " @-@ input_file in
     let output = match output_file with
       | None -> ""
-      | Some file -> "-o " ^ file in
+      | Some file -> "-o " @-@ file in
     [
       compilername;
       Ocaml_flags.stdlib;
@@ -953,7 +953,7 @@ let compile_module compiler compilername compileroutput log env
       exec commandline
     | Ocaml_filetypes.C ->
       let object_extension = Config.ext_obj in
-      let _object_filename = module_basename ^ object_extension in
+      let _object_filename = module_basename @-@ object_extension in
       let commandline =
         compile_commandline filename None
           Ocaml_flags.c_includes in
@@ -1202,7 +1202,7 @@ let ocamldoc_output_file env prefix =
     | "html" -> ".html"
     | "man" -> ".3o"
     | _ -> ".result" in
-  prefix ^ suffix
+  prefix @-@ suffix
 
 let check_ocamldoc_output = make_check_tool_output
   "check-ocamldoc-output" ocamldoc
@@ -1210,7 +1210,7 @@ let check_ocamldoc_output = make_check_tool_output
 let ocamldoc_flags env =
   Environments.safe_lookup Ocaml_variables.ocamldoc_flags env
 
-let compiled_doc_name input = input ^ ".odoc"
+let compiled_doc_name input = input @-@ ".odoc"
 
 (* The compiler used for compiling both cmi file
    and plugins *)
@@ -1239,7 +1239,7 @@ let compile_ocamldoc (basename,filetype as module_) log env =
     [
     Ocaml_commands.ocamlrun_ocamldoc;
     Ocaml_flags.stdlib;
-    "-dump " ^ compiled_doc_name basename;
+    "-dump " @-@ compiled_doc_name basename;
      filename;
   ] in
   let exit_status =
@@ -1276,7 +1276,7 @@ let setup_ocamldoc_build_env =
   let root_file = Filename.chop_extension (Actions_helpers.testfile env) in
   let reference_prefix = Filename.make_path [source_directory; root_file] in
   let output = ocamldoc_output_file env root_file in
-  let reference= reference_prefix ^ ocamldoc#reference_filename_suffix env in
+  let reference= reference_prefix @-@ ocamldoc#reference_filename_suffix env in
   let backend = Environments.safe_lookup Ocaml_variables.ocamldoc_backend env in
   let env =
     Environments.apply_modifiers env  Ocaml_modifiers.(str @ unix)
@@ -1288,11 +1288,11 @@ let setup_ocamldoc_build_env =
     else env in
   Result.pass, env
 
-let ocamldoc_plugin name = name ^ ".cmo"
+let ocamldoc_plugin name = name @-@ ".cmo"
 
 let ocamldoc_backend_flag env =
   let backend = Environments.safe_lookup Ocaml_variables.ocamldoc_backend env in
-  if backend = "" then "" else "-" ^ backend
+  if backend = "" then "" else "-" @-@ backend
 
 let ocamldoc_o_flag env =
   let output =  Environments.safe_lookup Builtin_variables.output env in
@@ -1315,11 +1315,11 @@ let run_ocamldoc =
   let input_file = Actions_helpers.testfile env in
   Printf.fprintf log "Generating documentation for %s\n%!" input_file;
   let load_all =
-    List.map (fun name -> "-load " ^ compiled_doc_name (fst name))
+    List.map (fun name -> "-load " @-@ compiled_doc_name (fst name))
     @@ (* sort module in alphabetical order *)
     List.sort Stdlib.compare modules in
   let with_plugins =
-    List.map (fun name -> "-g " ^ ocamldoc_plugin (fst name)) plugins in
+    List.map (fun name -> "-g " @-@ ocamldoc_plugin (fst name)) plugins in
   let commandline =
   [
     Ocaml_commands.ocamlrun_ocamldoc;

@@ -41,7 +41,7 @@ class toplevel
     let default = tool#reference_file env prefix in
     if Sys.file_exists default then default else
     let suffix = self#reference_filename_suffix env in
-    let mk s = (Filename.make_filename prefix s) ^ suffix in
+    let mk s = (Filename.make_filename prefix s) @-@ suffix in
     let filename = mk
       (Ocaml_backends.string_of_backend self#backend) in
     if Sys.file_exists filename then filename else

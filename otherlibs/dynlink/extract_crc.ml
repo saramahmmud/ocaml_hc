@@ -24,7 +24,7 @@ exception Corrupted_interface
 
 let digest_interface unit loadpath =
   let filename =
-    let shortname = unit ^ ".cmi" in
+    let shortname = unit @-@ ".cmi" in
     try
       Misc.find_in_path_uncap loadpath shortname
     with Not_found ->

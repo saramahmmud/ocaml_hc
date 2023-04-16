@@ -44,7 +44,7 @@ let string_of_filetype = function
   | Binary_interface -> "binary interface"
   | Obj -> "object"
   | Backend_specific (backend, filetype) ->
-    ((Ocaml_backends.string_of_backend backend) ^ " " ^
+    ((Ocaml_backends.string_of_backend backend) @-@ " " @-@
       (string_of_backend_specific filetype))
   | Text -> "text"
 
@@ -105,7 +105,7 @@ let filetype filename =
 
 let make_filename (basename, filetype) =
   let extension = extension_of_filetype filetype in
-  basename ^ "." ^ extension
+  basename @-@ "." @-@ extension
 
 let action_of_filetype = function
   | Implementation -> "Compiling implementation"
@@ -114,4 +114,4 @@ let action_of_filetype = function
   | C_minus_minus -> "Processing C-- file"
   | Lexer -> "Generating lexer"
   | Grammar -> "Generating parser"
-  | filetype -> ("nothing to do for " ^ (string_of_filetype filetype))
+  | filetype -> ("nothing to do for " @-@ (string_of_filetype filetype))

@@ -116,7 +116,7 @@ let add_if_undefined variable value env =
 
 let append variable appened_value environment =
   let previous_value = safe_lookup variable environment in
-  let new_value = previous_value ^ appened_value in
+  let new_value = previous_value @-@ appened_value in
   VariableMap.add variable (Some new_value) environment
 
 let remove = VariableMap.remove

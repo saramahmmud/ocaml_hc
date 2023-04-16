@@ -52,7 +52,7 @@ let cd = make
       try
         Sys.chdir cwd; (Result.pass, env)
       with _ ->
-        let reason = "Could not chidir to \"" ^ cwd ^ "\"" in
+        let reason = "Could not chidir to \"" @-@ cwd @-@ "\"" in
         let result = Result.fail_with_reason reason in
         (result, env)
     end)
@@ -258,7 +258,7 @@ let copy_action log env =
     | (Some src, Some dst) ->
       let f =
         if String.ends_with ~suffix:"/" dst
-        then fun src -> do_copy src (dst ^ (Filename.basename src))
+        then fun src -> do_copy src (dst @-@ (Filename.basename src))
         else fun src -> do_copy src dst
       in
       List.iter f (String.words src);

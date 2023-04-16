@@ -39,12 +39,12 @@ class tool
       Environments.safe_lookup Ocaml_variables.compiler_reference_suffix env
     in
     if tool_reference_suffix<>""
-    then tool_reference_suffix ^ ".reference"
+    then tool_reference_suffix @-@ ".reference"
     else ".reference"
 
   method reference_file env prefix =
     let suffix = self#reference_filename_suffix env in
-    (Filename.make_filename prefix directory) ^ suffix
+    (Filename.make_filename prefix directory) @-@ suffix
 end
 
 let expected_exit_status env tool =
@@ -67,5 +67,5 @@ let ocamldoc =
         Environments.safe_lookup Ocaml_variables.ocamldoc_backend env in
       if backend = "" then
         ".reference"
-      else "." ^ backend ^ ".reference"
+      else "." @-@ backend @-@ ".reference"
   end

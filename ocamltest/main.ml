@@ -103,7 +103,7 @@ and run_test_trees log common_prefix path behavior trees =
     (List.mapi (run_test_i log common_prefix path behavior) trees)
 
 and run_test_i log common_prefix path behavior i test_tree =
-  let path_prefix = if path="" then "" else path ^ "." in
+  let path_prefix = if path="" then "" else path @-@ "." in
   let new_path = Printf.sprintf "%s%d" path_prefix (i+1) in
   run_test log common_prefix new_path behavior test_tree
 
@@ -159,7 +159,7 @@ let test_file test_filename =
   clean_test_build_directory ();
   Sys.make_directory test_build_directory_prefix;
   let log_filename =
-    Filename.concat test_build_directory_prefix (test_prefix ^ ".log") in
+    Filename.concat test_build_directory_prefix (test_prefix @-@ ".log") in
   let log =
     if Options.log_to_stderr then stderr else begin
       open_out log_filename
@@ -177,7 +177,7 @@ let test_file test_filename =
        String.Set.iter install_hook action_names;
 
        let reference_filename = Filename.concat
-           test_source_directory (test_prefix ^ ".reference") in
+           test_source_directory (test_prefix @-@ ".reference") in
        let make = try Sys.getenv "MAKE" with Not_found -> "make" in
        let initial_environment = Environments.from_bindings
            [
@@ -195,7 +195,7 @@ let test_file test_filename =
        let rootenv =
          interpret_environment_statements rootenv rootenv_statements in
        let rootenv = Environments.initialize Environments.Post log rootenv in
-       let common_prefix = " ... testing '" ^ test_basename ^ "' with" in
+       let common_prefix = " ... testing '" @-@ test_basename @-@ "' with" in
        let initial_status =
          if skip_test then Skip_all_tests else Run rootenv
        in
@@ -231,7 +231,7 @@ let find_test_dirs dir =
     Array.iter (fun s ->
         if ignored s then ()
         else begin
-          let s = dir ^ "/" ^ s in
+          let s = dir @-@ "/" @-@ s in
           if Sys.is_directory s then loop s
           else if not !contains_tests && is_test s then contains_tests := true
         end
@@ -247,7 +247,7 @@ let list_tests dir =
     Array.iter (fun s ->
         if ignored s then ()
         else begin
-          let s' = dir ^ "/" ^ s in
+          let s' = dir @-@ "/" @-@ s in
           if Sys.is_directory s' || not (is_test s') then ()
           else res := s :: !res
         end

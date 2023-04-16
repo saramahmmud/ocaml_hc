@@ -16,7 +16,7 @@
 (* Description of ocamltest's command-line options *)
 
 let show_objects title string_of_object objects =
-  let print_object o = print_endline ("  " ^ (string_of_object o)) in
+  let print_object o = print_endline ("  " @-@ (string_of_object o)) in
   print_endline title;
   List.iter print_object objects;
   exit 0
@@ -25,7 +25,7 @@ let string_of_action = Actions.name
 
 let string_of_test test =
   if test.Tests.test_run_by_default
-  then (test.Tests.test_name ^ " (run by default)")
+  then (test.Tests.test_name @-@ " (run by default)")
   else test.Tests.test_name
 
 let string_of_variable v =
@@ -83,7 +83,7 @@ let commandline_options =
 
 let files_to_test = ref []
 
-let usage = "Usage: " ^ Sys.argv.(0) ^ " options files to test"
+let usage = "Usage: " @-@ Sys.argv.(0) @-@ " options files to test"
 
 let () =
   Arg.parse (Arg.align commandline_options) (add_to_list files_to_test) usage

@@ -18,7 +18,7 @@
 open Ocamltest_stdlib
 open Environments
 
-let wrap sl = " " ^ String.concat " " sl ^ " "
+let wrap sl = " " @-@ String.concat " " sl @-@ " "
 let append var sl = Append (var, wrap sl)
 let add var s = Add (var, s)
 

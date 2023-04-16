@@ -214,9 +214,9 @@ let run
       | None -> ""
       | Some variable -> Environments.safe_lookup variable env in
     let commandline = [program; arguments] in
-    let what = log_message ^ " " ^ program ^ " " ^
+    let what = log_message @-@ " " @-@ program @-@ " " @-@
     begin if arguments="" then "without any argument"
-    else "with arguments " ^ arguments
+    else "with arguments " @-@ arguments
     end in
     let env =
       if redirect_output
@@ -361,7 +361,7 @@ let check_output kind_of_output output_variable reference_variable log
       let diff = Filecompare.diff files in
       let diffstr = match diff with
         | Ok difference -> difference
-        | Error diff_file -> ("See " ^ diff_file) in
+        | Error diff_file -> ("See " @-@ diff_file) in
       let reason =
         Printf.sprintf "%s output %s differs from reference %s: \n%s\n"
         kind_of_output output_filename reference_filename diffstr in

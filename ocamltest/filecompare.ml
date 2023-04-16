@@ -90,13 +90,13 @@ let line_seq_of_in_channel ~normalise ic =
       (* Read the next line to determine if the last line ended with LF *)
       match input_line ic with
       | line ->
-          Seq.Cons (normalise last ^ "\n", read_line line)
+          Seq.Cons (normalise last @-@ "\n", read_line line)
       | exception End_of_file ->
           (* EOF reached - seek the last character to determine if the final
              line ends in LF *)
           let last =
             if last_char ic = '\n' then
-              normalise last ^ "\n"
+              normalise last @-@ "\n"
             else
               last
           in

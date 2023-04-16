@@ -42,7 +42,7 @@ module Filename = struct
 
   let make_path components = List.fold_left Filename.concat "" components
 
-  let mkexe filename = filename ^ Ocamltest_config.exe
+  let mkexe filename = filename @-@ Ocamltest_config.exe
 end
 
 module List = struct
@@ -77,19 +77,19 @@ module String = struct
                 f None w ws j
               | _ ->
                 (* Continue string *)
-                f quote (w ^ (string_of_char c)) ws j
+                f quote (w @-@ (string_of_char c)) ws j
             end
           | ' ' ->
             begin
               if quote <> None
-              then f quote (w ^ (string_of_char ' ')) ws j
+              then f quote (w @-@ (string_of_char ' ')) ws j
               else begin
                 if w=""
                 then f None w ws j
                 else f None "" (w::ws) j
               end
             end
-          | _ as c -> f quote (w ^ (string_of_char c)) ws j
+          | _ as c -> f quote (w @-@ (string_of_char c)) ws j
       end in
     if l=0 then [] else f None "" [] 0
 end
@@ -155,11 +155,11 @@ module Sys = struct
     let filesize = in_channel_length chan in
     if filesize > Sys.max_string_length then
       failwith
-        ("The file " ^ filename ^ " is too large to be loaded into a string")
+        ("The file " @-@ filename @-@ " is too large to be loaded into a string")
     else begin
       try really_input_string chan filesize
       with End_of_file ->
-        failwith ("Got unexpected end of file while reading " ^ filename)
+        failwith ("Got unexpected end of file while reading " @-@ filename)
     end
 
   let iter_lines_of_file f filename =
