@@ -31,7 +31,7 @@ let convert_address address =
          ADDR_INET
            ((try inet_addr_of_string host with Failure _ ->
                try (gethostbyname host).h_addr_list.(0) with Not_found ->
-                 prerr_endline ("Unknown host: " ^ host);
+                 prerr_endline ("Unknown host: " @-@ host);
                  failwith "Can't convert address"),
             (try int_of_string port with Failure _ ->
                prerr_endline "The port number should be an integer";
@@ -78,7 +78,7 @@ let search_in_path name =
               let pos2 = traverse pos in
                 let directory = (String.sub path pos (pos2 - pos)) in
                   let fullname =
-                    if directory = "" then name else directory ^ "/" ^ name
+                    if directory = "" then name else directory @-@ "/" @-@ name
                   in
                     try check fullname with
                     | Not_found ->
@@ -95,11 +95,11 @@ let rec expand_path ch =
       let pos = String.index ch '$' in
         if (pos + 1 < String.length ch) && (ch.[pos + 1] = '$') then
           (String.sub ch 0 (pos + 1))
-            ^ (subst_variable
+            @-@ (subst_variable
                  (String.sub ch (pos + 2) (String.length ch - pos - 2)))
         else
           (String.sub ch 0 pos)
-            ^ (subst2 (String.sub ch (pos + 1) (String.length ch - pos - 1)))
+            @-@ (subst2 (String.sub ch (pos + 1) (String.length ch - pos - 1)))
     with Not_found ->
       ch
   and subst2 ch =
@@ -113,13 +113,13 @@ let rec expand_path ch =
         do incr i done;
         !i
     in (Sys.getenv (String.sub ch 0 suiv))
-       ^ (subst_variable (String.sub ch suiv (String.length ch - suiv)))
+       @-@ (subst_variable (String.sub ch suiv (String.length ch - suiv)))
   in
     let ch = subst_variable ch in
       let concat_root nom ch2 =
         try Filename.concat (getpwnam nom).pw_dir ch2
         with Not_found ->
-          "~" ^ nom
+          "~" @-@ nom
       in
         if ch.[0] = '~' then
           try
@@ -135,7 +135,7 @@ let rec expand_path ch =
                       (String.sub ch (n + 1) (String.length ch - n - 1))
           with
             Not_found ->
-              expand_path (ch ^ "/")
+              expand_path (ch @-@ "/")
         else ch
 
 let make_absolute name =
