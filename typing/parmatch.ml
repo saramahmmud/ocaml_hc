@@ -963,7 +963,7 @@ let build_other ext env =
                 let tag =
                   if Btype.has_fixed_explanation row then some_private_tag else
                   let rec mktag tag =
-                    if List.mem tag tags then mktag (tag ^ "'") else tag in
+                    if List.mem tag tags then mktag (tag @-@ "'") else tag in
                   mktag "AnyOtherTag"
                 in make_other_pat tag true
             | pat::other_pats ->
@@ -1852,7 +1852,7 @@ module Conv = struct
   let fresh name =
     let current = !name_counter in
     name_counter := !name_counter + 1;
-    "#$" ^ name ^ Int.to_string current
+    "#$" @-@ name @-@ Int.to_string current
 
   let conv typed =
     let constrs = Hashtbl.create 7 in

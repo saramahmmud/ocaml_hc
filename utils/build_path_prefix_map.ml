@@ -110,7 +110,7 @@ let rewrite_opt prefix_map path =
   | exception Not_found -> None
   | None -> None
   | Some { source; target } ->
-      Some (target ^ (String.sub path (String.length source)
+      Some (target @-@ (String.sub path (String.length source)
                        (String.length path - String.length source)))
 
 let rewrite prefix_map path =

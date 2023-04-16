@@ -465,7 +465,7 @@ let transl_declaration env sdecl (id, uid) =
     if is_fixed_type sdecl then begin
       let p, _ =
         try Env.find_type_by_name
-              (Longident.Lident(Ident.name id ^ "#row")) env
+              (Longident.Lident(Ident.name id @-@ "#row")) env
         with Not_found -> assert false
       in
       set_private_row env sdecl.ptype_loc p decl
@@ -856,7 +856,7 @@ let transl_type_decl env rec_flag sdecl_list =
       (fun sdecl ->
          let ptype_name =
            let loc = { sdecl.ptype_name.loc with Location.loc_ghost = true } in
-           mkloc (sdecl.ptype_name.txt ^"#row") loc
+           mkloc (sdecl.ptype_name.txt @-@"#row") loc
          in
          let ptype_kind = Ptype_abstract in
          let ptype_manifest = None in
@@ -1652,7 +1652,7 @@ let explain_unbound_single ppf tv ty =
       let (tl, rv) = Ctype.flatten_fields fi in
       if eq_type rv tv then trivial ty else
       explain_unbound ppf tv tl (fun (_,_,t) -> t)
-        "method" (fun (lab,_,_) -> lab ^ ": ")
+        "method" (fun (lab,_,_) -> lab @-@ ": ")
   | Tvariant row ->
       if eq_type (row_more row) tv then trivial ty else
       explain_unbound ppf tv (row_fields row)
@@ -1661,7 +1661,7 @@ let explain_unbound_single ppf tv ty =
         | Reither (_,[t],_) -> t
         | Reither (_,tl,_) -> Btype.newgenty (Ttuple tl)
         | _ -> Btype.newgenty (Ttuple[]))
-        "case" (fun (lab,_) -> "`" ^ lab ^ " of ")
+        "case" (fun (lab,_) -> "`" @-@ lab @-@ " of ")
   | _ -> trivial ty
 
 
@@ -1768,7 +1768,7 @@ let report_error ppf = function
                   Printtyp.constructor_arguments c.Types.cd_args)
       | Type_record (tl, _), _ ->
           explain_unbound ppf ty tl (fun l -> l.Types.ld_type)
-            "field" (fun l -> Ident.name l.Types.ld_id ^ ": ")
+            "field" (fun l -> Ident.name l.Types.ld_id @-@ ": ")
       | Type_abstract, Some ty' ->
           explain_unbound_single ppf ty ty'
       | _ -> ()
@@ -1818,9 +1818,9 @@ let report_error ppf = function
       let variance (p,n,i) =
         let inj = if i then "injective " else "" in
         match p, n with
-          true,  true  -> inj ^ "invariant"
-        | true,  false -> inj ^ "covariant"
-        | false, true  -> inj ^ "contravariant"
+          true,  true  -> inj @-@ "invariant"
+        | true,  false -> inj @-@ "covariant"
+        | false, true  -> inj @-@ "contravariant"
         | false, false -> if inj = "" then "unrestricted" else inj
       in
       (match n with

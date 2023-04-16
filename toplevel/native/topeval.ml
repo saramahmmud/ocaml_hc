@@ -29,7 +29,7 @@ let global_symbol id =
   let sym = Compilenv.symbol_for_global id in
   match Tophooks.lookup sym with
   | None ->
-    fatal_error ("Toploop.global_symbol " ^ (Ident.unique_name id))
+    fatal_error ("Toploop.global_symbol " @-@ (Ident.unique_name id))
   | Some obj -> obj
 
 let remembered = ref Ident.empty
@@ -46,7 +46,7 @@ let rec remember phrase_name i = function
 
 let toplevel_value id =
   try Ident.find_same id !remembered
-  with _ -> Misc.fatal_error @@ "Unknown ident: " ^ Ident.unique_name id
+  with _ -> Misc.fatal_error @@ "Unknown ident: " @-@ Ident.unique_name id
 
 let close_phrase lam =
   let open Lambda in
@@ -158,7 +158,7 @@ let execute_phrase print_outcome ppf phr =
   | Ptop_def sstr ->
       let oldenv = !toplevel_env in
       incr phrase_seqid;
-      let phrase_name = "TOP" ^ string_of_int !phrase_seqid in
+      let phrase_name = "TOP" @-@ string_of_int !phrase_seqid in
       Compilenv.reset ?packname:None phrase_name;
       Typecore.reset_delayed_checks ();
       let (str, sg, names, shape, newenv) =

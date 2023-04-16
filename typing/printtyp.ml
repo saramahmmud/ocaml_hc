@@ -230,7 +230,7 @@ type mapping =
   | Associated_to_pervasives of out_name
   (** [Associated_to_pervasives out_name] is used when the item
       [Stdlib.$name] has been associated to the name [$name].
-      Upon a conflict, this name will be expanded to ["Stdlib." ^ name ] *)
+      Upon a conflict, this name will be expanded to ["Stdlib." @-@ name ] *)
 
 let hid_start = 0
 
@@ -242,7 +242,7 @@ let find_hid id map =
   try Ident.Map.find id map, map with
   Not_found -> add_hid_id id map
 
-let pervasives name = "Stdlib." ^ name
+let pervasives name = "Stdlib." @-@ name
 
 let map = Array.make Namespace.size M.empty
 let get namespace = map.(Namespace.id namespace)
@@ -313,7 +313,7 @@ let ident_name_simple namespace id =
       set namespace @@ M.add name (Need_unique_name m) (get namespace);
       Out_name.create (human_unique hid id)
   | Associated_to_pervasives r ->
-      Out_name.set r ("Stdlib." ^ Out_name.print r);
+      Out_name.set r ("Stdlib." @-@ Out_name.print r);
       let hid, m = find_hid id Ident.Map.empty in
       set namespace @@ M.add name (Need_unique_name m) (get namespace);
       Out_name.create (human_unique hid id)
@@ -485,7 +485,7 @@ let print_name ppf = function
 let string_of_label = function
     Nolabel -> ""
   | Labelled s -> s
-  | Optional s -> "?"^s
+  | Optional s -> "?"@-@s
 
 let visited = ref []
 let rec raw_type ppf ty =
@@ -903,13 +903,13 @@ end = struct
     let name =
       if !name_counter < 26
       then String.make 1 (Char.chr(97 + !name_counter))
-      else String.make 1 (Char.chr(97 + !name_counter mod 26)) ^
+      else String.make 1 (Char.chr(97 + !name_counter mod 26)) @-@
              Int.to_string(!name_counter / 26) in
     incr name_counter;
     if name_is_already_used name then new_name () else name
 
   let rec new_weak_name ty () =
-    let name = "weak" ^ Int.to_string !weak_counter in
+    let name = "weak" @-@ Int.to_string !weak_counter in
     incr weak_counter;
     if name_is_already_used name then new_weak_name ty ()
     else begin
@@ -936,7 +936,7 @@ end = struct
                     (fun (_, name') -> !current_name = name')
                     !names
             do
-              current_name := name ^ (Int.to_string !i);
+              current_name := name @-@ (Int.to_string !i);
               i := !i + 1;
             done;
             !current_name
@@ -1157,7 +1157,7 @@ let rec tree_of_typexp mode ty =
         tree_of_typexp mode ty
     | Tpoly (ty, tyl) ->
         (*let print_names () =
-          List.iter (fun (_, name) -> prerr_string (name ^ " ")) !names;
+          List.iter (fun (_, name) -> prerr_string (name @-@ " ")) !names;
           prerr_string "; " in *)
         if tyl = [] then tree_of_typexp mode ty else begin
           let tyl = List.map Transient_expr.repr tyl in

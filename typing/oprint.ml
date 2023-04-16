@@ -70,7 +70,7 @@ let value_ident ppf name =
 let valid_float_lexeme s =
   let l = String.length s in
   let rec loop i =
-    if i >= l then s ^ "." else
+    if i >= l then s @-@ "." else
     match s.[i] with
     | '0' .. '9' | '-' -> loop (i+1)
     | _ -> s
@@ -299,7 +299,7 @@ and print_simple_out_type ppf =
   | Otyp_object (fields, rest) ->
       fprintf ppf "@[<2>< %a >@]" (print_fields rest) fields
   | Otyp_stuff s -> pp_print_string ppf s
-  | Otyp_var (ng, s) -> pr_var ppf (if ng then "_" ^ s else s)
+  | Otyp_var (ng, s) -> pr_var ppf (if ng then "_" @-@ s else s)
   | Otyp_variant (non_gen, row_fields, closed, tags) ->
       let print_present ppf =
         function
@@ -427,7 +427,7 @@ let rec print_out_class_type ppf =
       in
       fprintf ppf "@[%a%a@]" pr_tyl tyl print_ident id
   | Octy_arrow (lab, ty, cty) ->
-      fprintf ppf "@[%s%a ->@ %a@]" (if lab <> "" then lab ^ ":" else "")
+      fprintf ppf "@[%s%a ->@ %a@]" (if lab <> "" then lab @-@ ":" else "")
         print_out_type_2 ty print_out_class_type cty
   | Octy_signature (self_ty, csil) ->
       let pr_param ppf =

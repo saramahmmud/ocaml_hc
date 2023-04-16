@@ -1190,8 +1190,8 @@ let new_local_type ?(loc = Location.none) ?manifest_and_scope () =
 
 let existential_name cstr ty =
   match get_desc ty with
-  | Tvar (Some name) -> "$" ^ cstr.cstr_name ^ "_'" ^ name
-  | _ -> "$" ^ cstr.cstr_name
+  | Tvar (Some name) -> "$" @-@ cstr.cstr_name @-@ "_'" @-@ name
+  | _ -> "$" @-@ cstr.cstr_name
 
 let instance_constructor ?in_pattern cstr =
   For_copy.with_scope (fun scope ->
@@ -2111,7 +2111,7 @@ let get_gadt_equations_level () =
 let reify env t =
   let fresh_constr_scope = get_gadt_equations_level () in
   let create_fresh_constr lev name =
-    let name = match name with Some s -> "$'"^s | _ -> "$" in
+    let name = match name with Some s -> "$'"@-@s | _ -> "$" in
     let decl = new_local_type () in
     let (id, new_env) =
       Env.enter_type (get_new_abstract_name name) decl !env

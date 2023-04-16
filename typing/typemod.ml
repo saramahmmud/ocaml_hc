@@ -478,7 +478,7 @@ let merge_constraint initial_env loc sg lid constr =
   let real_ids = ref [] in
   let unpackable_modtype = ref None in
   let split_row_id s ghosts =
-    let srow = s ^ "#row" in
+    let srow = s @-@ "#row" in
     let rec split before = function
         | Sig_type(id,_,_,_) :: rest when Ident.name id = srow ->
             before, Some id, rest
@@ -526,7 +526,7 @@ let merge_constraint initial_env loc sg lid constr =
             type_unboxed_default = false;
             type_uid = Uid.mk ~current_unit:(Env.get_unit_name ());
           }
-        and id_row = Ident.create_local (s^"#row") in
+        and id_row = Ident.create_local (s@-@"#row") in
         let initial_env =
           Env.add_type ~check:false id_row decl_row initial_env
         in
@@ -2979,7 +2979,7 @@ let () =
 (* Typecheck an implementation file *)
 
 let gen_annot outputprefix sourcefile annots =
-  Cmt2annot.gen_annot (Some (outputprefix ^ ".annot"))
+  Cmt2annot.gen_annot (Some (outputprefix @-@ ".annot"))
     ~sourcefile:(Some sourcefile) ~use_summaries:false annots
 
 let type_implementation sourcefile outputprefix modulename initial_env ast =
@@ -3011,11 +3011,11 @@ let type_implementation sourcefile outputprefix modulename initial_env ast =
         } (* result is ignored by Compile.implementation *)
       end else begin
         let sourceintf =
-          Filename.remove_extension sourcefile ^ !Config.interface_suffix in
+          Filename.remove_extension sourcefile @-@ !Config.interface_suffix in
         if Sys.file_exists sourceintf then begin
           let intf_file =
             try
-              Load_path.find_uncap (modulename ^ ".cmi")
+              Load_path.find_uncap (modulename @-@ ".cmi")
             with Not_found ->
               raise(Error(Location.in_file sourcefile, Env.empty,
                           Interface_not_compiled sourceintf)) in
@@ -3030,7 +3030,7 @@ let type_implementation sourcefile outputprefix modulename initial_env ast =
              exported are not reported as being unused. *)
           let shape = Shape.local_reduce shape in
           let annots = Cmt_format.Implementation str in
-          Cmt_format.save_cmt (outputprefix ^ ".cmt") modulename
+          Cmt_format.save_cmt (outputprefix @-@ ".cmt") modulename
             annots (Some sourcefile) initial_env None (Some shape);
           gen_annot outputprefix sourcefile annots;
           { structure = str;
@@ -3057,10 +3057,10 @@ let type_implementation sourcefile outputprefix modulename initial_env ast =
             let alerts = Builtin_attributes.alerts_of_str ast in
             let cmi =
               Env.save_signature ~alerts
-                simple_sg modulename (outputprefix ^ ".cmi")
+                simple_sg modulename (outputprefix @-@ ".cmi")
             in
             let annots = Cmt_format.Implementation str in
-            Cmt_format.save_cmt  (outputprefix ^ ".cmt") modulename
+            Cmt_format.save_cmt  (outputprefix @-@ ".cmt") modulename
               annots (Some sourcefile) initial_env (Some cmi) (Some shape);
             gen_annot outputprefix sourcefile annots
           end;
@@ -3077,13 +3077,13 @@ let type_implementation sourcefile outputprefix modulename initial_env ast =
           Cmt_format.Partial_implementation
             (Array.of_list (Cmt_format.get_saved_types ()))
         in
-        Cmt_format.save_cmt  (outputprefix ^ ".cmt") modulename
+        Cmt_format.save_cmt  (outputprefix @-@ ".cmt") modulename
           annots (Some sourcefile) initial_env None None;
         gen_annot outputprefix sourcefile annots
       )
 
 let save_signature modname tsg outputprefix source_file initial_env cmi =
-  Cmt_format.save_cmt  (outputprefix ^ ".cmti") modname
+  Cmt_format.save_cmt  (outputprefix @-@ ".cmti") modname
     (Cmt_format.Interface tsg) (Some source_file) initial_env (Some cmi) None
 
 let type_interface env ast =
@@ -3129,12 +3129,12 @@ let package_units initial_env objfiles cmifile modulename =
       (fun f ->
          let pref = chop_extensions f in
          let modname = String.capitalize_ascii(Filename.basename pref) in
-         let sg = Env.read_signature modname (pref ^ ".cmi") in
+         let sg = Env.read_signature modname (pref @-@ ".cmi") in
          if Filename.check_suffix f ".cmi" &&
             not(Mtype.no_code_needed_sig Env.initial_safe_string sg)
          then raise(Error(Location.none, Env.empty,
                           Implementation_is_required f));
-         (modname, Env.read_signature modname (pref ^ ".cmi")))
+         (modname, Env.read_signature modname (pref @-@ ".cmi")))
       objfiles in
   (* Compute signature of packaged unit *)
   Ident.reinit();
@@ -3150,7 +3150,7 @@ let package_units initial_env objfiles cmifile modulename =
     |> Shape.str ~uid:pack_uid
   in
   (* See if explicit interface is provided *)
-  let mlifile = prefix ^ !Config.interface_suffix in
+  let mlifile = prefix @-@ !Config.interface_suffix in
   if Sys.file_exists mlifile then begin
     if not (Sys.file_exists cmifile) then begin
       raise(Error(Location.in_file mlifile, Env.empty,
@@ -3161,7 +3161,7 @@ let package_units initial_env objfiles cmifile modulename =
       Includemod.compunit initial_env ~mark:Mark_both
         "(obtained by packing)" sg mlifile dclsig shape
     in
-    Cmt_format.save_cmt  (prefix ^ ".cmt") modulename
+    Cmt_format.save_cmt  (prefix @-@ ".cmt") modulename
       (Cmt_format.Packed (sg, objfiles)) None initial_env  None (Some shape);
     cc
   end else begin
@@ -3176,9 +3176,9 @@ let package_units initial_env objfiles cmifile modulename =
       let cmi =
         Env.save_signature_with_imports ~alerts:Misc.Stdlib.String.Map.empty
           sg modulename
-          (prefix ^ ".cmi") imports
+          (prefix @-@ ".cmi") imports
       in
-      Cmt_format.save_cmt (prefix ^ ".cmt")  modulename
+      Cmt_format.save_cmt (prefix @-@ ".cmt")  modulename
         (Cmt_format.Packed (cmi.Cmi_format.cmi_sign, objfiles)) None initial_env
         (Some cmi) (Some shape);
     end;

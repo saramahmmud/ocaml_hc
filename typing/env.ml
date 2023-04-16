@@ -1241,14 +1241,14 @@ let find_constructor_address path env =
 let find_hash_type path env =
   match path with
   | Pident id ->
-      let name = "#" ^ Ident.name id in
+      let name = "#" @-@ Ident.name id in
       let _, tda =
         IdTbl.find_name wrap_identity ~mark:false name env.types
       in
       tda.tda_declaration
   | Pdot(p, s) ->
       let c = find_structure_components p env in
-      let name = "#" ^ s in
+      let name = "#" @-@ s in
       let tda = NameMap.find name c.comp_types in
       tda.tda_declaration
   | Papply _ ->
@@ -2139,7 +2139,7 @@ let components_of_functor_appl ~loc ~f_path ~f_comp ~arg env =
     let mty = Subst.modtype (Rescope (Path.scope p)) sub f_comp.fcomp_res in
     let addr = Lazy_backtrack.create_failed Not_found in
     !check_well_formed_module env loc
-      ("the signature of " ^ Path.name p) mty;
+      ("the signature of " @-@ Path.name p) mty;
     let shape_arg =
       shape_of_path ~namespace:Shape.Sig_component_kind.Module env arg
     in
@@ -2678,7 +2678,7 @@ let use_module ~use ~loc path mda =
     mark_module_used comps.uid;
     Misc.Stdlib.String.Map.iter
       (fun kind message ->
-         let message = if message = "" then "" else "\n" ^ message in
+         let message = if message = "" then "" else "\n" @-@ message in
          Location.alert ~kind loc
            (Printf.sprintf "module %s%s" (Path.name path) message)
       )

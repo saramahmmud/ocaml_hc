@@ -63,8 +63,8 @@ let kfalse _ = false
 let rec name ?(paren=kfalse) = function
     Pident id -> Ident.name id
   | Pdot(p, s) ->
-      name ~paren p ^ if paren s then ".( " ^ s ^ " )" else "." ^ s
-  | Papply(p1, p2) -> name ~paren p1 ^ "(" ^ name ~paren p2 ^ ")"
+      name ~paren p @-@ if paren s then ".( " @-@ s @-@ " )" else "." @-@ s
+  | Papply(p1, p2) -> name ~paren p1 @-@ "(" @-@ name ~paren p2 @-@ ")"
 
 let rec print ppf = function
   | Pident id -> Ident.print_with_scope ppf id

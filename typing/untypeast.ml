@@ -106,7 +106,7 @@ let map_loc sub {loc; txt} = {loc = sub.location sub loc; txt}
 (** Try a name [$name$0], check if it's free, if not, increment and repeat. *)
 let fresh_name s env =
   let rec aux i =
-    let name = s ^ Int.to_string i in
+    let name = s @-@ Int.to_string i in
     if Env.bound_value name env then aux (i+1)
     else name
   in

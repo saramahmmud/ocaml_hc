@@ -32,7 +32,7 @@ let getvalue name =
   try
     String.Map.find name !toplevel_value_bindings
   with Not_found ->
-    fatal_error (name ^ " unbound at toplevel")
+    fatal_error (name @-@ " unbound at toplevel")
 
 let setvalue name v =
   toplevel_value_bindings := String.Map.add name v !toplevel_value_bindings
@@ -256,7 +256,7 @@ and really_load_file recursive ppf name filename ic =
           (function
             | (Reloc_getglobal id, _)
               when not (Symtable.is_global_defined id) ->
-                let file = Ident.name id ^ ".cmo" in
+                let file = Ident.name id @-@ ".cmo" in
                 begin match Load_path.find_uncap file with
                 | exception Not_found -> ()
                 | file ->

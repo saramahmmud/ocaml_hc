@@ -975,7 +975,7 @@ end) = struct
     let name = Datatype_kind.label_name kind in
     warn lid.loc
       (Warnings.Not_principal
-         ("this type-based " ^ name ^ " disambiguation"))
+         ("this type-based " @-@ name @-@ " disambiguation"))
 
   (* we selected a name out of the lexical scope *)
   let warn_out_of_scope warn lid env tpath =
@@ -2863,7 +2863,7 @@ and type_expect_
         | Val_ivar (_, cl_num) ->
             let (self_path, _) =
               Env.find_value_by_name
-                (Longident.Lident ("self-" ^ cl_num)) env
+                (Longident.Lident ("self-" @-@ cl_num)) env
             in
             Texp_instvar(self_path, path,
                          match lid.txt with
@@ -2871,7 +2871,7 @@ and type_expect_
                            | _ -> assert false)
         | Val_self (_, _, _, cl_num) ->
             let (path, _) =
-              Env.find_value_by_name (Longident.Lident ("self-" ^ cl_num)) env
+              Env.find_value_by_name (Longident.Lident ("self-" @-@ cl_num)) env
             in
             Texp_ident(path, lid, desc)
         | _ ->
@@ -3532,7 +3532,7 @@ and type_expect_
             let typ = Btype.method_type met sign in
             let (self_path, _) =
               Env.find_value_by_name
-                (Longident.Lident ("self-" ^ cl_num)) env
+                (Longident.Lident ("self-" @-@ cl_num)) env
             in
             Tmeth_ancestor(id, self_path), typ
         | _ ->
@@ -3615,7 +3615,7 @@ and type_expect_
             type_expect env snewval (mk_expected (instance ty))
           in
           let (path_self, _) =
-            Env.find_value_by_name (Longident.Lident ("self-" ^ cl_num)) env
+            Env.find_value_by_name (Longident.Lident ("self-" @-@ cl_num)) env
           in
           rue {
             exp_desc = Texp_setinstvar(path_self, path, lab, newval);
@@ -4006,7 +4006,7 @@ and type_binding_op_ident env s =
         fatal_error "Illegal name for instance variable"
     | Val_self (_, _, _, cl_num) ->
         let path, _ =
-          Env.find_value_by_name (Longident.Lident ("self-" ^ cl_num)) env
+          Env.find_value_by_name (Longident.Lident ("self-" @-@ cl_num)) env
         in
         path
     | _ -> path
@@ -5726,7 +5726,7 @@ let report_error ~loc env = function
   | Abstract_wrong_label {got; expected; expected_type; explanation} ->
       let label ~long = function
         | Nolabel -> "unlabeled"
-        | l       -> (if long then "labeled " else "") ^ prefixed_label_name l
+        | l       -> (if long then "labeled " else "") @-@ prefixed_label_name l
       in
       let second_long = match got, expected with
         | Nolabel, _ | _, Nolabel -> true
@@ -5794,7 +5794,7 @@ let report_error ~loc env = function
         | With_attributes ->
             "Existential types are not allowed in presence of attributes"
       in
-      begin match List.find (fun ty -> ty <> "$" ^ name) types with
+      begin match List.find (fun ty -> ty <> "$" @-@ name) types with
       | example ->
           Location.errorf ~loc
             "%s,@ but this pattern introduces the existential type %s."

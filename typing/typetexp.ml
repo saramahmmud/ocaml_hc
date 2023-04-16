@@ -121,7 +121,7 @@ let type_variable loc name =
   try
     TyVarMap.find name !type_variables
   with Not_found ->
-    raise(Error(loc, Env.empty, Unbound_type_variable ("'" ^ name)))
+    raise(Error(loc, Env.empty, Unbound_type_variable ("'" @-@ name)))
 
 let valid_tyvar_name name =
   name <> "" && name.[0] <> '_'
@@ -137,7 +137,7 @@ let transl_type_param env styp =
       let ty =
         try
           if not (valid_tyvar_name name) then
-            raise (Error (loc, Env.empty, Invalid_variable_name ("'" ^ name)));
+            raise (Error (loc, Env.empty, Invalid_variable_name ("'" @-@ name)));
           ignore (TyVarMap.find name !type_variables);
           raise Already_bound
         with Not_found ->
@@ -209,7 +209,7 @@ and transl_type_aux env policy styp =
   | Ptyp_var name ->
     let ty =
       if not (valid_tyvar_name name) then
-        raise (Error (styp.ptyp_loc, env, Invalid_variable_name ("'" ^ name)));
+        raise (Error (styp.ptyp_loc, env, Invalid_variable_name ("'" @-@ name)));
       begin try
         instance (List.assoc name !univars)
       with Not_found -> try
@@ -292,8 +292,8 @@ and transl_type_aux env policy styp =
         with Not_found -> try
           let lid2 =
             match lid.txt with
-              Longident.Lident s     -> Longident.Lident ("#" ^ s)
-            | Longident.Ldot(r, s)   -> Longident.Ldot (r, "#" ^ s)
+              Longident.Lident s     -> Longident.Lident ("#" @-@ s)
+            | Longident.Ldot(r, s)   -> Longident.Ldot (r, "#" @-@ s)
             | Longident.Lapply(_, _) -> fatal_error "Typetexp.transl_type"
           in
           let path, decl = Env.find_type_by_name lid2 env in
@@ -619,7 +619,7 @@ let globalize_used_variables env fixed =
         r := (loc, v,  TyVarMap.find name !type_variables) :: !r
       with Not_found ->
         if fixed && Btype.is_Tvar ty then
-          raise(Error(loc, env, Unbound_type_variable ("'"^name)));
+          raise(Error(loc, env, Unbound_type_variable ("'"@-@name)));
         let v2 = new_global_var () in
         r := (loc, v, v2) :: !r;
         type_variables := TyVarMap.add name v2 !type_variables)
@@ -712,7 +712,7 @@ open Printtyp
 
 let report_error env ppf = function
   | Unbound_type_variable name ->
-      let add_name name _ l = if name = "_" then l else ("'" ^ name) :: l in
+      let add_name name _ l = if name = "_" then l else ("'" @-@ name) :: l in
       let names = TyVarMap.fold add_name !type_variables [] in
     fprintf ppf "The type variable %s is unbound in this type declaration.@ %a"
       name
@@ -770,7 +770,7 @@ let report_error env ppf = function
       begin match get_desc ty with
         | Tvar (Some s) ->
            (* PR#7012: help the user that wrote 'Foo instead of `Foo *)
-           Misc.did_you_mean ppf (fun () -> ["`" ^ s])
+           Misc.did_you_mean ppf (fun () -> ["`" @-@ s])
         | _ -> ()
       end
   | Variant_tags (lab1, lab2) ->

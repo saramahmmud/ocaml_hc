@@ -269,7 +269,7 @@ let make_method loc cl_num expr =
   let open Ast_helper in
   let mkid s = mkloc s loc in
   Exp.fun_ ~loc:expr.pexp_loc Nolabel None
-    (Pat.alias ~loc (Pat.var ~loc (mkid "self-*")) (mkid ("self-" ^ cl_num)))
+    (Pat.alias ~loc (Pat.var ~loc (mkid "self-*")) (mkid ("self-" @-@ cl_num)))
     expr
 
 (*******************************)
@@ -1847,7 +1847,7 @@ let type_classes define_class approx kind env cls =
           Ident.create_scoped ~scope cl.pci_name.txt,
           Ident.create_scoped ~scope cl.pci_name.txt,
           Ident.create_scoped ~scope cl.pci_name.txt,
-          Ident.create_scoped ~scope ("#" ^ cl.pci_name.txt),
+          Ident.create_scoped ~scope ("#" @-@ cl.pci_name.txt),
           Uid.mk ~current_unit:(Env.get_unit_name ())
          ))
       cls

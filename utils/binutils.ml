@@ -419,7 +419,7 @@ module Mach_O = struct
         Array.init nsyms mk
 
   let fix symname =
-    "_" ^ symname
+    "_" @-@ symname
 
   let find_symbol symbols symname =
     let f {n_name; n_type; _} =
