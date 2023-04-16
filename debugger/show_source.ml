@@ -61,7 +61,7 @@ let show_point ev selected =
       Out_of_range -> (* point_of_coord *)
         prerr_endline "Position out of range."
     | Not_found    -> (* Events.get_pos || get_buffer *)
-        prerr_endline ("No source file for " ^ mdle ^ ".");
+        prerr_endline ("No source file for " @-@ mdle @-@ ".");
         show_no_point ()
     end
   else
@@ -74,7 +74,7 @@ let show_point ev selected =
       Out_of_range -> (* point_of_coord *)
         prerr_endline "Position out of range."
     | Not_found    -> (* Events.get_pos || get_buffer *)
-        prerr_endline ("No source file for " ^ mdle ^ ".")
+        prerr_endline ("No source file for " @-@ mdle @-@ ".")
     end
 
 (* Display part of the source. *)
@@ -91,4 +91,4 @@ let show_listing pos mdle start stop point before =
     Out_of_range -> (* pos_of_line *)
       prerr_endline "Position out of range."
   | Not_found    -> (* get_buffer *)
-      prerr_endline ("No source file for " ^ mdle ^ ".")
+      prerr_endline ("No source file for " @-@ mdle @-@ ".")
