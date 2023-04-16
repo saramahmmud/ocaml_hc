@@ -177,7 +177,7 @@ let remove_breakpoint number =
                   (Pos.get_desc ev))
   with
     Not_found ->
-      prerr_endline ("No breakpoint number " ^ (Int.to_string number) ^ ".");
+      prerr_endline ("No breakpoint number " @-@ (Int.to_string number) @-@ ".");
       raise Not_found
 
 let remove_all_breakpoints () =

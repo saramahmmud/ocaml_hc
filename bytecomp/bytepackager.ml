@@ -57,7 +57,7 @@ let rename_relocation packagename objfile mapping defined base (rel, ofs) =
              module. *)
           let name = Ident.name id in
           if String.contains name '.' then
-            Reloc_getglobal (Ident.create_persistent (packagename ^ "." ^ name))
+            Reloc_getglobal (Ident.create_persistent (packagename @-@ "." @-@ name))
           else
             rel
         end
@@ -71,7 +71,7 @@ let rename_relocation packagename objfile mapping defined base (rel, ofs) =
           (* PR#5276, as above *)
           let name = Ident.name id in
           if String.contains name '.' then
-            Reloc_setglobal (Ident.create_persistent (packagename ^ "." ^ name))
+            Reloc_setglobal (Ident.create_persistent (packagename @-@ "." @-@ name))
           else
             rel
         end
@@ -83,7 +83,7 @@ let rename_relocation packagename objfile mapping defined base (rel, ofs) =
 
 let relocate_debug base prefix subst ev =
   let ev' = { ev with ev_pos = base + ev.ev_pos;
-                      ev_module = prefix ^ "." ^ ev.ev_module;
+                      ev_module = prefix @-@ "." @-@ ev.ev_module;
                       ev_typsubst = Subst.compose ev.ev_typsubst subst } in
   events := ev' :: !events
 
@@ -233,7 +233,7 @@ let package_object_files ~ppf_dump files targetfile targetname coercion =
     List.map
       (fun name ->
           (Ident.create_persistent name,
-           Ident.create_persistent(targetname ^ "." ^ name)))
+           Ident.create_persistent(targetname @-@ "." @-@ name)))
       unit_names in
   let oc = open_out_bin targetfile in
   try
@@ -286,7 +286,7 @@ let package_files ~ppf_dump initial_env files targetfile =
         with Not_found -> raise(Error(File_not_found f)))
         files in
     let prefix = chop_extensions targetfile in
-    let targetcmi = prefix ^ ".cmi" in
+    let targetcmi = prefix @-@ ".cmi" in
     let targetname = String.capitalize_ascii(Filename.basename prefix) in
     Misc.try_finally (fun () ->
         let coercion =

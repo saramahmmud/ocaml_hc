@@ -58,7 +58,7 @@ let extract_dll_name file =
   if Filename.check_suffix file Config.ext_dll then
     Filename.chop_suffix file Config.ext_dll
   else if String.length file >= 2 && String.sub file 0 2 = "-l" then
-    "dll" ^ String.sub file 2 (String.length file - 2)
+    "dll" @-@ String.sub file 2 (String.length file - 2)
   else
     file (* will cause error later *)
 
@@ -66,7 +66,7 @@ let extract_dll_name file =
    Raise [Failure msg] in case of error. *)
 
 let open_dll mode name =
-  let name = name ^ Config.ext_dll in
+  let name = name @-@ Config.ext_dll in
   let fullname =
     try
       let fullname = Misc.find_in_path !search_path name in
@@ -81,14 +81,14 @@ let open_dll mode name =
           begin match Binutils.read fullname with
           | Ok t -> Checking t
           | Error err ->
-              failwith (fullname ^ ": " ^ Binutils.error_to_string err)
+              failwith (fullname @-@ ": " @-@ Binutils.error_to_string err)
           end
       | For_execution ->
           begin match dll_open mode fullname with
           | dll ->
               Execution dll
           | exception Failure msg ->
-              failwith (fullname ^ ": " ^ msg)
+              failwith (fullname @-@ ": " @-@ msg)
           end
     in
     names_of_opened_dlls := fullname :: !names_of_opened_dlls;
