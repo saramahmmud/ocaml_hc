@@ -114,12 +114,12 @@ let location d =
   else Debuginfo.to_string d
 
 let operation d = function
-  | Capply _ty -> "app" ^ location d
+  | Capply _ty -> "app" @-@ location d
   | Cextcall(lbl, _ty_res, _ty_args, _alloc) ->
       Printf.sprintf "extcall \"%s\"%s" lbl (location d)
   | Cload (c, Asttypes.Immutable) -> Printf.sprintf "load %s" (chunk c)
   | Cload (c, Asttypes.Mutable) -> Printf.sprintf "load_mut %s" (chunk c)
-  | Calloc -> "alloc" ^ location d
+  | Calloc -> "alloc" @-@ location d
   | Cstore (c, init) ->
     let init =
       match init with
@@ -153,8 +153,8 @@ let operation d = function
   | Cfloatofint -> "floatofint"
   | Cintoffloat -> "intoffloat"
   | Ccmpf c -> Printf.sprintf "%sf" (float_comparison c)
-  | Craise k -> Lambda.raise_kind k ^ location d
-  | Ccheckbound -> "checkbound" ^ location d
+  | Craise k -> Lambda.raise_kind k @-@ location d
+  | Ccheckbound -> "checkbound" @-@ location d
   | Copaque -> "opaque"
 
 let rec expr ppf = function

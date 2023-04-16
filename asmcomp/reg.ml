@@ -132,13 +132,13 @@ let name t =
   | Some raw_name ->
     let with_spilled =
       if t.spill then
-        "spilled-" ^ raw_name
+        "spilled-" @-@ raw_name
       else
         raw_name
     in
     match t.part with
     | None -> with_spilled
-    | Some part -> with_spilled ^ "#" ^ Int.to_string part
+    | Some part -> with_spilled @-@ "#" @-@ Int.to_string part
 
 let first_virtual_reg_stamp = ref (-1)
 

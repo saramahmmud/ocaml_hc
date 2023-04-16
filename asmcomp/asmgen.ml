@@ -107,7 +107,7 @@ let emit_fundecl fd =
 
 let rec regalloc ~ppf_dump round fd =
   if round > 50 then
-    fatal_error(fd.Mach.fun_name ^
+    fatal_error(fd.Mach.fun_name @-@
                 ": function too complex, cannot complete register allocation");
   dump_if ppf_dump dump_live "Liveness analysis" fd;
   let num_stack_slots =
@@ -265,14 +265,14 @@ type middle_end =
 
 let asm_filename output_prefix =
     if !keep_asm_file || !Emitaux.binary_backend_available
-    then output_prefix ^ ext_asm
+    then output_prefix @-@ ext_asm
     else Filename.temp_file "camlasm" ext_asm
 
 let compile_implementation ?toplevel ~backend ~prefixname ~middle_end
       ~ppf_dump (program : Lambda.program) =
   compile_unit ~output_prefix:prefixname
     ~asm_filename:(asm_filename prefixname) ~keep_asm:!keep_asm_file
-    ~obj_filename:(prefixname ^ ext_obj)
+    ~obj_filename:(prefixname @-@ ext_obj)
     (fun () ->
       Ident.Set.iter Compilenv.require_global program.required_globals;
       let clambda_with_constants =
@@ -299,7 +299,7 @@ let linear_gen_implementation filename =
 let compile_implementation_linear output_prefix ~progname =
   compile_unit ~output_prefix
     ~asm_filename:(asm_filename output_prefix) ~keep_asm:!keep_asm_file
-    ~obj_filename:(output_prefix ^ ext_obj)
+    ~obj_filename:(output_prefix @-@ ext_obj)
     (fun () ->
       linear_gen_implementation progname)
 
@@ -312,7 +312,7 @@ let report_error ppf = function
   | Mismatched_for_pack saved ->
     let msg = function
        | None -> "without -for-pack"
-       | Some s -> "with -for-pack "^s
+       | Some s -> "with -for-pack "@-@s
      in
      fprintf ppf
        "This input file cannot be compiled %s: it was generated %s."
