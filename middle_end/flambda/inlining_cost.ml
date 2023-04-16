@@ -376,14 +376,14 @@ module Benefit = struct
       let dashes =
         List.map (fun (_, _, n) -> String.make n '-') benefits_table
       in
-      "|-" ^ String.concat "-+-" dashes ^ "-|"
+      "|-" @-@ String.concat "-+-" dashes @-@ "-|"
     end
 
   let table_headers =
     lazy begin
       let benefits_table = Lazy.force benefits_table in
       let headers = List.map (fun (head, _, _) -> head) benefits_table in
-      "| " ^ String.concat " | " headers ^ " |"
+      "| " @-@ String.concat " | " headers @-@ " |"
     end
 
   let print_table_values ppf b =

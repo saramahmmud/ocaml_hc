@@ -226,16 +226,16 @@ let default_options = Options.list @
   "-no-module-constraint-filter", Arg.Clear Odoc_global.filter_with_module_constraints,
   M.no_filter_with_module_constraints ;
 
-  "-keep-code", Arg.Set Odoc_global.keep_code, M.keep_code^"\n" ;
+  "-keep-code", Arg.Set Odoc_global.keep_code, M.keep_code@-@"\n" ;
 
   "-dump", Arg.String (fun s -> Odoc_global.dump := Some s), M.dump ;
-  "-load", Arg.String (fun s -> Odoc_global.load := !Odoc_global.load @ [s]), M.load^"\n" ;
+  "-load", Arg.String (fun s -> Odoc_global.load := !Odoc_global.load @ [s]), M.load@-@"\n" ;
 
   "-t", Arg.String (fun s -> Odoc_global.title := Some s), M.option_title ;
   "-intro", Arg.String (fun s -> Odoc_global.intro_file := Some s), M.option_intro ;
   "-hide", Arg.String add_hidden_modules, M.hide_modules ;
   "-m", Arg.String (fun s -> Odoc_global.merge_options := !Odoc_global.merge_options @ (analyse_merge_options s)),
-  M.merge_options ^
+  M.merge_options @-@
   "\n\n *** choosing a generator ***\n";
 
 (* generators *)
@@ -272,7 +272,7 @@ let default_options = Options.list @
   "-customdir", Arg.Unit (fun () -> Printf.printf "%s\n" Odoc_config.custom_generators_path; exit 0),
   M.display_custom_generators_dir ;
   "-i", Arg.String (fun _ -> ()), M.add_load_dir ;
-  "-g", Arg.String (fun _ -> ()), M.load_file ^
+  "-g", Arg.String (fun _ -> ()), M.load_file @-@
   "\n\n *** HTML options ***\n";
 
 (* html only options *)
@@ -282,7 +282,7 @@ let default_options = Options.list @
   "-colorize-code", Arg.Set Odoc_html.colorize_code, M.colorize_code ;
   "-short-functors", Arg.Set Odoc_html.html_short_functors, M.html_short_functors ;
   "-charset", Arg.Set_string Odoc_html.charset, (M.charset !Odoc_html.charset) ;
-  "-nonavbar", Arg.Clear Odoc_html.show_navbar, M.no_navbar ^
+  "-nonavbar", Arg.Clear Odoc_html.show_navbar, M.no_navbar @-@
   "\n\n *** LaTeX options ***\n";
 
 (* latex only options *)
@@ -308,7 +308,7 @@ let default_options = Options.list @
     Arg.String (fun s -> Odoc_latex.latex_class_prefix := s), M.latex_class_prefix ;
   "-latex-class-type-prefix",
     Arg.String (fun s -> Odoc_latex.latex_class_type_prefix := s), M.latex_class_type_prefix ;
-  "-notoc", Arg.Unit (fun () -> Odoc_global.with_toc := false), M.no_toc ^
+  "-notoc", Arg.Unit (fun () -> Odoc_global.with_toc := false), M.no_toc @-@
   "\n\n *** texinfo options ***\n";
 
 (* texi only options *)
@@ -319,14 +319,14 @@ let default_options = Options.list @
 
   "-info-section", Arg.String ((:=) Odoc_texi.info_section), M.info_section ;
   "-info-entry", Arg.String (fun s -> Odoc_texi.info_entry := !Odoc_texi.info_entry @ [ s ]),
-  M.info_entry ^
+  M.info_entry @-@
   "\n\n *** dot options ***\n";
 
 (* dot only options *)
   "-dot-colors", Arg.String (fun s -> Odoc_dot.dot_colors := Str.split (Str.regexp_string ",") s), M.dot_colors ;
   "-dot-include-all", Arg.Set Odoc_dot.dot_include_all, M.dot_include_all ;
   "-dot-types", Arg.Set Odoc_dot.dot_types, M.dot_types ;
-  "-dot-reduce", Arg.Set Odoc_dot.dot_reduce, M.dot_reduce^
+  "-dot-reduce", Arg.Set Odoc_dot.dot_reduce, M.dot_reduce@-@
   "\n\n *** man pages options ***\n";
 
 (* man only options *)
@@ -344,7 +344,7 @@ let modified_options () =
 let append_last_doc suffix =
   match List.rev !options with
   | (key, spec, doc) :: tl ->
-      options := List.rev ((key, spec, doc ^ suffix) :: tl)
+      options := List.rev ((key, spec, doc @-@ suffix) :: tl)
   | [] -> ()
 
 (** The help option list, overriding the default ones from the Arg module *)
@@ -353,7 +353,7 @@ let help_action () =
   let msg =
     Arg.usage_string
       (!options @ !help_options)
-      (M.usage ^ M.options_are) in
+      (M.usage @-@ M.options_are) in
   print_string msg
 let () =
   help_options := [
@@ -381,7 +381,7 @@ let parse () =
   begin try
     Arg.parse (Arg.align ~limit:13 options)
       anonymous
-      (M.usage^M.options_are)
+      (M.usage@-@M.options_are)
   with Compenv.Exit_with_status n -> exit n
   end;
   (* we sort the hidden modules by name, to be sure that for example,

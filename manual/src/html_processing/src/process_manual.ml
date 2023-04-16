@@ -41,12 +41,12 @@ let preg_anyspace =
 (* "long" space is either " " (hevea 2.32) or "\u{2003}" (hevea 2.35) *)
 let preg_emspace = "\\(\u{2003}\\| \\)"
 (* What hevea inserts between "Chapter" and the chapter number: *)
-let preg_chapter_space = "\\(\u{2004}\u{200d}\\|" ^ preg_anyspace ^ "\\)"
+let preg_chapter_space = "\\(\u{2004}\u{200d}\\|" @-@ preg_anyspace @-@ "\\)"
 let writtenby_css = "span.font-it" (* "span.c009" for hevea 2.32 *)
 
 (* Remove number: "Chapter 1  The core language" ==> "The core language" *)
 let remove_number s =
-  Re.Str.(global_replace (regexp (".+" ^ preg_emspace)) "" s)
+  Re.Str.(global_replace (regexp (".+" @-@ preg_emspace)) "" s)
 
 let toc_get_title li =
   let a = li $ "a[href]" in
@@ -100,7 +100,7 @@ let parse_toc () =
 let copyright_text = ref "Copyright © 2020 Institut National de Recherche en Informatique et en Automatique"
 
 let copyright () =
-  "<div class=\"copyright\">" ^ !copyright_text ^ "</div>"
+  "<div class=\"copyright\">" @-@ !copyright_text @-@ "</div>"
   |> parse
 
 
@@ -111,7 +111,7 @@ let copyright () =
    https://github.com/maranget/hevea/pull/61 *)
 
 let reg_chapter = Re.Str.regexp
-    ("Chapter" ^ preg_chapter_space ^ "\\([0-9]+\\)" ^ preg_anyspace)
+    ("Chapter" @-@ preg_chapter_space @-@ "\\([0-9]+\\)" @-@ preg_anyspace)
 
 let load_html file =
   dbg "%s" file;
@@ -133,10 +133,10 @@ let load_html file =
     (* Remove the chapter number in local links, it makes the TOC unnecessarily
        unfriendly. *)
     |> Re.Str.(global_replace
-                 (regexp (">[0-9]+\\.\\([0-9]+\\)" ^ preg_anyspace)))
+                 (regexp (">[0-9]+\\.\\([0-9]+\\)" @-@ preg_anyspace)))
       {|><span class="number">\1</span> |}
     |> Re.Str.(global_replace
-                 (regexp ("[0-9]+\\.\\([0-9]+\\(\\.[0-9]+\\)+\\)" ^ preg_anyspace)))
+                 (regexp ("[0-9]+\\.\\([0-9]+\\(\\.[0-9]+\\)+\\)" @-@ preg_anyspace)))
       {|<span class="number">\1</span> |}
 
     (* The API (libref and compilerlibref directories) should be separate
@@ -150,7 +150,7 @@ let load_html file =
   (* For the main index file, we do a few adjustments *)
   let html = if file = "index.html"
     then Re.Str.(global_replace
-                   (regexp ("Part" ^ preg_chapter_space ^ "\\([I|V]+\\)<br>\n"))
+                   (regexp ("Part" @-@ preg_chapter_space @-@ "\\([I|V]+\\)<br>\n"))
                    {|<span class="number">\3.</span> |} html)
     else html in
 
@@ -180,8 +180,8 @@ let nav_replace_img_by_text toc alt a img =
   let file = R.attribute "href" a in
   let title = match file_title file toc with
     | Some f -> begin match alt with
-        | "Previous" -> "« " ^ f
-        | "Next" -> f ^ " »"
+        | "Previous" -> "« " @-@ f
+        | "Next" -> f @-@ " »"
         | "Up" -> f
         | _ -> failwith "This should not happen"
             end
@@ -198,7 +198,7 @@ let update_navigation soup toc =
   Option.iter delete (soup $? "hr");
   let links =
     ["Previous"; "Up"; "Next"]
-    |> List.map (fun alt -> alt, to_list (soup $$ ("img[alt=\"" ^ alt ^ "\"]")))
+    |> List.map (fun alt -> alt, to_list (soup $$ ("img[alt=\"" @-@ alt @-@ "\"]")))
     (* In principle [imgs] will contain either 0 or 2 elements. *)
     |> List.filter (fun (_alt, imgs) -> List.length imgs = 2)
     (* We delete the first link, and replace image by text *)
@@ -285,7 +285,7 @@ let convert_index version soup =
 
 let change_title title soup =
   let title_tag = soup $ "title" in
-  let new_title = create_element "title" ~inner_text:("OCaml - " ^ title) in
+  let new_title = create_element "title" ~inner_text:("OCaml - " @-@ title) in
   replace title_tag new_title
 
 (* Create left sidebar for TOC.  *)
@@ -351,12 +351,12 @@ let make_toc_sidebar ~version ~title file body =
         end;
         (* Link to APIs *)
         let a = create_element "a" ~inner_text:"OCaml API"
-            ~attributes:["href", api_page_url ^ "/index.html"] in
+            ~attributes:["href", api_page_url @-@ "/index.html"] in
         let li = create_element "li" in
         (append_child li a;
          append_child toc li);
         let a = create_element "a" ~inner_text:"OCaml Compiler API"
-            ~attributes:["href", api_page_url ^ "/compilerlibref/index.html"] in
+            ~attributes:["href", api_page_url @-@ "/compilerlibref/index.html"] in
         let li = create_element "li" in
         (append_child li a;
          append_child toc li)
@@ -375,7 +375,7 @@ let make_toc_sidebar ~version ~title file body =
 
   (* Add version number *)
   let version_text = if file = "index.html" then "Select another version"
-    else "Version " ^ version in
+    else "Version " @-@ version in
   add_version_link nav version_text releases_url;
   toc
 
@@ -432,7 +432,7 @@ let get_xfiles = function
              not (starts_with ".." rf) &&
              not (starts_with "http" rf)
           then begin
-            li $ "a" |> set_attribute "href" (rf ^ "#start-section");
+            li $ "a" |> set_attribute "href" (rf @-@ "#start-section");
             rf::list
           end else list) []
 

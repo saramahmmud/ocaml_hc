@@ -38,7 +38,7 @@ let label t =
         Linkage_name.to_string
           (Compilation_unit.get_linkage_name compilation_unit)
       in
-      let label = unit_linkage_name ^ "__" ^ Variable.unique_name variable in
+      let label = unit_linkage_name @-@ "__" @-@ Variable.unique_name variable in
       Linkage_name.create label
 
 include Identifiable.Make (struct

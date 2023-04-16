@@ -105,10 +105,10 @@ let symbolname_for_pack pack name =
 let unit_id_from_name name = Ident.create_persistent name
 
 let concat_symbol unitname id =
-  unitname ^ "__" ^ id
+  unitname @-@ "__" @-@ id
 
 let make_symbol ?(unitname = current_unit.ui_symbol) idopt =
-  let prefix = "caml" ^ unitname in
+  let prefix = "caml" @-@ unitname in
   match idopt with
   | None -> prefix
   | Some id -> concat_symbol prefix id
@@ -148,7 +148,7 @@ let current_unit_name () =
   current_unit.ui_name
 
 let symbol_in_current_unit name =
-  let prefix = "caml" ^ current_unit.ui_symbol in
+  let prefix = "caml" @-@ current_unit.ui_symbol in
   name = prefix ||
   (let lp = String.length prefix in
    String.length name >= 2 + lp
@@ -197,7 +197,7 @@ let get_global_info global_ident = (
         else begin
           try
             let filename =
-              Load_path.find_uncap (modname ^ ".cmx") in
+              Load_path.find_uncap (modname @-@ ".cmx") in
             let (ui, crc) = read_unit_info filename in
             if ui.ui_name <> modname then
               raise(Error(Illegal_renaming(modname, ui.ui_name, filename)));
@@ -245,7 +245,7 @@ let global_approx id =
 
 let symbol_for_global id =
   if Ident.is_predef id then
-    "caml_exn_" ^ Ident.name id
+    "caml_exn_" @-@ Ident.name id
   else begin
     let unitname = Ident.name id in
     match
@@ -417,7 +417,7 @@ let closure_symbol fv =
     Linkage_name.to_string (Compilation_unit.get_linkage_name compilation_unit)
   in
   let linkage_name =
-    concat_symbol unitname ((Closure_id.unique_name fv) ^ "_closure")
+    concat_symbol unitname ((Closure_id.unique_name fv) @-@ "_closure")
   in
   Symbol.of_global_linkage compilation_unit (Linkage_name.create linkage_name)
 

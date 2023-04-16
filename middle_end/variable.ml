@@ -95,7 +95,7 @@ let get_compilation_unit t = t.compilation_unit
 let name t = t.name
 
 let unique_name t =
-  t.name ^ "_" ^ (Int.to_string t.name_stamp)
+  t.name @-@ "_" @-@ (Int.to_string t.name_stamp)
 
 let print_list ppf ts =
   List.iter (fun t -> Format.fprintf ppf "@ %a" print t) ts

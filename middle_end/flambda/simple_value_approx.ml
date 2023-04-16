@@ -200,7 +200,7 @@ let rec print_descr ppf = function
       | Some s ->
           let s =
             if size > 10
-            then String.sub s 0 8 ^ "..."
+            then String.sub s 0 8 @-@ "..."
             else s
           in
           Format.fprintf ppf "string %i %S" size s

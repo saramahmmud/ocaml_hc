@@ -240,7 +240,7 @@ end
 
 let really_save_then_forget_decisions ~output_prefix =
   let report = Inlining_report.build !log in
-  let out_channel = open_out (output_prefix ^ ".inlining.org") in
+  let out_channel = open_out (output_prefix @-@ ".inlining.org") in
   let ppf = Format.formatter_of_out_channel out_channel in
   Inlining_report.print ppf report;
   close_out out_channel;
