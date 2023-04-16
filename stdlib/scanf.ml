@@ -562,10 +562,10 @@ let token_int_literal conv ib =
   let tok =
     match conv with
     | D_conversion | I_conversion -> Scanning.token ib
-    | U_conversion -> "0u" ^ Scanning.token ib
-    | O_conversion -> "0o" ^ Scanning.token ib
-    | X_conversion -> "0x" ^ Scanning.token ib
-    | B_conversion -> "0b" ^ Scanning.token ib in
+    | U_conversion -> "0u" @-@ Scanning.token ib
+    | O_conversion -> "0o" @-@ Scanning.token ib
+    | X_conversion -> "0x" @-@ Scanning.token ib
+    | B_conversion -> "0b" @-@ Scanning.token ib in
   let l = String.length tok in
   if l = 0 || tok.[0] <> '+' then tok else String.sub tok 1 (l - 1)
 
@@ -1507,7 +1507,7 @@ let kscanf ib ef (Format (fmt, str)) =
     match try Args (make_scanf ib fmt readers) with
       | (Scan_failure _ | Failure _ | End_of_file) as exc -> Exc exc
       | Invalid_argument msg ->
-        invalid_arg (msg ^ " in format \"" ^ String.escaped str ^ "\"")
+        invalid_arg (msg @-@ " in format \"" @-@ String.escaped str @-@ "\"")
     with
       | Args args -> apply f args
       | Exc exc -> ef ib exc
@@ -1546,11 +1546,11 @@ let sscanf_format :
 
 
 let format_from_string s fmt =
-  sscanf_format ("\"" ^ String.escaped s ^ "\"") fmt (fun x -> x)
+  sscanf_format ("\"" @-@ String.escaped s @-@ "\"") fmt (fun x -> x)
 
 
 let unescaped s =
-  sscanf ("\"" ^ s ^ "\"") "%S%!" (fun x -> x)
+  sscanf ("\"" @-@ s @-@ "\"") "%S%!" (fun x -> x)
 
 
 (* Deprecated *)
