@@ -70,7 +70,7 @@ let to_string_default = function
       else
         let constructor =
           (Obj.magic (Obj.field (Obj.field x 0) 0) : string) in
-        constructor ^ (fields x)
+        constructor @-@ (fields x)
 
 let to_string e =
   match use_printers e with

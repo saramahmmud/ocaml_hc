@@ -840,7 +840,7 @@ let pp_set_geometry state ~max_indent ~margin =
   let geometry = { max_indent; margin } in
   match validate_geometry geometry with
   | Error msg ->
-    raise (Invalid_argument ("Format.pp_set_geometry: " ^ msg))
+    raise (Invalid_argument ("Format.pp_set_geometry: " @-@ msg))
   | Ok () ->
     pp_set_full_geometry state geometry
 
@@ -923,10 +923,10 @@ let pp_set_formatter_out_channel state oc =
 *)
 
 let default_pp_mark_open_tag = function
-  | String_tag s -> "<" ^ s ^ ">"
+  | String_tag s -> "<" @-@ s @-@ ">"
   | _ -> ""
 let default_pp_mark_close_tag = function
-  | String_tag s -> "</" ^ s ^ ">"
+  | String_tag s -> "</" @-@ s @-@ ">"
   | _ -> ""
 
 let default_pp_print_open_tag = ignore

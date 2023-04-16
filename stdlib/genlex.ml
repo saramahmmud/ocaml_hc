@@ -55,7 +55,7 @@ let make_lexer keywords =
   and keyword_or_error c =
     let s = String.make 1 c in
     try Hashtbl.find kwd_table s with
-      Not_found -> raise (Stream.Error ("Illegal character " ^ s))
+      Not_found -> raise (Stream.Error ("Illegal character " @-@ s))
   in
   let rec next_token (strm__ : _ Stream.t) =
     match Stream.peek strm__ with
