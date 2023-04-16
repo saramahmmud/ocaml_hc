@@ -336,7 +336,7 @@ let find_raise_label i =
   with
   | Not_found ->
       Misc.fatal_error
-        ("exit("^Int.to_string i^") outside appropriated catch")
+        ("exit("@-@ Int.to_string i @-@") outside appropriated catch")
 
 (* Will the translation of l lead to a jump to label ? *)
 let code_as_jump l sz = match l with
@@ -381,7 +381,7 @@ let comp_bint_primitive bi suff args =
     match bi with Pnativeint -> "caml_nativeint_"
                 | Pint32 -> "caml_int32_"
                 | Pint64 -> "caml_int64_" in
-  Kccall(pref ^ suff, List.length args)
+  Kccall(pref @-@ suff, List.length args)
 
 let comp_primitive p args =
   match p with
@@ -494,9 +494,9 @@ let comp_primitive p args =
   | Pbintcomp(_, Cgt) -> Kccall("caml_greaterthan", 2)
   | Pbintcomp(_, Cle) -> Kccall("caml_lessequal", 2)
   | Pbintcomp(_, Cge) -> Kccall("caml_greaterequal", 2)
-  | Pbigarrayref(_, n, _, _) -> Kccall("caml_ba_get_" ^ Int.to_string n, n + 1)
-  | Pbigarrayset(_, n, _, _) -> Kccall("caml_ba_set_" ^ Int.to_string n, n + 2)
-  | Pbigarraydim(n) -> Kccall("caml_ba_dim_" ^ Int.to_string n, 1)
+  | Pbigarrayref(_, n, _, _) -> Kccall("caml_ba_get_" @-@ Int.to_string n, n + 1)
+  | Pbigarrayset(_, n, _, _) -> Kccall("caml_ba_set_" @-@ Int.to_string n, n + 2)
+  | Pbigarraydim(n) -> Kccall("caml_ba_dim_" @-@ Int.to_string n, 1)
   | Pbigstring_load_16(_) -> Kccall("caml_ba_uint8_get16", 2)
   | Pbigstring_load_32(_) -> Kccall("caml_ba_uint8_get32", 2)
   | Pbigstring_load_64(_) -> Kccall("caml_ba_uint8_get64", 2)
@@ -553,7 +553,7 @@ let rec comp_expr env exp sz cont =
         let ofs = Ident.find_same id env.ce_rec in
         Koffsetclosure(ofs) :: cont
       with Not_found ->
-        fatal_error ("Bytegen.comp_expr: var " ^ Ident.unique_name id)
+        fatal_error ("Bytegen.comp_expr: var " @-@ Ident.unique_name id)
       end
   | Lconst cst ->
       Kconst cst :: cont
