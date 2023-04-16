@@ -104,7 +104,7 @@ class html =
       let (html_file, _) = Naming.html_files m.m_name in
       let father = Name.father m.m_name in
       bs b "<pre>";
-      bs b ((self#keyword "module")^" ");
+      bs b ((self#keyword "module")@-@" ");
       (
        if with_link then
          bp b "<a href=\"%s\">%s</a>" html_file (Name.simple m.m_name)
@@ -147,44 +147,44 @@ class html =
           ".code { color : #465F91 ; }" ;
           "h1 { font-size : 20pt ; text-align: center; }" ;
 
-          "h2 { font-size : 20pt ; border: 1px solid #000000; "^
-            "margin-top: 5px; margin-bottom: 2px;"^
-            "text-align: center; background-color: #90BDFF ;"^
+          "h2 { font-size : 20pt ; border: 1px solid #000000; "@-@
+            "margin-top: 5px; margin-bottom: 2px;"@-@
+            "text-align: center; background-color: #90BDFF ;"@-@
             "padding: 2px; }" ;
 
-          "h3 { font-size : 20pt ; border: 1px solid #000000; "^
-            "margin-top: 5px; margin-bottom: 2px;"^
-            "text-align: center; background-color: #90DDFF ;"^
+          "h3 { font-size : 20pt ; border: 1px solid #000000; "@-@
+            "margin-top: 5px; margin-bottom: 2px;"@-@
+            "text-align: center; background-color: #90DDFF ;"@-@
             "padding: 2px; }" ;
 
-          "h4 { font-size : 20pt ; border: 1px solid #000000; "^
-            "margin-top: 5px; margin-bottom: 2px;"^
-            "text-align: center; background-color: #90EDFF ;"^
+          "h4 { font-size : 20pt ; border: 1px solid #000000; "@-@
+            "margin-top: 5px; margin-bottom: 2px;"@-@
+            "text-align: center; background-color: #90EDFF ;"@-@
             "padding: 2px; }" ;
 
-          "h5 { font-size : 20pt ; border: 1px solid #000000; "^
-            "margin-top: 5px; margin-bottom: 2px;"^
-            "text-align: center; background-color: #90FDFF ;"^
+          "h5 { font-size : 20pt ; border: 1px solid #000000; "@-@
+            "margin-top: 5px; margin-bottom: 2px;"@-@
+            "text-align: center; background-color: #90FDFF ;"@-@
             "padding: 2px; }" ;
 
-          "h6 { font-size : 20pt ; border: 1px solid #000000; "^
-            "margin-top: 5px; margin-bottom: 2px;"^
-            "text-align: center; background-color: #C0FFFF ; "^
+          "h6 { font-size : 20pt ; border: 1px solid #000000; "@-@
+            "margin-top: 5px; margin-bottom: 2px;"@-@
+            "text-align: center; background-color: #C0FFFF ; "@-@
             "padding: 2px; }" ;
 
-          "div.h7 { font-size : 20pt ; border: 1px solid #000000; "^
-            "margin-top: 5px; margin-bottom: 2px;"^
-            "text-align: center; background-color: #E0FFFF ; "^
+          "div.h7 { font-size : 20pt ; border: 1px solid #000000; "@-@
+            "margin-top: 5px; margin-bottom: 2px;"@-@
+            "text-align: center; background-color: #E0FFFF ; "@-@
             "padding: 2px; }" ;
 
-          "div.h8 { font-size : 20pt ; border: 1px solid #000000; "^
-            "margin-top: 5px; margin-bottom: 2px;"^
-            "text-align: center; background-color: #F0FFFF ; "^
+          "div.h8 { font-size : 20pt ; border: 1px solid #000000; "@-@
+            "margin-top: 5px; margin-bottom: 2px;"@-@
+            "text-align: center; background-color: #F0FFFF ; "@-@
             "padding: 2px; }" ;
 
-          "div.h9 { font-size : 20pt ; border: 1px solid #000000; "^
-            "margin-top: 5px; margin-bottom: 2px;"^
-            "text-align: center; background-color: #FFFFFF ; "^
+          "div.h9 { font-size : 20pt ; border: 1px solid #000000; "@-@
+            "margin-top: 5px; margin-bottom: 2px;"@-@
+            "text-align: center; background-color: #FFFFFF ; "@-@
             "padding: 2px; }" ;
 
           ".typetable { border-style : hidden }" ;
@@ -193,18 +193,18 @@ class html =
           "body { background-color : White }" ;
           "tr { background-color : White }" ;
           "td.typefieldcomment { background-color : #FFFFFF ; font-size: smaller ;}" ;
-          "pre { margin-bottom: 4px ; margin-left: 1em; "^
-            "border-color: #27408b; border-style: solid; "^
-            "border-width: 1px 1px 1px 3px; "^
+          "pre { margin-bottom: 4px ; margin-left: 1em; "@-@
+            "border-color: #27408b; border-style: solid; "@-@
+            "border-width: 1px 1px 1px 3px; "@-@
             "padding: 4px; }" ;
           "div.sig_block {margin-left: 2em}" ;
 
-          "div.codeblock { "^
-            "margin-left: 2em; margin-right: 1em; padding: 6px; "^
-            "margin-bottom: 8px; display: none; "^
+          "div.codeblock { "@-@
+            "margin-left: 2em; margin-right: 1em; padding: 6px; "@-@
+            "margin-bottom: 8px; display: none; "@-@
             "border-width: 1px 1px 1px 3px; border-style: solid; border-color: grey; }" ;
 
-          "span.code_expand { color: blue; text-decoration: underline; cursor: pointer; "^
+          "span.code_expand { color: blue; text-decoration: underline; cursor: pointer; "@-@
           "margin-left: 1em ; } ";
         ];
   end

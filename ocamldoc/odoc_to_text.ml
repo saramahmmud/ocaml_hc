@@ -39,7 +39,7 @@ class virtual info =
         [] ->
           []
       | _ ->
-          [ Bold [Raw (Odoc_messages.authors^": ")] ;
+          [ Bold [Raw (Odoc_messages.authors@-@": ")] ;
             Raw (String.concat ", " l) ;
             Newline
           ]
@@ -48,7 +48,7 @@ class virtual info =
     method text_of_version_opt v_opt =
       match v_opt with
         None -> []
-      | Some v -> [ Bold [Raw (Odoc_messages.version^": ")] ;
+      | Some v -> [ Bold [Raw (Odoc_messages.version@-@": ")] ;
                     Raw v ;
                     Newline
                   ]
@@ -57,7 +57,7 @@ class virtual info =
     method text_of_since_opt s_opt =
       match s_opt with
         None -> []
-      | Some s -> [ Bold [Raw (Odoc_messages.since^": ")] ;
+      | Some s -> [ Bold [Raw (Odoc_messages.since@-@": ")] ;
                     Raw s ;
                     Newline
                   ]
@@ -125,7 +125,7 @@ class virtual info =
     method text_of_return_opt return_opt =
       match return_opt with
         None -> []
-      | Some t -> (Bold [Raw (Odoc_messages.returns^" ")]) :: t @ [ Newline ]
+      | Some t -> (Bold [Raw (Odoc_messages.returns@-@" ")]) :: t @ [ Newline ]
 
     (** Return a [text] for the given list of custom tagged texts. *)
     method text_of_custom l =
@@ -153,7 +153,7 @@ class virtual info =
           let t =
             (match info.i_deprecated with
               None -> []
-            | Some t -> ( Italic [Raw (Odoc_messages.deprecated^". ")] ) :: t
+            | Some t -> ( Italic [Raw (Odoc_messages.deprecated@-@". ")] ) :: t
              ) @
             (match info.i_desc with
               None -> []
@@ -293,7 +293,7 @@ class virtual to_text =
         Format.flush_str_formatter ()
       in
       [ CodePre s ] @
-      [Latex ("\\index{"^(self#label s_name)^"@\\verb`"^(self#label ~no_:false s_name)^"`}\n")] @
+      [Latex ("\\index{"@-@(self#label s_name)@-@"@\\verb`"@-@(self#label ~no_:false s_name)@-@"`}\n")] @
       (self#text_of_info v.val_info)
 
     (** @return [text] value for a class attribute. *)
@@ -309,7 +309,7 @@ class virtual to_text =
         Format.flush_str_formatter ()
       in
       (CodePre s) ::
-      [Latex ("\\index{"^(self#label s_name)^"@\\verb`"^(self#label ~no_:false s_name)^"`}\n")] @
+      [Latex ("\\index{"@-@(self#label s_name)@-@"@\\verb`"@-@(self#label ~no_:false s_name)@-@"`}\n")] @
       (self#text_of_info a.att_value.val_info)
 
     (** @return [text] value for a class method. *)
@@ -325,7 +325,7 @@ class virtual to_text =
         Format.flush_str_formatter ()
       in
       (CodePre s) ::
-      [Latex ("\\index{"^(self#label s_name)^"@\\verb`"^(self#label ~no_:false s_name)^"`}\n")] @
+      [Latex ("\\index{"@-@(self#label s_name)@-@"@\\verb`"@-@(self#label ~no_:false s_name)@-@"`}\n")] @
       (self#text_of_info m.met_value.val_info)
 
 
@@ -363,7 +363,7 @@ class virtual to_text =
       );
       let s2 = Format.flush_str_formatter () in
       [ CodePre s2 ] @
-      [Latex ("\\index{"^(self#label s_name)^"@\\verb`"^(self#label ~no_:false s_name)^"`}\n")] @
+      [Latex ("\\index{"@-@(self#label s_name)@-@"@\\verb`"@-@(self#label ~no_:false s_name)@-@"`}\n")] @
       (self#text_of_info e.ex_info)
 
     (** Return [text] value for the description of a function parameter. *)
@@ -388,7 +388,7 @@ class virtual to_text =
                      (fun n ->
                        match Parameter.desc_by_name p n with
                          None -> [] (* should not occur *)
-                       | Some t -> [Code (n^" ") ; Raw ": "] @ t
+                       | Some t -> [Code (n@-@" ") ; Raw ": "] @ t
                      )
                      l2
                   )
@@ -433,7 +433,7 @@ class virtual to_text =
                  (fun (p, desc_opt) ->
                    begin match p.mp_type with None -> [Raw ""]
                    | Some mty ->
-                       [Code (p.mp_name^" : ")] @
+                       [Code (p.mp_name@-@" : ")] @
                        (self#text_of_module_type mty)
                    end @
                    (match desc_opt with
@@ -459,11 +459,11 @@ class virtual to_text =
                 match capp.capp_class with
                   None -> capp.capp_name
                 | Some cl -> cl.cl_name
-               )^
-               " "^
+               )@-@
+               " "@-@
                (String.concat " "
                   (List.map
-                     (fun s -> "("^s^")")
+                     (fun s -> "("@-@s@-@")")
                      capp.capp_params_code))
               )
           ]
@@ -524,11 +524,11 @@ class virtual to_text =
         Module_alias m_alias ->
           (match m_alias.ma_module with
             None ->
-              [Code ((if with_def_syntax then " = " else "")^m_alias.ma_name)]
+              [Code ((if with_def_syntax then " = " else "")@-@m_alias.ma_name)]
           | Some (Mod m) ->
-              [Code ((if with_def_syntax then " = " else "")^m.m_name)]
+              [Code ((if with_def_syntax then " = " else "")@-@m.m_name)]
           | Some (Modtype mt) ->
-              [Code ((if with_def_syntax then " = " else "")^mt.mt_name)]
+              [Code ((if with_def_syntax then " = " else "")@-@mt.mt_name)]
           )
       | Module_apply (k1, k2) ->
           (if with_def_syntax then [Code " = "] else []) @
@@ -551,8 +551,8 @@ class virtual to_text =
           [Code " )"]
 
       | Module_struct _ ->
-          [Code ((if with_def_syntax then " : " else "")^
-                 Odoc_messages.struct_end^" ")]
+          [Code ((if with_def_syntax then " : " else "")@-@
+                 Odoc_messages.struct_end@-@" ")]
 
       | Module_functor (_, k)  ->
           (if with_def_syntax then [Code " : "] else []) @
@@ -577,11 +577,11 @@ class virtual to_text =
     method text_of_module_type_kind ?(with_def_syntax=true) tk =
       match tk with
       | Module_type_struct _ ->
-          [Code ((if with_def_syntax then " = " else "")^Odoc_messages.sig_end)]
+          [Code ((if with_def_syntax then " = " else "")@-@Odoc_messages.sig_end)]
 
       | Module_type_functor (p, k) ->
           let t1 =
-            [Code ("("^p.mp_name^" : ")] @
+            [Code ("("@-@p.mp_name@-@" : ")] @
             (self#text_of_module_type_kind p.mp_kind) @
             [Code ") -> "]
           in
@@ -594,7 +594,7 @@ class virtual to_text =
           t @ [Code code]
 
       | Module_type_alias mt_alias ->
-          [Code ((if with_def_syntax then " = " else "")^
+          [Code ((if with_def_syntax then " = " else "")@-@
                  (match mt_alias.mta_module with
                    None -> mt_alias.mta_name
                  | Some mt -> mt.mt_name))

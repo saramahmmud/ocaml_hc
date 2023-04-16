@@ -107,7 +107,7 @@ module Texter =
             n
             (match l_opt with
               None -> ""
-            | Some s -> ":"^s
+            | Some s -> ":"@-@s
             );
           p_text b t ;
           p b "}"
@@ -139,7 +139,7 @@ module Texter =
                    | RK_recfield -> "recfield"
                    | RK_const -> "const"
                  in
-                 s^":"
+                 s@-@":"
             )
             name;
           match text_opt with

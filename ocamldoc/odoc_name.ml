@@ -65,10 +65,10 @@ let strip_string s =
 let parens_if_infix name =
   match strip_string name with
   | "" -> ""
-  | s when s.[0] = '*' || s.[String.length s - 1] = '*' -> "( " ^ s ^ " )"
-  | s when List.mem s.[0] infix_chars -> "(" ^ s ^ ")"
+  | s when s.[0] = '*' || s.[String.length s - 1] = '*' -> "( " @-@ s @-@ " )"
+  | s when List.mem s.[0] infix_chars -> "(" @-@ s @-@ ")"
   | "or" | "mod" | "land" | "lor" | "lxor" | "lsl" | "lsr" | "asr" ->
-     "(" ^ name ^ ")"
+     "(" @-@ name @-@ ")"
   | name -> name
 ;;
 
@@ -107,7 +107,7 @@ let cut name =
 let simple name = snd (cut name)
 let father name = fst (cut name)
 
-let concat n1 n2 = n1^"."^n2
+let concat n1 n2 = n1@-@"."@-@n2
 
 let normalize_name name =
   let (p,s) = cut name in
@@ -199,7 +199,7 @@ let get_relative_opt n1 n2 =
 
 let alias_unprefix ln s =
   if ln = "" then s else
-  let p = ln ^ "__" in
+  let p = ln @-@ "__" in
   let n, k = String.(length p, length s) in
   if k > n &&
      String.sub s 0 n = p then

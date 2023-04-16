@@ -153,7 +153,7 @@ let string_of_class_params c =
           (
            match label with
              Asttypes.Nolabel -> ""
-           | s -> Printtyp.string_of_label s ^":"
+           | s -> Printtyp.string_of_label s @-@":"
           )
           (if parent then "(" else "")
           (Odoc_print.string_of_type_expr
@@ -200,7 +200,7 @@ let string_of_type t =
    let parameters_str =
      String.concat " " (
        List.map (fun (p, co, cn) ->
-         (string_of_variance t (co, cn)) ^ (Odoc_print.string_of_type_expr p)
+         (string_of_variance t (co, cn)) @-@ (Odoc_print.string_of_type_expr p)
        ) t.M.ty_parameters
      )
    in
@@ -218,8 +218,8 @@ let string_of_type t =
         )
      )
    | Some (M.Other typ) ->
-     "= " ^ (if priv then "private " else "" ) ^
-       (Odoc_print.string_of_type_expr typ) ^ " "
+     "= " @-@ (if priv then "private " else "" ) @-@
+       (Odoc_print.string_of_type_expr typ) @-@ " "
  in
  let type_kind_str =
    match t.M.ty_kind with
@@ -236,7 +236,7 @@ let string_of_type t =
            let string_of_parameters = function
              | M.Cstr_tuple l ->
                  String.concat " * " (
-                   List.map (fun t -> "("^Odoc_print.string_of_type_expr t^")") l
+                   List.map (fun t -> "("@-@Odoc_print.string_of_type_expr t@-@")") l
                  )
              | M.Cstr_record l ->
                  string_of_record l
@@ -244,8 +244,8 @@ let string_of_type t =
            P.sprintf "  | %s%s%s" cons.M.vc_name (
              match cons.M.vc_args, cons.M.vc_ret with
               | M.Cstr_tuple [], None -> ""
-              | li, None -> " of " ^ (string_of_parameters li)
-              | M.Cstr_tuple [], Some r -> " : " ^ Odoc_print.string_of_type_expr r
+              | li, None -> " of " @-@ (string_of_parameters li)
+              | M.Cstr_tuple [], Some r -> " : " @-@ Odoc_print.string_of_type_expr r
               | li, Some r ->
                  P.sprintf " : %s -> %s" (string_of_parameters li)
                    (Odoc_print.string_of_type_expr r)
@@ -271,58 +271,58 @@ let string_of_type_extension te =
   let module M = Odoc_extension in
   let module T = Odoc_type in
     "type "
-    ^(String.concat ""
+    @-@(String.concat ""
         (List.map
-           (fun p -> (Odoc_print.string_of_type_expr p)^" ")
+           (fun p -> (Odoc_print.string_of_type_expr p)@-@" ")
            te.M.te_type_parameters
         ))
-    ^te.M.te_type_name
-    ^" += "
-    ^(if (bool_of_private te.M.te_private) then "private " else "")
-    ^"\n"
-    ^(String.concat ""
+    @-@te.M.te_type_name
+    @-@" += "
+    @-@(if (bool_of_private te.M.te_private) then "private " else "")
+    @-@"\n"
+    @-@(String.concat ""
         (List.map
            (fun x ->
               "  | "
-              ^(Name.simple x.M.xt_name)
-              ^(match x.M.xt_args, x.M.xt_ret with
+              @-@(Name.simple x.M.xt_name)
+              @-@(match x.M.xt_args, x.M.xt_ret with
                   | T.Cstr_tuple [], None -> ""
                   | T.Cstr_tuple l, None ->
-                      " of " ^
+                      " of " @-@
                         (String.concat " * "
                            (List.map
-                              (fun t -> "("^Odoc_print.string_of_type_expr t^")") l))
-                  | T.Cstr_tuple [], Some r -> " : " ^ Odoc_print.string_of_type_expr r
+                              (fun t -> "("@-@Odoc_print.string_of_type_expr t@-@")") l))
+                  | T.Cstr_tuple [], Some r -> " : " @-@ Odoc_print.string_of_type_expr r
                   | T.Cstr_tuple l, Some r ->
-                      " : " ^
+                      " : " @-@
                         (String.concat " * "
                            (List.map
-                              (fun t -> "("^Odoc_print.string_of_type_expr t^")") l))
-                      ^ " -> " ^ Odoc_print.string_of_type_expr r
+                              (fun t -> "("@-@Odoc_print.string_of_type_expr t@-@")") l))
+                      @-@ " -> " @-@ Odoc_print.string_of_type_expr r
                   | T.Cstr_record l, None ->
-                      " of " ^  string_of_record l
+                      " of " @-@  string_of_record l
                   | T.Cstr_record l, Some r ->
-                      " : " ^ string_of_record l ^ " -> "
-                      ^ Odoc_print.string_of_type_expr r
+                      " : " @-@ string_of_record l @-@ " -> "
+                      @-@ Odoc_print.string_of_type_expr r
                )
-              ^(match x.M.xt_alias with
+              @-@(match x.M.xt_alias with
                     None -> ""
                   | Some xa ->
-                      " = "^
+                      " = "@-@
                         (match xa.M.xa_xt with
                              None -> xa.M.xa_name
                            | Some x2 -> x2.M.xt_name
                         )
                )
-              ^(match x.M.xt_text with
+              @-@(match x.M.xt_text with
                     None ->
                       ""
                   | Some t ->
-                      "(* "^(Odoc_misc.string_of_info t)^" *)"
-               )^"\n"
+                      "(* "@-@(Odoc_misc.string_of_info t)@-@" *)"
+               )@-@"\n"
            )
            te.M.te_constructors))
-    ^(match te.M.te_info with
+    @-@(match te.M.te_info with
           None -> ""
         | Some i -> Odoc_misc.string_of_info i
      )
@@ -330,66 +330,66 @@ let string_of_type_extension te =
 let string_of_exception e =
   let module T = Odoc_type in
   let module M = Odoc_exception in
-  "exception "^(Name.simple e.M.ex_name)^
+  "exception "@-@(Name.simple e.M.ex_name)@-@
   (match e.M.ex_args, e.M.ex_ret with
      T.Cstr_tuple [], None -> ""
    | T.Cstr_tuple l,None ->
-       " of "^
+       " of "@-@
        (String.concat " * "
-         (List.map (fun t -> "("^(Odoc_print.string_of_type_expr t)^")") l))
+         (List.map (fun t -> "("@-@(Odoc_print.string_of_type_expr t)@-@")") l))
    | T.Cstr_tuple [],Some r ->
-       " : "^
+       " : "@-@
        (Odoc_print.string_of_type_expr r)
    | T.Cstr_tuple l,Some r ->
-       " : "^
+       " : "@-@
        (String.concat " * "
-         (List.map (fun t -> "("^(Odoc_print.string_of_type_expr t)^")") l))^
-       " -> "^
+         (List.map (fun t -> "("@-@(Odoc_print.string_of_type_expr t)@-@")") l))@-@
+       " -> "@-@
        (Odoc_print.string_of_type_expr r)
    | T.Cstr_record l, None ->
-       " of " ^  string_of_record l
+       " of " @-@  string_of_record l
    | T.Cstr_record l, Some r ->
-       " : " ^ string_of_record l ^ " -> "
-       ^ Odoc_print.string_of_type_expr r
-  )^
+       " : " @-@ string_of_record l @-@ " -> "
+       @-@ Odoc_print.string_of_type_expr r
+  )@-@
   (match e.M.ex_alias with
     None -> ""
   | Some ea ->
-      " = "^
+      " = "@-@
       (match ea.M.ea_ex with
         None -> ea.M.ea_name
       | Some e2 -> e2.M.ex_name
       )
-  )^"\n"^
+  )@-@"\n"@-@
   (match e.M.ex_info with
     None -> ""
   | Some i -> Odoc_misc.string_of_info i)
 
 let string_of_value v =
   let module M = Odoc_value in
-  "val "^(Name.simple v.M.val_name)^" : "^
-  (Odoc_print.string_of_type_expr v.M.val_type)^"\n"^
+  "val "@-@(Name.simple v.M.val_name)@-@" : "@-@
+  (Odoc_print.string_of_type_expr v.M.val_type)@-@"\n"@-@
   (match v.M.val_info with
     None -> ""
   | Some i -> Odoc_misc.string_of_info i)
 
 let string_of_attribute a =
   let module M = Odoc_value in
-  "val "^
-  (if a.M.att_virtual then "virtual " else "")^
-  (if a.M.att_mutable then Odoc_messages.mutab^" " else "")^
-  (Name.simple a.M.att_value.M.val_name)^" : "^
-  (Odoc_print.string_of_type_expr a.M.att_value.M.val_type)^"\n"^
+  "val "@-@
+  (if a.M.att_virtual then "virtual " else "")@-@
+  (if a.M.att_mutable then Odoc_messages.mutab@-@" " else "")@-@
+  (Name.simple a.M.att_value.M.val_name)@-@" : "@-@
+  (Odoc_print.string_of_type_expr a.M.att_value.M.val_type)@-@"\n"@-@
   (match a.M.att_value.M.val_info with
     None -> ""
   | Some i -> Odoc_misc.string_of_info i)
 
 let string_of_method m =
   let module M = Odoc_value in
-  "method "^
-  (if m.M.met_private then Odoc_messages.privat^" " else "")^
-  (Name.simple m.M.met_value.M.val_name)^" : "^
-  (Odoc_print.string_of_type_expr m.M.met_value.M.val_type)^"\n"^
+  "method "@-@
+  (if m.M.met_private then Odoc_messages.privat@-@" " else "")@-@
+  (Name.simple m.M.met_value.M.val_name)@-@" : "@-@
+  (Odoc_print.string_of_type_expr m.M.met_value.M.val_type)@-@"\n"@-@
   (match m.M.met_value.M.val_info with
     None -> ""
   | Some i -> Odoc_misc.string_of_info i)

@@ -44,7 +44,7 @@ let complete_name p =
     | Tuple ([], _) -> (* anonymous parameter *)
         "??"
     | Tuple (pi_list, _) ->
-        "("^(String.concat "," (List.map iter pi_list))^")"
+        "("@-@(String.concat "," (List.map iter pi_list))@-@")"
   in
   iter p
 

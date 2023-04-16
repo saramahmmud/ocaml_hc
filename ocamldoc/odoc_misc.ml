@@ -83,9 +83,9 @@ let remove_duplicates (type a) compare (li : a list) =
 let rec string_of_longident li =
   match li with
   | Longident.Lident s -> s
-  | Longident.Ldot(li, s) -> string_of_longident li ^ "." ^ s
+  | Longident.Ldot(li, s) -> string_of_longident li @-@ "." @-@ s
   | Longident.Lapply(l1, l2) ->
-      string_of_longident l1 ^ "(" ^ string_of_longident l2 ^ ")"
+      string_of_longident l1 @-@ "(" @-@ string_of_longident l2 @-@ ")"
 
 let rec string_of_text t =
   let rec iter t_ele =
@@ -102,30 +102,30 @@ let rec string_of_text t =
       | Odoc_types.Emphasize t -> string_of_text t
       | Odoc_types.List l ->
           (String.concat ""
-             (List.map (fun t -> "\n- "^(string_of_text t)) l))^
+             (List.map (fun t -> "\n- "@-@(string_of_text t)) l))@-@
           "\n"
       | Odoc_types.Enum l ->
           let rec f n = function
               [] -> "\n"
             | t :: q ->
-                "\n"^(Int.to_string n)^". "^(string_of_text t)^
+                "\n"@-@(Int.to_string n)@-@". "@-@(string_of_text t)@-@
                 (f (n + 1) q)
           in
           f 1 l
       | Odoc_types.Newline -> "\n"
-      | Odoc_types.Block t -> "\t"^(string_of_text t)^"\n"
-      | Odoc_types.Title (_, _, t) -> "\n"^(string_of_text t)^"\n"
-      | Odoc_types.Latex s -> "{% "^s^" %}"
+      | Odoc_types.Block t -> "\t"@-@(string_of_text t)@-@"\n"
+      | Odoc_types.Title (_, _, t) -> "\n"@-@(string_of_text t)@-@"\n"
+      | Odoc_types.Latex s -> "{% "@-@s@-@" %}"
       | Odoc_types.Link (s, t) ->
-          "["^s^"]"^(string_of_text t)
+          "["@-@s@-@"]"@-@(string_of_text t)
       | Odoc_types.Ref (_name, _, Some text) ->
           Printf.sprintf "[%s]" (string_of_text text)
       | Odoc_types.Ref (name, _, None) ->
           iter (Odoc_types.Code name)
       | Odoc_types.Superscript t ->
-          "^{"^(string_of_text t)^"}"
+          "^{"@-@(string_of_text t)@-@"}"
       | Odoc_types.Subscript t ->
-          "^{"^(string_of_text t)^"}"
+          "^{"@-@(string_of_text t)@-@"}"
       | Odoc_types.Module_list l ->
           string_of_text
             (list_concat (Odoc_types.Raw ", ")
@@ -143,32 +143,32 @@ let string_of_author_list l =
     [] ->
       ""
   | _ ->
-      "* "^Odoc_messages.authors^":\n"^
-      (String.concat ", " l)^
+      "* "@-@Odoc_messages.authors@-@":\n"@-@
+      (String.concat ", " l)@-@
       "\n"
 
 let string_of_version_opt v_opt =
   match v_opt with
     None -> ""
-  | Some v -> Odoc_messages.version^": "^v^"\n"
+  | Some v -> Odoc_messages.version@-@": "@-@v@-@"\n"
 
 let string_of_since_opt s_opt =
   match s_opt with
     None -> ""
-  | Some s -> Odoc_messages.since^" "^s^"\n"
+  | Some s -> Odoc_messages.since@-@" "@-@s@-@"\n"
 
 let string_of_raised_exceptions l =
   match l with
     [] -> ""
-  | (s, t) :: [] -> Odoc_messages.raises^" "^s^" "^(string_of_text t)^"\n"
+  | (s, t) :: [] -> Odoc_messages.raises@-@" "@-@s@-@" "@-@(string_of_text t)@-@"\n"
   | _ ->
-      Odoc_messages.raises^"\n"^
+      Odoc_messages.raises@-@"\n"@-@
       (String.concat ""
          (List.map
-            (fun (ex, desc) -> "- "^ex^" "^(string_of_text desc)^"\n")
+            (fun (ex, desc) -> "- "@-@ex@-@" "@-@(string_of_text desc)@-@"\n")
             l
          )
-      )^"\n"
+      )@-@"\n"
 
 let string_of_see (see_ref, t) =
   let t_ref =
@@ -182,35 +182,35 @@ let string_of_see (see_ref, t) =
 let string_of_sees l =
   match l with
     [] -> ""
-  | see :: [] -> Odoc_messages.see_also^" "^(string_of_see see)^" \n"
+  | see :: [] -> Odoc_messages.see_also@-@" "@-@(string_of_see see)@-@" \n"
   | _ ->
-      Odoc_messages.see_also^"\n"^
+      Odoc_messages.see_also@-@"\n"@-@
       (String.concat ""
          (List.map
-            (fun see -> "- "^(string_of_see see)^"\n")
+            (fun see -> "- "@-@(string_of_see see)@-@"\n")
             l
          )
-      )^"\n"
+      )@-@"\n"
 
 let string_of_return_opt return_opt =
   match return_opt with
     None -> ""
-  | Some s -> Odoc_messages.returns^" "^(string_of_text s)^"\n"
+  | Some s -> Odoc_messages.returns@-@" "@-@(string_of_text s)@-@"\n"
 
 let string_of_info i =
   let module M = Odoc_types in
   (match i.M.i_deprecated with
     None -> ""
-  | Some d -> Odoc_messages.deprecated^". "^(string_of_text d)^"\n")^
+  | Some d -> Odoc_messages.deprecated@-@". "@-@(string_of_text d)@-@"\n")@-@
   (match i.M.i_desc with
     None -> ""
   | Some d when d = [Odoc_types.Raw ""] -> ""
-  | Some d -> (string_of_text d)^"\n"
-  )^
-  (string_of_author_list i.M.i_authors)^
-  (string_of_version_opt i.M.i_version)^
-  (string_of_since_opt i.M.i_since)^
-  (string_of_raised_exceptions i.M.i_raised_exceptions)^
+  | Some d -> (string_of_text d)@-@"\n"
+  )@-@
+  (string_of_author_list i.M.i_authors)@-@
+  (string_of_version_opt i.M.i_version)@-@
+  (string_of_since_opt i.M.i_since)@-@
+  (string_of_raised_exceptions i.M.i_raised_exceptions)@-@
   (string_of_return_opt i.M.i_return_value)
 
 let apply_opt f v_opt =
@@ -219,15 +219,15 @@ let apply_opt f v_opt =
   | Some v -> Some (f v)
 
 let string_of_date ?(absolute=false) ?(hour=true) d =
-  let add_0 s = if String.length s < 2 then "0"^s else s in
+  let add_0 s = if String.length s < 2 then "0"@-@s else s in
   let t = (if absolute then Unix.gmtime else Unix.localtime) d in
-  (Int.to_string (t.Unix.tm_year + 1900))^"-"^
-  (add_0 (Int.to_string (t.Unix.tm_mon + 1)))^"-"^
-  (add_0 (Int.to_string t.Unix.tm_mday))^
+  (Int.to_string (t.Unix.tm_year + 1900))@-@"-"@-@
+  (add_0 (Int.to_string (t.Unix.tm_mon + 1)))@-@"-"@-@
+  (add_0 (Int.to_string t.Unix.tm_mday))@-@
   (
    if hour then
-     " "^
-     (add_0 (Int.to_string t.Unix.tm_hour))^":"^
+     " "@-@
+     (add_0 (Int.to_string t.Unix.tm_hour))@-@":"@-@
      (add_0 (Int.to_string t.Unix.tm_min))
    else
      ""
@@ -345,7 +345,7 @@ let rec get_before_dot s =
            String.sub s (n+1) (len - n - 1))
       | _ ->
           let b, s2, s_after = get_before_dot (String.sub s (n + 1) (len - n - 1)) in
-          (b, (String.sub s 0 (n+1))^s2, s_after)
+          (b, (String.sub s 0 (n+1))@-@s2, s_after)
   with
     Not_found -> (false, s, "")
 
