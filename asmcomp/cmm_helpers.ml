@@ -787,7 +787,7 @@ let call_cached_method obj tag cache pos args dbg =
   let cache = array_indexing log2_size_addr cache pos dbg in
   Compilenv.need_send_fun arity;
   Cop(Capply typ_val,
-      Cconst_symbol("caml_send" ^ Int.to_string arity, dbg) ::
+      Cconst_symbol("caml_send" @-@ Int.to_string arity, dbg) ::
         obj :: tag :: cache :: args,
       dbg)
 
@@ -831,12 +831,12 @@ let make_checkbound dbg = function
 (* Record application and currying functions *)
 
 let apply_function_sym n =
-  Compilenv.need_apply_fun n; "caml_apply" ^ Int.to_string n
+  Compilenv.need_apply_fun n; "caml_apply" @-@ Int.to_string n
 let curry_function_sym n =
   Compilenv.need_curry_fun n;
   if n >= 0
-  then "caml_curry" ^ Int.to_string n
-  else "caml_tuplify" ^ Int.to_string (-n)
+  then "caml_curry" @-@ Int.to_string n
+  else "caml_tuplify" @-@ Int.to_string (-n)
 
 (* Big arrays *)
 
@@ -1359,7 +1359,7 @@ let default_prim name =
 let int64_native_prim name arity ~alloc =
   let u64 = Primitive.Unboxed_integer Primitive.Pint64 in
   let rec make_args = function 0 -> [] | n -> u64 :: make_args (n - 1) in
-  Primitive.make ~name ~native_name:(name ^ "_native")
+  Primitive.make ~name ~native_name:(name @-@ "_native")
     ~alloc
     ~native_repr_args:(make_args arity)
     ~native_repr_res:u64
@@ -1403,9 +1403,9 @@ let simplif_primitive_32bits :
   | Pbintcomp(Pint64, Lambda.Cge) -> Pccall (default_prim "caml_greaterequal")
   | Pcompare_bints Pint64 -> Pccall (default_prim "caml_int64_compare")
   | Pbigarrayref(_unsafe, n, Pbigarray_int64, _layout) ->
-      Pccall (default_prim ("caml_ba_get_" ^ Int.to_string n))
+      Pccall (default_prim ("caml_ba_get_" @-@ Int.to_string n))
   | Pbigarrayset(_unsafe, n, Pbigarray_int64, _layout) ->
-      Pccall (default_prim ("caml_ba_set_" ^ Int.to_string n))
+      Pccall (default_prim ("caml_ba_set_" @-@ Int.to_string n))
   | Pstring_load(Sixty_four, _) -> Pccall (default_prim "caml_string_get64")
   | Pbytes_load(Sixty_four, _) -> Pccall (default_prim "caml_bytes_get64")
   | Pbytes_set(Sixty_four, _) -> Pccall (default_prim "caml_bytes_set64")
@@ -1419,13 +1419,13 @@ let simplif_primitive p : Clambda_primitives.primitive =
   | Pduprecord _ ->
       Pccall (default_prim "caml_obj_dup")
   | Pbigarrayref(_unsafe, n, Pbigarray_unknown, _layout) ->
-      Pccall (default_prim ("caml_ba_get_" ^ string_of_int n))
+      Pccall (default_prim ("caml_ba_get_" @-@ string_of_int n))
   | Pbigarrayset(_unsafe, n, Pbigarray_unknown, _layout) ->
-      Pccall (default_prim ("caml_ba_set_" ^ string_of_int n))
+      Pccall (default_prim ("caml_ba_set_" @-@ string_of_int n))
   | Pbigarrayref(_unsafe, n, _kind, Pbigarray_unknown_layout) ->
-      Pccall (default_prim ("caml_ba_get_" ^ string_of_int n))
+      Pccall (default_prim ("caml_ba_get_" @-@ string_of_int n))
   | Pbigarrayset(_unsafe, n, _kind, Pbigarray_unknown_layout) ->
-      Pccall (default_prim ("caml_ba_set_" ^ string_of_int n))
+      Pccall (default_prim ("caml_ba_set_" @-@ string_of_int n))
   | p ->
       if size_int = 8 then p else simplif_primitive_32bits p
 
@@ -1867,7 +1867,7 @@ let send_function arity =
   in
   let body = Clet(VP.create clos', clos, body) in
   let cache = cache in
-  let fun_name = "caml_send" ^ Int.to_string arity in
+  let fun_name = "caml_send" @-@ Int.to_string arity in
   let fun_args =
     [obj, typ_val; tag, typ_int; cache, typ_addr]
     @ List.map (fun id -> (id, typ_val)) (List.tl args) in
@@ -1884,7 +1884,7 @@ let send_function arity =
 let apply_function arity =
   let (args, clos, body) = apply_function_body arity in
   let all_args = args @ [clos] in
-  let fun_name = "caml_apply" ^ Int.to_string arity in
+  let fun_name = "caml_apply" @-@ Int.to_string arity in
   let fun_dbg = placeholder_fun_dbg ~human_name:fun_name in
   Cfunction
    {fun_name;
@@ -1909,7 +1909,7 @@ let tuplify_function arity =
     else get_field_gen Asttypes.Mutable (Cvar arg) i (dbg ())
          :: access_components(i+1)
   in
-  let fun_name = "caml_tuplify" ^ Int.to_string arity in
+  let fun_name = "caml_tuplify" @-@ Int.to_string arity in
   let fun_dbg = placeholder_fun_dbg ~human_name:fun_name in
   Cfunction
    {fun_name;
@@ -1982,7 +1982,7 @@ let final_curry_function arity =
                  newclos (n-1))
     end in
   let fun_name =
-    "caml_curry" ^ Int.to_string arity ^ "_" ^ Int.to_string (arity-1)
+    "caml_curry" @-@ Int.to_string arity @-@ "_" @-@ Int.to_string (arity-1)
   in
   let fun_dbg = placeholder_fun_dbg ~human_name:fun_name in
   Cfunction
@@ -1999,8 +1999,8 @@ let rec intermediate_curry_functions arity num =
   if num = arity - 1 then
     [final_curry_function arity]
   else begin
-    let name1 = "caml_curry" ^ Int.to_string arity in
-    let name2 = if num = 0 then name1 else name1 ^ "_" ^ Int.to_string num in
+    let name1 = "caml_curry" @-@ Int.to_string arity in
+    let name2 = if num = 0 then name1 else name1 @-@ "_" @-@ Int.to_string num in
     let arg = V.create_local "arg" and clos = V.create_local "clos" in
     let fun_dbg = placeholder_fun_dbg ~human_name:name2 in
     Cfunction
@@ -2010,17 +2010,17 @@ let rec intermediate_curry_functions arity num =
          if arity - num > 2 && arity <= max_arity_optimized then
            Cop(Calloc,
                [alloc_closure_header 5 (dbg ());
-                Cconst_symbol(name1 ^ "_" ^ Int.to_string (num+1), dbg ());
+                Cconst_symbol(name1 @-@ "_" @-@ Int.to_string (num+1), dbg ());
                 alloc_closure_info ~arity:(arity - num - 1)
                                    ~startenv:3 (dbg ());
-                Cconst_symbol(name1 ^ "_" ^ Int.to_string (num+1) ^ "_app",
+                Cconst_symbol(name1 @-@ "_" @-@ Int.to_string (num+1) @-@ "_app",
                   dbg ());
                 Cvar arg; Cvar clos],
                dbg ())
          else
            Cop(Calloc,
                 [alloc_closure_header 4 (dbg ());
-                 Cconst_symbol(name1 ^ "_" ^ Int.to_string (num+1), dbg ());
+                 Cconst_symbol(name1 @-@ "_" @-@ Int.to_string (num+1), dbg ());
                  alloc_closure_info ~arity:1 ~startenv:2 (dbg ());
                  Cvar arg; Cvar clos],
                 dbg ());
@@ -2056,7 +2056,7 @@ let rec intermediate_curry_functions arity num =
             List.map (fun (arg, ty) -> VP.create arg, ty)
               (direct_args @ [clos, typ_val])
           in
-          let fun_name = name1 ^ "_" ^ Int.to_string (num+1) ^ "_app" in
+          let fun_name = name1 @-@ "_" @-@ Int.to_string (num+1) @-@ "_app" in
           let fun_dbg = placeholder_fun_dbg ~human_name:fun_name in
           let cf =
             Cfunction
@@ -2665,7 +2665,7 @@ let predef_exception i name =
   let data_items =
     emit_string_constant (name_sym, Local) name []
   in
-  let exn_sym = "caml_exn_" ^ name in
+  let exn_sym = "caml_exn_" @-@ name in
   let tag = Obj.object_tag in
   let size = 2 in
   let fields =
@@ -2718,7 +2718,7 @@ let fundecls_size fundecls =
 let emit_constant_closure ((_, global_symb) as symb) fundecls clos_vars cont =
   let closure_symbol (f : Clambda.ufunction) =
     if Config.flambda then
-      cdefine_symbol (f.label ^ "_closure", global_symb)
+      cdefine_symbol (f.label @-@ "_closure", global_symb)
     else
       []
   in

@@ -221,7 +221,7 @@ let fundecl ppf f =
     if Debuginfo.is_none f.fun_dbg || not !Clflags.locations then
       ""
     else
-      " " ^ Debuginfo.to_string f.fun_dbg in
+      " " @-@ Debuginfo.to_string f.fun_dbg in
   fprintf ppf "@[<v 2>%s(%a)%s@,%a@]"
     f.fun_name regs f.fun_args dbg instr f.fun_body
 
