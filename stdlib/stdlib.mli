@@ -704,6 +704,14 @@ val ( ^ ) : string -> string -> string
     than {!Sys.max_string_length} bytes.
 *)
 
+val ( @-@ ) : string -> string -> string
+(** String concatenation.
+    Right-associative operator, see {!Ocaml_operators} for more information.
+
+    @raise Invalid_argument if the result is longer then
+    than {!Sys.max_string_length} bytes.
+*)
+
 (** {1 Character operations}
 
    More character operations are provided in module {!Char}.

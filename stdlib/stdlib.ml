@@ -219,6 +219,13 @@ let ( ^ ) s1 s2 =
   string_blit s2 0 s l1 l2;
   bytes_unsafe_to_string s
 
+let ( @-@ ) s1 s2 =
+  let l1 = string_length s1 and l2 = string_length s2 in
+  let s = bytes_create (l1 + l2) in
+  string_blit s1 0 s 0 l1;
+  string_blit s2 0 s l1 l2;
+  bytes_to_string_tag s
+
 (* Character operations -- more in module Char *)
 
 external int_of_char : char -> int = "%identity"
