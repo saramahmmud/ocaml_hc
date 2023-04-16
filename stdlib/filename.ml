@@ -118,11 +118,11 @@ module Unix : SYSDEPS = struct
   let quote = generic_quote "'\\''"
   let quote_command cmd ?stdin ?stdout ?stderr args =
     String.concat " " (List.map quote (cmd :: args))
-    ^ (match stdin  with None -> "" | Some f -> " <" ^ quote f)
-    ^ (match stdout with None -> "" | Some f -> " >" ^ quote f)
-    ^ (match stderr with None -> "" | Some f -> if stderr = stdout
+    @-@ (match stdin  with None -> "" | Some f -> " <" @-@ quote f)
+    @-@ (match stdout with None -> "" | Some f -> " >" @-@ quote f)
+    @-@ (match stderr with None -> "" | Some f -> if stderr = stdout
                                                 then " 2>&1"
-                                                else " 2>" ^ quote f)
+                                                else " 2>" @-@ quote f)
   let basename = generic_basename is_dir_sep current_dir_name
   let dirname = generic_dirname is_dir_sep current_dir_name
 end
@@ -220,9 +220,9 @@ Quoting commands for execution by cmd.exe is difficult.
     Buffer.contents b
   let quote_cmd_filename f =
     if String.contains f '\"' || String.contains f '%' then
-      failwith ("Filename.quote_command: bad file name " ^ f)
+      failwith ("Filename.quote_command: bad file name " @-@ f)
     else if String.contains f ' ' then
-      "\"" ^ f ^ "\""
+      "\"" @-@ f @-@ "\""
     else
       f
   (* Redirections in cmd.exe: see https://ss64.com/nt/syntax-redirection.html
@@ -234,12 +234,12 @@ Quoting commands for execution by cmd.exe is difficult.
       quote_cmd_filename cmd;
       " ";
       quote_cmd (String.concat " " (List.map quote args));
-      (match stdin  with None -> "" | Some f -> " <" ^ quote_cmd_filename f);
-      (match stdout with None -> "" | Some f -> " >" ^ quote_cmd_filename f);
+      (match stdin  with None -> "" | Some f -> " <" @-@ quote_cmd_filename f);
+      (match stdout with None -> "" | Some f -> " >" @-@ quote_cmd_filename f);
       (match stderr with None -> "" | Some f ->
                                         if stderr = stdout
                                         then " 2>&1"
-                                        else " 2>" ^ quote_cmd_filename f);
+                                        else " 2>" @-@ quote_cmd_filename f);
       "\""
     ]
   let has_drive s =
@@ -255,7 +255,7 @@ Quoting commands for execution by cmd.exe is difficult.
   let dirname s =
     let (drive, path) = drive_and_path s in
     let dir = generic_dirname is_dir_sep current_dir_name path in
-    drive ^ dir
+    drive @-@ dir
   let basename s =
     let (_drive, path) = drive_and_path s in
     generic_basename is_dir_sep current_dir_name path
@@ -289,8 +289,8 @@ include Sysdeps
 let concat dirname filename =
   let l = String.length dirname in
   if l = 0 || is_dir_sep dirname (l-1)
-  then dirname ^ filename
-  else dirname ^ dir_sep ^ filename
+  then dirname @-@ filename
+  else dirname @-@ dir_sep @-@ filename
 
 let chop_suffix name suff =
   if check_suffix name suff

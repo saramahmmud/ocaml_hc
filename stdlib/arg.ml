@@ -76,7 +76,7 @@ let split s =
 let make_symlist prefix sep suffix l =
   match l with
   | [] -> "<none>"
-  | h::t -> (List.fold_left (fun x y -> x ^ sep ^ y) (prefix ^ h) t) ^ suffix
+  | h::t -> (List.fold_left (fun x y -> x @-@ sep @-@ y) (prefix @-@ h) t) @-@ suffix
 
 
 let print_spec buf (key, spec, doc) =
@@ -212,7 +212,7 @@ let parse_and_expand_argv_dynamic_aux allow_expand current argv speclist anonfun
               consume_arg ();
             end else begin
               raise (Stop (Wrong (s, arg, "one of: "
-                                          ^ (make_symlist "" " " "" symb))))
+                                          @-@ (make_symlist "" " " "" symb))))
             end
         | Set_string r ->
             r := get_arg ();
@@ -356,7 +356,7 @@ let add_padding len ksd =
   | (kwd, (Symbol _ as spec), msg) ->
       let cutcol = second_word msg in
       let spaces = String.make ((Int.max 0 (len - cutcol)) + 3) ' ' in
-      (kwd, spec, "\n" ^ spaces ^ replace_leading_tab msg)
+      (kwd, spec, "\n" @-@ spaces @-@ replace_leading_tab msg)
   | (kwd, spec, msg) ->
       let cutcol = second_word msg in
       let kwd_len = String.length kwd in
@@ -367,7 +367,7 @@ let add_padding len ksd =
         let spaces = String.make diff ' ' in
         let prefix = String.sub (replace_leading_tab msg) 0 cutcol in
         let suffix = String.sub msg cutcol (String.length msg - cutcol) in
-        (kwd, spec, prefix ^ spaces ^ suffix)
+        (kwd, spec, prefix @-@ spaces @-@ suffix)
 
 
 let align ?(limit=max_int) speclist =
