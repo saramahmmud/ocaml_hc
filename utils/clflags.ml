@@ -151,7 +151,7 @@ let insn_sched = ref insn_sched_default (* -[no-]insn-sched *)
 
 let std_include_flag prefix =
   if !no_std_include then ""
-  else (prefix ^ (Filename.quote Config.standard_library))
+  else (prefix @-@ (Filename.quote Config.standard_library))
 ;;
 
 let std_include_dir () =
@@ -429,7 +429,7 @@ module Compiler_ir = struct
     match t with
       | Linear -> "linear"
     in
-    ".cmir-" ^ ext
+    ".cmir-" @-@ ext
 
   (** [extract_extension_with_pass filename] returns the IR whose extension
       is a prefix of the extension of [filename], and the suffix,
@@ -514,7 +514,7 @@ module Compiler_pass = struct
 
   let to_output_filename t ~prefix =
     match t with
-    | Scheduling -> prefix ^ Compiler_ir.(extension Linear)
+    | Scheduling -> prefix @-@ Compiler_ir.(extension Linear)
     | _ -> Misc.fatal_error "Not supported"
 
   let of_input_filename name =

@@ -797,18 +797,18 @@ let message = function
       "this pattern-matching is fragile."
   | Fragile_match s ->
       "this pattern-matching is fragile.\n\
-       It will remain exhaustive when constructors are added to type " ^ s ^ "."
+       It will remain exhaustive when constructors are added to type " @-@ s @-@ "."
   | Ignored_partial_application ->
       "this function application is partial,\n\
        maybe some arguments are missing."
   | Labels_omitted [] -> assert false
   | Labels_omitted [l] ->
-     "label " ^ l ^ " was omitted in the application of this function."
+     "label " @-@ l @-@ " was omitted in the application of this function."
   | Labels_omitted ls ->
-     "labels " ^ String.concat ", " ls ^
+     "labels " @-@ String.concat ", " ls @-@
        " were omitted in the application of this function."
   | Method_override [lab] ->
-      "the method " ^ lab ^ " is overridden."
+      "the method " @-@ lab @-@ " is overridden."
   | Method_override (cname :: slist) ->
       String.concat " "
         ("the following methods are overridden by the class"
@@ -817,16 +817,16 @@ let message = function
   | Partial_match "" -> "this pattern-matching is not exhaustive."
   | Partial_match s ->
       "this pattern-matching is not exhaustive.\n\
-       Here is an example of a case that is not matched:\n" ^ s
+       Here is an example of a case that is not matched:\n" @-@ s
   | Missing_record_field_pattern s ->
-      "the following labels are not bound in this record pattern:\n" ^ s ^
+      "the following labels are not bound in this record pattern:\n" @-@ s @-@
       "\nEither bind these labels explicitly or add '; _' to the pattern."
   | Non_unit_statement ->
       "this expression should have type unit."
   | Redundant_case -> "this match case is unused."
   | Redundant_subpat -> "this sub-pattern is unused."
   | Instance_variable_override [lab] ->
-      "the instance variable " ^ lab ^ " is overridden."
+      "the instance variable " @-@ lab @-@ " is overridden."
   | Instance_variable_override (cname :: slist) ->
       String.concat " "
         ("the following instance variables are overridden by the class"
@@ -835,11 +835,11 @@ let message = function
   | Illegal_backslash -> "illegal backslash escape in string."
   | Implicit_public_methods l ->
       "the following private methods were made public implicitly:\n "
-      ^ String.concat " " l ^ "."
+      @-@ String.concat " " l @-@ "."
   | Unerasable_optional_argument -> "this optional argument cannot be erased."
-  | Undeclared_virtual_method m -> "the virtual method "^m^" is not declared."
-  | Not_principal s -> s^" is not principal."
-  | Non_principal_labels s -> s^" without principality."
+  | Undeclared_virtual_method m -> "the virtual method "@-@m@-@" is not declared."
+  | Not_principal s -> s@-@" is not principal."
+  | Non_principal_labels s -> s@-@" without principality."
   | Ignored_extra_argument -> "this argument will not be used by the function."
   | Nonreturning_statement ->
       "this statement never returns (or has an unsound type.)"
@@ -848,11 +848,11 @@ let message = function
       "all the fields are explicitly listed in this record:\n\
        the 'with' clause is useless."
   | Bad_module_name (modname) ->
-      "bad source file name: \"" ^ modname ^ "\" is not a valid module name."
+      "bad source file name: \"" @-@ modname @-@ "\" is not a valid module name."
   | All_clauses_guarded ->
       "this pattern-matching is not exhaustive.\n\
        All clauses in this pattern-matching are guarded."
-  | Unused_var v | Unused_var_strict v -> "unused variable " ^ v ^ "."
+  | Unused_var v | Unused_var_strict v -> "unused variable " @-@ v @-@ "."
   | Wildcard_arg_to_constant_constr ->
      "wildcard pattern given as argument to a constant constructor"
   | Eol_in_string ->
@@ -864,63 +864,63 @@ let message = function
       Printf.sprintf
         "files %s and %s both define a module named %s"
         file1 file2 modname
-  | Unused_value_declaration v -> "unused value " ^ v ^ "."
-  | Unused_open s -> "unused open " ^ s ^ "."
-  | Unused_open_bang s -> "unused open! " ^ s ^ "."
-  | Unused_type_declaration s -> "unused type " ^ s ^ "."
-  | Unused_for_index s -> "unused for-loop index " ^ s ^ "."
-  | Unused_ancestor s -> "unused ancestor variable " ^ s ^ "."
-  | Unused_constructor (s, Unused) -> "unused constructor " ^ s ^ "."
+  | Unused_value_declaration v -> "unused value " @-@ v @-@ "."
+  | Unused_open s -> "unused open " @-@ s @-@ "."
+  | Unused_open_bang s -> "unused open! " @-@ s @-@ "."
+  | Unused_type_declaration s -> "unused type " @-@ s @-@ "."
+  | Unused_for_index s -> "unused for-loop index " @-@ s @-@ "."
+  | Unused_ancestor s -> "unused ancestor variable " @-@ s @-@ "."
+  | Unused_constructor (s, Unused) -> "unused constructor " @-@ s @-@ "."
   | Unused_constructor (s, Not_constructed) ->
-      "constructor " ^ s ^
+      "constructor " @-@ s @-@
       " is never used to build values.\n\
         (However, this constructor appears in patterns.)"
   | Unused_constructor (s, Only_exported_private) ->
-      "constructor " ^ s ^
+      "constructor " @-@ s @-@
       " is never used to build values.\n\
         Its type is exported as a private type."
   | Unused_extension (s, is_exception, complaint) ->
      let kind =
        if is_exception then "exception" else "extension constructor" in
-     let name = kind ^ " " ^ s in
+     let name = kind @-@ " " @-@ s in
      begin match complaint with
-       | Unused -> "unused " ^ name
+       | Unused -> "unused " @-@ name
        | Not_constructed ->
-          name ^
+          name @-@
           " is never used to build values.\n\
            (However, this constructor appears in patterns.)"
        | Only_exported_private ->
-          name ^
+          name @-@
           " is never used to build values.\n\
             It is exported or rebound as a private extension."
      end
   | Unused_rec_flag ->
       "unused rec flag."
   | Name_out_of_scope (ty, [nm], false) ->
-      nm ^ " was selected from type " ^ ty ^
+      nm @-@ " was selected from type " @-@ ty @-@
       ".\nIt is not visible in the current scope, and will not \n\
        be selected if the type becomes unknown."
   | Name_out_of_scope (_, _, false) -> assert false
   | Name_out_of_scope (ty, slist, true) ->
-      "this record of type "^ ty ^" contains fields that are \n\
+      "this record of type "@-@ ty @-@" contains fields that are \n\
        not visible in the current scope: "
-      ^ String.concat " " slist ^ ".\n\
+      @-@ String.concat " " slist @-@ ".\n\
        They will not be selected if the type becomes unknown."
   | Ambiguous_name ([s], tl, false, expansion) ->
-      s ^ " belongs to several types: " ^ String.concat " " tl ^
+      s @-@ " belongs to several types: " @-@ String.concat " " tl @-@
       "\nThe first one was selected. Please disambiguate if this is wrong."
-      ^ expansion
+      @-@ expansion
   | Ambiguous_name (_, _, false, _ ) -> assert false
   | Ambiguous_name (_slist, tl, true, expansion) ->
-      "these field labels belong to several types: " ^
-      String.concat " " tl ^
+      "these field labels belong to several types: " @-@
+      String.concat " " tl @-@
       "\nThe first one was selected. Please disambiguate if this is wrong."
-      ^ expansion
+      @-@ expansion
   | Disambiguated_name s ->
-      "this use of " ^ s ^ " relies on type-directed disambiguation,\n\
+      "this use of " @-@ s @-@ " relies on type-directed disambiguation,\n\
        it will not compile with OCaml 4.00 or earlier."
   | Nonoptional_label s ->
-      "the label " ^ s ^ " is not optional."
+      "the label " @-@ s @-@ " is not optional."
   | Open_shadow_identifier (kind, s) ->
       Printf.sprintf
         "this open statement shadows the %s identifier %s (which is later used)"
@@ -938,7 +938,7 @@ let message = function
         (if List.length sl = 1 then "" else "s")
         (String.concat ", " sl)
   | No_cmi_file(name, None) ->
-      "no cmi file was found in path for module " ^ name
+      "no cmi file was found in path for module " @-@ name
   | No_cmi_file(name, Some msg) ->
       Printf.sprintf
         "no valid cmi file was found in path for module %s. %s"
@@ -973,10 +973,10 @@ let message = function
         in
         match vars with
         | [] -> assert false
-        | [x] -> "variable " ^ x ^ " appears " ^ in_different_places
+        | [x] -> "variable " @-@ x @-@ " appears " @-@ in_different_places
         | _::_ ->
             let vars = String.concat ", " vars in
-            "variables " ^ vars ^ " appear " ^ in_different_places
+            "variables " @-@ vars @-@ " appear " @-@ in_different_places
       in
       Printf.sprintf
         "Ambiguous or-pattern variables under guard;\n\
@@ -992,7 +992,7 @@ let message = function
       "A potential assignment to a non-mutable value was detected \n\
         in this source file.  Such assignments may generate incorrect code \n\
         when using Flambda."
-  | Unused_module s -> "unused module " ^ s ^ "."
+  | Unused_module s -> "unused module " @-@ s @-@ "."
   | Unboxable_type_in_prim_decl t ->
       Printf.sprintf
         "This primitive declaration uses type %s, whose representation\n\
@@ -1009,8 +1009,8 @@ let message = function
       "The printed interface differs from the inferred interface.\n\
        The inferred interface contained items which could not be printed\n\
        properly due to name collisions between identifiers."
-     ^ s
-     ^ "\nBeware that this warning is purely informational and will not catch\n\
+     @-@ s
+     @-@ "\nBeware that this warning is purely informational and will not catch\n\
         all instances of erroneous printed interface."
   | Unsafe_array_syntax_without_parsing ->
      "option -unsafe used with a preprocessor returning a syntax tree"
@@ -1019,18 +1019,18 @@ let message = function
         "This type declaration is defining a new '()' constructor\n\
          which shadows the existing one.\n\
          Hint: Did you mean 'type %s = unit'?" name
-  | Unused_functor_parameter s -> "unused functor parameter " ^ s ^ "."
+  | Unused_functor_parameter s -> "unused functor parameter " @-@ s @-@ "."
   | Match_on_mutable_state_prevent_uncurry ->
     "This pattern depends on mutable state.\n\
      It prevents the remaining arguments from being uncurried, which will \
      cause additional closure allocations."
-  | Unused_field (s, Unused) -> "unused record field " ^ s ^ "."
+  | Unused_field (s, Unused) -> "unused record field " @-@ s @-@ "."
   | Unused_field (s, Not_read) ->
-      "record field " ^ s ^
+      "record field " @-@ s @-@
       " is never read.\n\
         (However, this field is used to build or mutate values.)"
   | Unused_field (s, Not_mutated) ->
-      "mutable record field " ^ s ^
+      "mutable record field " @-@ s @-@
       " is never mutated."
   | Missing_mli ->
     "Cannot find interface file."
@@ -1123,7 +1123,7 @@ let help_warnings () =
     (fun {number; description; names} ->
        let name =
          match names with
-         | s :: _ -> " [" ^ s ^ "]"
+         | s :: _ -> " [" @-@ s @-@ "]"
          | [] -> ""
        in
        Printf.printf "%3i%s %s\n" number name description)

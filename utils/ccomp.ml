@@ -43,7 +43,7 @@ let build_diversion lst =
   List.iter (fun f -> Printf.fprintf oc "%s\n" f) lst;
   close_out oc;
   at_exit (fun () -> Misc.remove_file responsefile);
-  "@" ^ responsefile
+  "@" @-@ responsefile
 
 let quote_files lst =
   let lst = List.filter (fun f -> f <> "") lst in
@@ -56,7 +56,7 @@ let quote_files lst =
 
 let quote_prefixed pr lst =
   let lst = List.filter (fun f -> f <> "") lst in
-  let lst = List.map (fun f -> pr ^ f) lst in
+  let lst = List.map (fun f -> pr @-@ f) lst in
   quote_files lst
 
 let quote_optfile = function
@@ -147,7 +147,7 @@ let expand_libname cclibs =
   cclibs |> List.map (fun cclib ->
     if String.starts_with ~prefix:"-l" cclib then
       let libname =
-        "lib" ^ String.sub cclib 2 (String.length cclib - 2) ^ Config.ext_lib in
+        "lib" @-@ String.sub cclib 2 (String.length cclib - 2) @-@ Config.ext_lib in
       try
         Load_path.find libname
       with Not_found ->

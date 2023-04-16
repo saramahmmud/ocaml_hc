@@ -388,7 +388,7 @@ module Int_literal_converter = struct
   let cvt_int_aux str neg of_string =
     if String.length str = 0 || str.[0]= '-'
     then of_string str
-    else neg (of_string ("-" ^ str))
+    else neg (of_string ("-" @-@ str))
   let int s = cvt_int_aux s (~-) int_of_string
   let int32 s = cvt_int_aux s Int32.neg Int32.of_string
   let int64 s = cvt_int_aux s Int64.neg Int64.of_string
@@ -636,8 +636,8 @@ module Color = struct
     | White -> "7"
 
   let code_of_style = function
-    | FG c -> "3" ^ ansi_of_color c
-    | BG c -> "4" ^ ansi_of_color c
+    | FG c -> "3" @-@ ansi_of_color c
+    | BG c -> "4" @-@ ansi_of_color c
     | Bold -> "1"
     | Reset -> "0"
 
@@ -647,7 +647,7 @@ module Color = struct
       | [s] -> code_of_style s
       | _ -> String.concat ";" (List.map code_of_style l)
     in
-    "\x1b[" ^ s ^ "m"
+    "\x1b[" @-@ s @-@ "m"
 
 
   type Format.stag += Style of style list
@@ -1063,14 +1063,14 @@ module Magic_number = struct
               and the rest of the current raw number for our configuration. *)
            let raw_kind = raw_kind kind in
            let len = String.length raw_kind in
-           raw_kind ^ String.sub reference len (String.length reference - len)
+           raw_kind @-@ String.sub reference len (String.length reference - len)
       | Cmxa config ->
          let reference = cmxa_magic_number in
          if config = native_obj_config then reference
          else
            let raw_kind = raw_kind kind in
            let len = String.length raw_kind in
-           raw_kind ^ String.sub reference len (String.length reference - len)
+           raw_kind @-@ String.sub reference len (String.length reference - len)
       | Cmxs -> cmxs_magic_number
       | Cmt -> cmt_magic_number
       | Ast_intf -> ast_intf_magic_number

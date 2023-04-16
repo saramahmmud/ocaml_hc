@@ -109,7 +109,7 @@ let time_display v : display =
      the first element of each row, we can't pad them with spaces. *)
   let to_string_without_unit v ~width = Printf.sprintf "%0*.03f" width v in
   let to_string ~max:_ ~width =
-    to_string_without_unit v ~width:(width - 1) ^ "s" in
+    to_string_without_unit v ~width:(width - 1) @-@ "s" in
   let worth_displaying ~max:_ =
     float_of_string (to_string_without_unit v ~width:0) <> 0. in
   { to_string; worth_displaying }
@@ -151,7 +151,7 @@ let memory_word_display =
     let to_string ~max ~width =
       let scale, scale_str = choose_memory_scale max in
       let width = width - String.length scale_str in
-      to_string_without_unit v ~width scale ^ scale_str
+      to_string_without_unit v ~width scale @-@ scale_str
     in
     let worth_displaying ~max =
       let scale, _ = choose_memory_scale max in
@@ -296,7 +296,7 @@ let display_rows ppf rows =
     if List.exists (fun b -> b) worth_displaying then
       Format.fprintf ppf "%s%s %s@\n"
         indentation (String.concat " " cell_strings) name;
-    List.iter (loop ~indentation:("  " ^ indentation)) rows;
+    List.iter (loop ~indentation:("  " @-@ indentation)) rows;
   in
   List.iter (loop ~indentation:"") rows
 
