@@ -256,7 +256,7 @@ let link_archive output_fun currpos_fun file_name units_required =
   try
     List.iter
       (fun cu ->
-         let name = file_name ^ "(" ^ cu.cu_name ^ ")" in
+         let name = file_name @-@ "(" @-@ cu.cu_name @-@ ")" in
          try
            link_compunit output_fun currpos_fun inchan name cu
          with Symtable.Error msg ->
@@ -327,7 +327,7 @@ let link_bytecode ?final_name tolink exec_name standalone =
          (* Copy the header *)
          let header =
            if String.length !Clflags.use_runtime > 0
-           then "camlheader_ur" else "camlheader" ^ !Clflags.runtime_variant
+           then "camlheader_ur" else "camlheader" @-@ !Clflags.runtime_variant
          in
          try
            let inchan = open_in_bin (Load_path.find header) in
@@ -346,7 +346,7 @@ let link_bytecode ?final_name tolink exec_name standalone =
            (* shebang mustn't exceed 128 including the #! and \0 *)
            if String.length runtime > 125 then
              "/bin/sh\n\
-              exec \"" ^ runtime ^ "\" \"$0\" \"$@\""
+              exec \"" @-@ runtime @-@ "\" \"$0\" \"$@\""
            else
              runtime
          in
@@ -568,7 +568,7 @@ let link_bytecode_as_c tolink outfile with_main =
 \n#endif\n";
     );
   if not with_main && !Clflags.debug then
-    output_cds_file ((Filename.chop_extension outfile) ^ ".cds")
+    output_cds_file ((Filename.chop_extension outfile) @-@ ".cds")
 
 (* Build a custom runtime *)
 
@@ -576,7 +576,7 @@ let build_custom_runtime prim_name exec_name =
   let runtime_lib =
     if not !Clflags.with_runtime
     then ""
-    else "-lcamlrun" ^ !Clflags.runtime_variant in
+    else "-lcamlrun" @-@ !Clflags.runtime_variant in
   let debug_prefix_map =
     if Config.c_has_debug_prefix_map && not !Clflags.keep_camlprimc_file then
       let flag =
@@ -589,7 +589,7 @@ let build_custom_runtime prim_name exec_name =
     else
       [] in
   let exitcode =
-    (Clflags.std_include_flag "-I" ^ " " ^ Config.bytecomp_c_libraries)
+    (Clflags.std_include_flag "-I" @-@ " " @-@ Config.bytecomp_c_libraries)
   in
   Ccomp.call_linker Ccomp.Exe exec_name
     (debug_prefix_map @ [prim_name] @ List.rev !Clflags.ccobjs @ [runtime_lib])
@@ -608,7 +608,7 @@ let append_bytecode bytecode_name exec_name =
 let fix_exec_name name =
   match Sys.os_type with
     "Win32" | "Cygwin" ->
-      if String.contains name '.' then name else name ^ ".exe"
+      if String.contains name '.' then name else name @-@ ".exe"
   | _ -> name
 
 (* Main entry point (build a custom runtime if needed) *)
@@ -648,7 +648,7 @@ let link objfiles output_name =
     let bytecode_name = Filename.temp_file "camlcode" "" in
     let prim_name =
       if !Clflags.keep_camlprimc_file then
-        output_name ^ ".camlprim.c"
+        output_name @-@ ".camlprim.c"
       else
         Filename.temp_file "camlprim" ".c" in
     Misc.try_finally
@@ -692,15 +692,15 @@ let link objfiles output_name =
          && not (Filename.check_suffix output_name ".c")
       then Filename.temp_file "camlobj" ".c", Some "camlobj.c"
       else begin
-        let f = basename ^ ".c" in
+        let f = basename @-@ ".c" in
         if Sys.file_exists f then raise(Error(File_exists f));
         f, None
       end
     in
     let obj_file =
       if !Clflags.output_complete_object
-      then (Filename.chop_extension c_file) ^ Config.ext_obj
-      else basename ^ Config.ext_obj
+      then (Filename.chop_extension c_file) @-@ Config.ext_obj
+      else basename @-@ Config.ext_obj
     in
     let temps = ref [] in
     Misc.try_finally
@@ -727,7 +727,7 @@ let link objfiles output_name =
                  let runtime_lib =
                    if not !Clflags.with_runtime
                    then ""
-                   else "-lcamlrun" ^ !Clflags.runtime_variant in
+                   else "-lcamlrun" @-@ !Clflags.runtime_variant in
                  Ccomp.call_linker mode output_name
                    ([obj_file] @ List.rev !Clflags.ccobjs @ [runtime_lib])
                    c_libs = 0
