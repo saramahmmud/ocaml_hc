@@ -61,9 +61,9 @@ let main () =
   | Some name -> name
   | None ->
       if Filename.check_suffix source_name ".mll" then
-        Filename.chop_suffix source_name ".mll" ^ ".ml"
+        Filename.chop_suffix source_name ".mll" @-@ ".ml"
       else
-        source_name ^ ".ml" in
+        source_name @-@ ".ml" in
 
   let ic = open_in_bin source_name in
   let oc = open_out dest_name in

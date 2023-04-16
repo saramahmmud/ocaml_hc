@@ -94,11 +94,11 @@ let with_ppf_dump ~file_prefix f =
   let ppf_dump, finally =
     match !Clflags.dump_dir, !Clflags.dump_into_file with
     | None, false -> Format.err_formatter, ignore
-    | None, true -> with_ch (open_out (file_prefix ^ ".dump"))
+    | None, true -> with_ch (open_out (file_prefix @-@ ".dump"))
     | Some d, _ ->
         let () = make_directory Filename.(dirname @@ concat d @@ file_prefix) in
         let _, ch =
-          Filename.open_temp_file ~temp_dir:d (file_prefix ^ ".")  ".dump"
+          Filename.open_temp_file ~temp_dir:d (file_prefix @-@ ".")  ".dump"
         in
         with_ch ch
 

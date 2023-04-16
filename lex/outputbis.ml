@@ -139,11 +139,11 @@ let output_clause ctx pref pats mems r =
   pr ctx " *)\n%s" pref;
   output_pats ctx pats;
   pr ctx " ->\n";
-  output_action ctx ("  "^pref) mems r
+  output_action ctx ("  "@-@pref) mems r
 
 let output_default_clause ctx pref mems r =
   pr ctx "%s| _ ->\n" pref;
-  output_action ctx ("  "^pref) mems r
+  output_action ctx ("  "@-@pref) mems r
 
 let output_moves ctx pref moves =
   let t = Hashtbl.create 17 in
@@ -241,7 +241,7 @@ let output_trans_body pref ctx = function
                 %sin\n\
                 %sbegin match next_char with\n"
           pref pref pref pref pref pref pref pref;
-        output_moves ctx (pref ^ "  ") move;
+        output_moves ctx (pref @-@ "  ") move;
         pr ctx "%send\n" pref
       end
 

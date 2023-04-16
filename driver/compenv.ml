@@ -139,7 +139,7 @@ let parse_args s =
       let binding = try
         Misc.cut_at arg '='
       with Not_found ->
-        raise (SyntaxError ("missing '=' in " ^ arg))
+        raise (SyntaxError ("missing '=' in " @-@ arg))
       in
       if is_after then
         iter is_after tail before (binding :: after)
@@ -622,7 +622,7 @@ type deferred_action =
   | ProcessDLLs of string list
 
 let c_object_of_filename name =
-  Filename.chop_suffix (Filename.basename name) ".c" ^ Config.ext_obj
+  Filename.chop_suffix (Filename.basename name) ".c" @-@ Config.ext_obj
 
 let process_action
     (ppf, implementation, interface, ocaml_mod_ext, ocaml_lib_ext) action =
@@ -630,7 +630,7 @@ let process_action
     readenv ppf (Before_compile name);
     let opref = output_prefix name in
     implementation ~start_from ~source_file:name ~output_prefix:opref;
-    objfiles := (opref ^ ocaml_mod_ext) :: !objfiles
+    objfiles := (opref @-@ ocaml_mod_ext) :: !objfiles
   in
   match action with
   | ProcessImplementation name ->
@@ -639,7 +639,7 @@ let process_action
       readenv ppf (Before_compile name);
       let opref = output_prefix name in
       interface ~source_file:name ~output_prefix:opref;
-      if !make_package then objfiles := (opref ^ ".cmi") :: !objfiles
+      if !make_package then objfiles := (opref @-@ ".cmi") :: !objfiles
   | ProcessCFile name ->
       readenv ppf (Before_compile name);
       Location.input_name := name;
@@ -672,7 +672,7 @@ let process_action
         | Some start_from ->
           Location.input_name := name;
           impl ~start_from name
-        | None -> raise(Arg.Bad("don't know what to do with " ^ name))
+        | None -> raise(Arg.Bad("don't know what to do with " @-@ name))
 
 
 let action_of_file name =

@@ -98,10 +98,10 @@ let add_to_synonym_list synonyms suffix =
 
 (* Find file 'name' (capitalized) in search path *)
 let find_module_in_load_path name =
-  let names = List.map (fun ext -> name ^ ext) (!mli_synonyms @ !ml_synonyms) in
+  let names = List.map (fun ext -> name @-@ ext) (!mli_synonyms @ !ml_synonyms) in
   let unames =
     let uname = String.uncapitalize_ascii name in
-    List.map (fun ext -> uname ^ ext) (!mli_synonyms @ !ml_synonyms)
+    List.map (fun ext -> uname @-@ ext) (!mli_synonyms @ !ml_synonyms)
   in
   let rec find_in_array a pos =
     if pos >= Array.length a then None else begin
@@ -124,12 +124,12 @@ let find_dependency target_kind modname (byt_deps, opt_deps) =
   try
     let filename = find_module_in_load_path modname in
     let basename = Filename.chop_extension filename in
-    let cmi_file = basename ^ ".cmi" in
-    let cmx_file = basename ^ ".cmx" in
+    let cmi_file = basename @-@ ".cmi" in
+    let cmx_file = basename @-@ ".cmx" in
     let mli_exists =
-      List.exists (fun ext -> Sys.file_exists (basename ^ ext)) !mli_synonyms in
+      List.exists (fun ext -> Sys.file_exists (basename @-@ ext)) !mli_synonyms in
     let ml_exists =
-      List.exists (fun ext -> Sys.file_exists (basename ^ ext)) !ml_synonyms in
+      List.exists (fun ext -> Sys.file_exists (basename @-@ ext)) !ml_synonyms in
     if mli_exists then
       let new_opt_dep =
         if !all_dependencies then
@@ -154,7 +154,7 @@ let find_dependency target_kind modname (byt_deps, opt_deps) =
           | ML  -> [ cmi_file ]
         else
           (* again, make-specific hack *)
-          [basename ^ (if !native_only then ".cmx" else ".cmo")] in
+          [basename @-@ (if !native_only then ".cmx" else ".cmo")] in
       let optnames =
         if !all_dependencies
         then match target_kind with
@@ -336,16 +336,16 @@ let read_parse_and_extract parse_function extract_function def ast_kind
 
 let print_ml_dependencies source_file extracted_deps pp_deps =
   let basename = Filename.chop_extension source_file in
-  let byte_targets = [ basename ^ ".cmo" ] in
+  let byte_targets = [ basename @-@ ".cmo" ] in
   let native_targets =
     if !all_dependencies
-    then [ basename ^ ".cmx"; basename ^ ".o" ]
-    else [ basename ^ ".cmx" ] in
-  let shared_targets = [ basename ^ ".cmxs" ] in
+    then [ basename @-@ ".cmx"; basename @-@ ".o" ]
+    else [ basename @-@ ".cmx" ] in
+  let shared_targets = [ basename @-@ ".cmxs" ] in
   let init_deps = if !all_dependencies then [source_file] else [] in
-  let cmi_name = basename ^ ".cmi" in
+  let cmi_name = basename @-@ ".cmi" in
   let init_deps, extra_targets =
-    if List.exists (fun ext -> Sys.file_exists (basename ^ ext))
+    if List.exists (fun ext -> Sys.file_exists (basename @-@ ext))
         !mli_synonyms
     then (cmi_name :: init_deps, cmi_name :: init_deps), []
     else (init_deps, init_deps),
@@ -370,7 +370,7 @@ let print_mli_dependencies source_file extracted_deps pp_deps =
   let (byt_deps, _opt_deps) =
     String.Set.fold (find_dependency MLI)
       extracted_deps ([], []) in
-  print_dependencies [basename ^ ".cmi"] (byt_deps @ pp_deps)
+  print_dependencies [basename @-@ ".cmi"] (byt_deps @ pp_deps)
 
 let print_file_dependencies (source_file, kind, extracted_deps, pp_deps) =
   if !raw_dependencies then begin
@@ -550,7 +550,7 @@ let parse_map fname =
     String.capitalize_ascii
       (Filename.basename (Filename.chop_extension fname)) in
   if String.Map.is_empty m then
-    report_err (Failure (fname ^ " : empty map file or parse error"));
+    report_err (Failure (fname @-@ " : empty map file or parse error"));
   let mm = Depend.make_node m in
   if !debug then begin
     Format.printf "@[<v>%s:%t%a@]@." fname
@@ -680,7 +680,7 @@ let main_from_option () =
     exit 2;
   end;
   let args =
-    Array.concat [ [| Sys.argv.(0) ^ " -depend" |];
+    Array.concat [ [| Sys.argv.(0) @-@ " -depend" |];
                    Array.sub Sys.argv 2 (Array.length Sys.argv - 2) ] in
   Sys.argv.(0) <- args.(0);
   exit (run_main args)

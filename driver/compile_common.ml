@@ -25,10 +25,10 @@ type info = {
   native : bool;
 }
 
-let cmx i = i.output_prefix ^ ".cmx"
-let obj i = i.output_prefix ^ Config.ext_obj
-let cmo i = i.output_prefix ^ ".cmo"
-let annot i = i.output_prefix ^ ".annot"
+let cmx i = i.output_prefix @-@ ".cmx"
+let obj i = i.output_prefix @-@ Config.ext_obj
+let cmo i = i.output_prefix @-@ ".cmo"
+let annot i = i.output_prefix @-@ ".annot"
 
 let with_info ~native ~tool_name ~source_file ~output_prefix ~dump_ext k =
   Compmisc.init_path ();
@@ -76,7 +76,7 @@ let emit_signature info ast tsg =
   let sg =
     let alerts = Builtin_attributes.alerts_of_sig ast in
     Env.save_signature ~alerts tsg.Typedtree.sig_type
-      info.module_name (info.output_prefix ^ ".cmi")
+      info.module_name (info.output_prefix @-@ ".cmi")
   in
   Typemod.save_signature info.module_name tsg
     info.output_prefix info.source_file info.env sg

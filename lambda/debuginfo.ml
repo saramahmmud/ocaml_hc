@@ -34,7 +34,7 @@ module Scoped_location = struct
     | Cons r -> r.str_fun
 
   let cons item str =
-    Cons {item; str; str_fun = str ^ ".(fun)"}
+    Cons {item; str; str_fun = str @-@ ".(fun)"}
 
   let empty_scopes = Empty
 
@@ -43,13 +43,13 @@ module Scoped_location = struct
     | s ->
        match s.[0] with
        | 'a'..'z' | 'A'..'Z' | '_' | '0'..'9' -> s
-       | _ -> "(" ^ s ^ ")"
+       | _ -> "(" @-@ s @-@ ")"
 
   let dot ?(sep = ".") scopes s =
     let s = add_parens_if_symbolic s in
     match scopes with
     | Empty -> s
-    | Cons {str; _} -> str ^ sep ^ s
+    | Cons {str; _} -> str @-@ sep @-@ s
 
   let enter_anonymous_function ~scopes =
     let str = str_fun scopes in
@@ -132,7 +132,7 @@ let to_string dbg =
              d.dinfo_file d.dinfo_line d.dinfo_char_start d.dinfo_char_end)
         ds
     in
-    "{" ^ String.concat ";" items ^ "}"
+    "{" @-@ String.concat ";" items @-@ "}"
 
 let item_from_location ~scopes loc =
   let valid_endpos =
