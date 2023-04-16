@@ -123,7 +123,7 @@ class virtual info =
           | (s, t) :: q ->
               bs b ".B \"";
               bs b Odoc_messages.raises;
-              bs b (" "^s^"\"\n");
+              bs b (" "@-@s@-@"\"\n");
               self#man_of_text b t;
               bs b "\n";
               match q with
@@ -206,7 +206,7 @@ class virtual info =
            | Some d ->
                let b = Buffer.create 256 in
                bs b ".B \"";
-               bs b (Odoc_messages.deprecated^".");
+               bs b (Odoc_messages.deprecated@-@".");
                bs b "\"\n";
                self#man_of_text b d;
                bs b "\n";
@@ -217,7 +217,7 @@ class virtual info =
                  None -> []
                | Some d when d = [Odoc_info.Raw ""] -> []
                | Some d ->
-                   [ (self#str_man_of_text d)^"\n" ]
+                   [ (self#str_man_of_text d)@-@"\n" ]
               ) @
               [
                 self#str_man_of_author_list info.M.i_authors;
@@ -453,7 +453,7 @@ class man =
       List.iter
         (fun x ->
            let father = Name.father x.xt_name in
-           bs b ("| "^(Name.simple x.xt_name));
+           bs b ("| "@-@(Name.simple x.xt_name));
            (
              match x.xt_args, x.xt_ret with
                | Cstr_tuple [], None -> bs b "\n"
@@ -552,7 +552,7 @@ class man =
           bs b "{";
            List.iter (fun r ->
              bs b (if r.rf_mutable then "\n\n.B mutable \n" else "\n ");
-             bs b (r.rf_name^" : ");
+             bs b (r.rf_name@-@" : ");
              self#man_of_type_expr b father r.rf_type;
              bs b ";";
              self#field_comment b r.rf_text ;
@@ -582,7 +582,7 @@ class man =
           if priv then bs b "private ";
           bs b "<";
           List.iter (fun r ->
-            bs b (r.of_name^" : ");
+            bs b (r.of_name@-@" : ");
             self#man_of_type_expr b father r.of_type;
             bs b ";";
             self#field_comment b r.of_text ;
@@ -601,7 +601,7 @@ class man =
          if priv then bs b " private";
          bs b "\n ";
          List.iter (fun constr ->
-           bs b ("| "^constr.vc_name);
+           bs b ("| "@-@constr.vc_name);
            let print_text t =
              bs b "  (* ";
              self#man_of_info b (Some t);
@@ -660,8 +660,8 @@ class man =
     method man_of_attribute b a =
       bs b ".I val ";
       if a.att_virtual then bs b ("virtual ");
-      if a.att_mutable then bs b (Odoc_messages.mutab^" ");
-      bs b ((Name.simple a.att_value.val_name)^" : ");
+      if a.att_mutable then bs b (Odoc_messages.mutab@-@" ");
+      bs b ((Name.simple a.att_value.val_name)@-@" : ");
       self#man_of_type_expr b (Name.father a.att_value.val_name) a.att_value.val_type;
       bs b "\n.sp\n";
       self#man_of_info b a.att_value.val_info;
@@ -672,7 +672,7 @@ class man =
       bs b ".I method ";
       if m.met_private then bs b "private ";
       if m.met_virtual then bs b "virtual ";
-      bs b ((Name.simple m.met_value.val_name)^" : ");
+      bs b ((Name.simple m.met_value.val_name)@-@" : ");
       self#man_of_type_expr b
         (Name.father m.met_value.val_name) m.met_value.val_type;
       bs b "\n.sp\n";
@@ -719,7 +719,7 @@ class man =
               match Parameter.desc_by_name p n with
                 None -> ()
               | Some t ->
-                  self#man_of_code b (n^" : ");
+                  self#man_of_code b (n@-@" : ");
                   self#man_of_text b t
             )
             l
@@ -735,7 +735,7 @@ class man =
           List.iter
             (fun (p, desc_opt) ->
               bs b ".sp\n";
-              bs b ("\""^p.mp_name^"\"\n");
+              bs b ("\""@-@p.mp_name@-@"\"\n");
               Option.iter (self#man_of_module_type b m_name) p.mp_type;
               bs b "\n";
               (
@@ -825,8 +825,8 @@ class man =
 
     method man_of_recfield b modname f =
       bs b ".I ";
-      if f.rf_mutable then bs b (Odoc_messages.mutab^" ");
-      bs b (f.rf_name^" : ");
+      if f.rf_mutable then bs b (Odoc_messages.mutab@-@" ");
+      bs b (f.rf_name@-@" : ");
       self#man_of_type_expr b modname f.rf_type;
       bs b "\n.sp\n";
       self#man_of_info b f.rf_text;
@@ -834,7 +834,7 @@ class man =
 
     method man_of_const b modname c =
       bs b ".I ";
-      bs b (c.vc_name^" ");
+      bs b (c.vc_name@-@" ");
       (match c.vc_args with
        | Cstr_tuple [] -> ()
        | Cstr_tuple (h::q) ->
@@ -876,11 +876,11 @@ class man =
       try
         let chanout = self#open_out file in
         let b = new_buf () in
-        bs b (".TH \""^cl.cl_name^"\" ");
+        bs b (".TH \""@-@cl.cl_name@-@"\" ");
         bs b !man_section ;
-        bs b (" "^Odoc_misc.current_date^" ");
+        bs b (" "@-@Odoc_misc.current_date@-@" ");
         bs b "OCamldoc ";
-        bs b ("\""^(match !Global.title with Some t -> t | None -> "")^"\"\n");
+        bs b ("\""@-@(match !Global.title with Some t -> t | None -> "")@-@"\"\n");
 
         let abstract =
           match cl.cl_info with
@@ -891,10 +891,10 @@ class man =
         in
 
         bs b ".SH NAME\n";
-        bs b (cl.cl_name^" \\- "^abstract^"\n");
-        bs b (".SH "^Odoc_messages.clas^"\n");
-        bs b (Odoc_messages.clas^"   "^cl.cl_name^"\n");
-        bs b (".SH "^Odoc_messages.documentation^"\n");
+        bs b (cl.cl_name@-@" \\- "@-@abstract@-@"\n");
+        bs b (".SH "@-@Odoc_messages.clas@-@"\n");
+        bs b (Odoc_messages.clas@-@"   "@-@cl.cl_name@-@"\n");
+        bs b (".SH "@-@Odoc_messages.documentation@-@"\n");
         bs b ".sp\n";
         self#man_of_class b cl;
 
@@ -934,11 +934,11 @@ class man =
       try
         let chanout = self#open_out file in
         let b = new_buf () in
-        bs b (".TH \""^ct.clt_name^"\" ");
+        bs b (".TH \""@-@ct.clt_name@-@"\" ");
         bs b !man_section ;
-        bs b (" "^Odoc_misc.current_date^" ");
+        bs b (" "@-@Odoc_misc.current_date@-@" ");
         bs b "OCamldoc ";
-        bs b ("\""^(match !Global.title with Some t -> t | None -> "")^"\"\n");
+        bs b ("\""@-@(match !Global.title with Some t -> t | None -> "")@-@"\"\n");
 
         let abstract =
           match ct.clt_info with
@@ -949,10 +949,10 @@ class man =
         in
 
         bs b ".SH NAME\n";
-        bs b (ct.clt_name^" \\- "^abstract^"\n");
-        bs b (".SH "^Odoc_messages.class_type^"\n");
-        bs b (Odoc_messages.class_type^"   "^ct.clt_name^"\n");
-        bs b (".SH "^Odoc_messages.documentation^"\n");
+        bs b (ct.clt_name@-@" \\- "@-@abstract@-@"\n");
+        bs b (".SH "@-@Odoc_messages.class_type@-@"\n");
+        bs b (Odoc_messages.class_type@-@"   "@-@ct.clt_name@-@"\n");
+        bs b (".SH "@-@Odoc_messages.documentation@-@"\n");
         bs b ".sp\n";
 
         self#man_of_class_type b ct;
@@ -1026,11 +1026,11 @@ class man =
       try
         let chanout = self#open_out file in
         let b = new_buf () in
-        bs b (".TH \""^mt.mt_name^"\" ");
+        bs b (".TH \""@-@mt.mt_name@-@"\" ");
         bs b !man_section ;
-        bs b (" "^Odoc_misc.current_date^" ");
+        bs b (" "@-@Odoc_misc.current_date@-@" ");
         bs b "OCamldoc ";
-        bs b ("\""^(match !Global.title with Some t -> t | None -> "")^"\"\n");
+        bs b ("\""@-@(match !Global.title with Some t -> t | None -> "")@-@"\"\n");
 
         let abstract =
           match mt.mt_info with
@@ -1040,13 +1040,13 @@ class man =
               self#remove_newlines s
         in
         bs b ".SH NAME\n";
-        bs b (mt.mt_name^" \\- "^abstract^"\n");
-        bs b (".SH "^Odoc_messages.module_type^"\n");
-        bs b (Odoc_messages.module_type^"   "^mt.mt_name^"\n");
-        bs b (".SH "^Odoc_messages.documentation^"\n");
+        bs b (mt.mt_name@-@" \\- "@-@abstract@-@"\n");
+        bs b (".SH "@-@Odoc_messages.module_type@-@"\n");
+        bs b (Odoc_messages.module_type@-@"   "@-@mt.mt_name@-@"\n");
+        bs b (".SH "@-@Odoc_messages.documentation@-@"\n");
         bs b ".sp\n";
-        bs b (Odoc_messages.module_type^"\n");
-        bs b (".BI \""^(Name.simple mt.mt_name)^"\"\n");
+        bs b (Odoc_messages.module_type@-@"\n");
+        bs b (".BI \""@-@(Name.simple mt.mt_name)@-@"\"\n");
         bs b " = ";
         (
          match mt.mt_type with
@@ -1108,11 +1108,11 @@ class man =
       try
         let chanout = self#open_out file in
         let b = new_buf () in
-        bs b (".TH \""^m.m_name^"\" ");
+        bs b (".TH \""@-@m.m_name@-@"\" ");
         bs b !man_section ;
-        bs b (" "^Odoc_misc.current_date^" ");
+        bs b (" "@-@Odoc_misc.current_date@-@" ");
         bs b "OCamldoc ";
-        bs b ("\""^(match !Global.title with Some t -> t | None -> "")^"\"\n");
+        bs b ("\""@-@(match !Global.title with Some t -> t | None -> "")@-@"\"\n");
 
         let abstract =
           match m.m_info with
@@ -1123,13 +1123,13 @@ class man =
         in
 
         bs b ".SH NAME\n";
-        bs b (m.m_name^" \\- "^abstract^"\n");
-        bs b (".SH "^Odoc_messages.modul^"\n");
-        bs b (Odoc_messages.modul^"   "^m.m_name^"\n");
-        bs b (".SH "^Odoc_messages.documentation^"\n");
+        bs b (m.m_name@-@" \\- "@-@abstract@-@"\n");
+        bs b (".SH "@-@Odoc_messages.modul@-@"\n");
+        bs b (Odoc_messages.modul@-@"   "@-@m.m_name@-@"\n");
+        bs b (".SH "@-@Odoc_messages.documentation@-@"\n");
         bs b ".sp\n";
-        bs b (Odoc_messages.modul^"\n");
-        bs b (".BI \""^(Name.simple m.m_name)^"\"\n");
+        bs b (Odoc_messages.modul@-@"\n");
+        bs b (".BI \""@-@(Name.simple m.m_name)@-@"\"\n");
         bs b " : ";
         self#man_of_module_type b (Name.father m.m_name) m.m_type;
         bs b "\n.sp\n";
@@ -1214,58 +1214,58 @@ class man =
       try
         let chanout = self#open_out file in
         let b = new_buf () in
-        bs b (".TH \""^name^"\" ");
+        bs b (".TH \""@-@name@-@"\" ");
         bs b !man_section ;
-        bs b (" "^Odoc_misc.current_date^" ");
+        bs b (" "@-@Odoc_misc.current_date@-@" ");
         bs b "OCamldoc ";
-        bs b ("\""^(match !Global.title with Some t -> t | None -> "")^"\"\n");
+        bs b ("\""@-@(match !Global.title with Some t -> t | None -> "")@-@"\"\n");
         bs b ".SH NAME\n";
-        bs b (name^" \\- all "^name^" elements\n\n");
+        bs b (name@-@" \\- all "@-@name@-@" elements\n\n");
 
         let f ele =
           match ele with
             Res_value v ->
-              bs b ("\n.SH "^Odoc_messages.modul^" "^(Name.father v.val_name)^"\n");
+              bs b ("\n.SH "@-@Odoc_messages.modul@-@" "@-@(Name.father v.val_name)@-@"\n");
               self#man_of_value b v
           | Res_type t ->
-              bs b ("\n.SH "^Odoc_messages.modul^" "^(Name.father t.ty_name)^"\n");
+              bs b ("\n.SH "@-@Odoc_messages.modul@-@" "@-@(Name.father t.ty_name)@-@"\n");
               self#man_of_type b t
           | Res_extension x ->
-              bs b ("\n.SH "^Odoc_messages.modul^" "^(Name.father x.xt_name)^"\n");
+              bs b ("\n.SH "@-@Odoc_messages.modul@-@" "@-@(Name.father x.xt_name)@-@"\n");
               self#man_of_type_extension b (Name.father x.xt_name) x.xt_type_extension
           | Res_exception e ->
-              bs b ("\n.SH "^Odoc_messages.modul^" "^(Name.father e.ex_name)^"\n");
+              bs b ("\n.SH "@-@Odoc_messages.modul@-@" "@-@(Name.father e.ex_name)@-@"\n");
               self#man_of_exception b e
           | Res_attribute a ->
-              bs b ("\n.SH "^Odoc_messages.clas^" "^(Name.father a.att_value.val_name)^"\n");
+              bs b ("\n.SH "@-@Odoc_messages.clas@-@" "@-@(Name.father a.att_value.val_name)@-@"\n");
               self#man_of_attribute b a
           | Res_method m ->
-              bs b ("\n.SH "^Odoc_messages.clas^" "^(Name.father m.met_value.val_name)^"\n");
+              bs b ("\n.SH "@-@Odoc_messages.clas@-@" "@-@(Name.father m.met_value.val_name)@-@"\n");
               self#man_of_method b m
           | Res_class c ->
-              bs b ("\n.SH "^Odoc_messages.modul^" "^(Name.father c.cl_name)^"\n");
+              bs b ("\n.SH "@-@Odoc_messages.modul@-@" "@-@(Name.father c.cl_name)@-@"\n");
               self#man_of_class b c
           | Res_class_type ct ->
-              bs b ("\n.SH "^Odoc_messages.modul^" "^(Name.father ct.clt_name)^"\n");
+              bs b ("\n.SH "@-@Odoc_messages.modul@-@" "@-@(Name.father ct.clt_name)@-@"\n");
               self#man_of_class_type b ct
           | Res_recfield (ty,f) ->
-               bs b ("\n.SH Type "^(ty.ty_name)^"\n");
+               bs b ("\n.SH Type "@-@(ty.ty_name)@-@"\n");
               self#man_of_recfield b (Name.father ty.ty_name) f
           | Res_const (ty,c) ->
-               bs b ("\n.SH Type "^(ty.ty_name)^"\n");
+               bs b ("\n.SH Type "@-@(ty.ty_name)@-@"\n");
               self#man_of_const b (Name.father ty.ty_name) c
           | Res_module m ->
               if Name.father m.m_name <> "" then
                 begin
-                  bs b ("\n.SH "^Odoc_messages.modul^" "^(Name.father m.m_name)^"\n");
-                  bs b (Odoc_messages.modul^"\n");
-                  bs b (".BI \""^(Name.simple m.m_name)^"\"\n");
+                  bs b ("\n.SH "@-@Odoc_messages.modul@-@" "@-@(Name.father m.m_name)@-@"\n");
+                  bs b (Odoc_messages.modul@-@"\n");
+                  bs b (".BI \""@-@(Name.simple m.m_name)@-@"\"\n");
                   bs b " : ";
                   self#man_of_module_type b (Name.father m.m_name) m.m_type;
                 end
               else
                 begin
-                  bs b ("\n.SH "^Odoc_messages.modul^" "^m.m_name^"\n");
+                  bs b ("\n.SH "@-@Odoc_messages.modul@-@" "@-@m.m_name@-@"\n");
                   bs b " : ";
                   self#man_of_module_type b (Name.father m.m_name) m.m_type;
                 end;
@@ -1273,9 +1273,9 @@ class man =
               self#man_of_module_body b m
 
           | Res_module_type mt ->
-              bs b ("\n.SH "^Odoc_messages.modul^" "^(Name.father mt.mt_name)^"\n");
-              bs b (Odoc_messages.module_type^"\n");
-              bs b (".BI \""^(Name.simple mt.mt_name)^"\"\n");
+              bs b ("\n.SH "@-@Odoc_messages.modul@-@" "@-@(Name.father mt.mt_name)@-@"\n");
+              bs b (Odoc_messages.module_type@-@"\n");
+              bs b (".BI \""@-@(Name.simple mt.mt_name)@-@"\"\n");
               bs b " = ";
               (
                match mt.mt_type with

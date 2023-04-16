@@ -80,7 +80,7 @@ let merge_info merge_options (m1 : info) (m2 : info) =
     | None, Some v -> Some v
     | Some v1, Some v2 ->
         if List.mem Merge_version merge_options then
-          Some (v1^" "^v2)
+          Some (v1@-@" "@-@v2)
         else
           Some v1
   in
@@ -102,7 +102,7 @@ let merge_info merge_options (m1 : info) (m2 : info) =
     | None, Some v -> Some v
     | Some v1, Some v2 ->
         if List.mem Merge_since merge_options then
-          Some (v1^" "^v2)
+          Some (v1@-@" "@-@v2)
         else
           Some v1
   in
