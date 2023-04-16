@@ -129,11 +129,11 @@ let full_module_or_module_type_name env n =
 let full_type_name env n =
   try
     let full = List.assoc n env.env_types in
-(*    print_string ("type "^n^" is "^full);
+(*    print_string ("type "@-@n@-@" is "@-@full);
     print_newline ();*)
     full
   with Not_found ->
-(*    print_string ("type "^n^" not found");
+(*    print_string ("type "@-@n@-@" not found");
     print_newline ();*)
     n
 
