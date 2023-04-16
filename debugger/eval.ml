@@ -72,7 +72,7 @@ let value_path event env path =
   match Env.find_value_address path env with
   | addr -> address path event addr
   | exception Not_found ->
-      fatal_error ("Cannot find address for: " ^ (Path.name path))
+      fatal_error ("Cannot find address for: " @-@ (Path.name path))
 
 let rec expression event env = function
   | E_ident lid -> begin
@@ -83,7 +83,7 @@ let rec expression event env = function
             | Val_ivar (_, cl_num) ->
                 let (p0, _) =
                   Env.find_value_by_name
-                    (Longident.Lident ("self-" ^ cl_num)) env
+                    (Longident.Lident ("self-" @-@ cl_num)) env
                 in
                 let v = value_path event env p0 in
                 let i = value_path event env p in

@@ -1866,11 +1866,11 @@ let get_mod_field modname field =
      in
      match Env.open_pers_signature modname env with
      | Error `Not_found ->
-         fatal_error ("Module " ^ modname ^ " unavailable.")
+         fatal_error ("Module " @-@ modname @-@ " unavailable.")
      | Ok env -> (
          match Env.find_value_by_name (Longident.Lident field) env with
          | exception Not_found ->
-             fatal_error ("Primitive " ^ modname ^ "." ^ field ^ " not found.")
+             fatal_error ("Primitive " @-@ modname @-@ "." @-@ field @-@ " not found.")
          | path, _ -> transl_value_path Loc_unknown env path
        ))
 
@@ -2990,7 +2990,7 @@ let rec event_branch repr lam =
   | Lstaticraise _, _ -> lam
   | _, Some _ ->
       Printlambda.lambda Format.str_formatter lam;
-      fatal_error ("Matching.event_branch: " ^ Format.flush_str_formatter ())
+      fatal_error ("Matching.event_branch: " @-@ Format.flush_str_formatter ())
 
 (*
    This exception is raised when the compiler cannot produce code

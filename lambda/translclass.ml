@@ -316,7 +316,7 @@ let rec build_class_init ~scopes cla cstr super inh_init cl_init msubst top cl =
                 let met_code =
                   if !Clflags.native_code && List.length met_code = 1 then
                     (* Force correct naming of method for profiles *)
-                    let met = Ident.create_local ("method_" ^ name.txt) in
+                    let met = Ident.create_local ("method_" @-@ name.txt) in
                     [Llet(Strict, Pgenval, met, List.hd met_code, Lvar met)]
                   else met_code
                 in
@@ -557,24 +557,24 @@ let rec builtin_meths self env env2 body =
   | Llet(_str, _k, s', Lvar s, body) when List.mem s self ->
       builtin_meths (s'::self) env env2 body
   | Lapply{ap_func = f; ap_args = [arg]} when const_path f ->
-      let s, args = conv arg in ("app_"^s, f :: args)
+      let s, args = conv arg in ("app_"@-@s, f :: args)
   | Lapply{ap_func = f; ap_args = [arg; p]} when const_path f && const_path p ->
       let s, args = conv arg in
-      ("app_"^s^"_const", f :: args @ [p])
+      ("app_"@-@s@-@"_const", f :: args @ [p])
   | Lapply{ap_func = f; ap_args = [p; arg]} when const_path f && const_path p ->
       let s, args = conv arg in
-      ("app_const_"^s, f :: p :: args)
+      ("app_const_"@-@s, f :: p :: args)
   | Lsend(Self, Lvar n, Lvar s, [arg], _) when List.mem s self ->
       let s, args = conv arg in
-      ("meth_app_"^s, Lvar n :: args)
+      ("meth_app_"@-@s, Lvar n :: args)
   | Lsend(Self, met, Lvar s, [], _) when List.mem s self ->
       ("get_meth", [met])
   | Lsend(Public, met, arg, [], _) ->
       let s, args = conv arg in
-      ("send_"^s, met :: args)
+      ("send_"@-@s, met :: args)
   | Lsend(Cached, met, arg, [_;_], _) ->
       let s, args = conv arg in
-      ("send_"^s, met :: args)
+      ("send_"@-@s, met :: args)
   | Lfunction {kind = Curried; params = [x, _]; body} ->
       let rec enter self = function
         | Lprim(Parraysetu _, [Lvar s; Lvar n; Lvar x'], _)
@@ -586,7 +586,7 @@ let rec builtin_meths self env env2 body =
       in enter self body
   | Lfunction _ -> raise Not_found
   | _ ->
-      let s, args = conv body in ("get_"^s, args)
+      let s, args = conv body in ("get_"@-@s, args)
 
 module M = struct
   open CamlinternalOO
@@ -684,7 +684,7 @@ let transl_class ~scopes ids cl_id pub_meths cl vflag =
 
   (* Prepare for heavy environment handling *)
   let scopes = enter_class_definition ~scopes cl_id in
-  let tables = Ident.create_local (Ident.name cl_id ^ "_tables") in
+  let tables = Ident.create_local (Ident.name cl_id @-@ "_tables") in
   let (top_env, req) = oo_add_class tables in
   let top = not req in
   let cl_env, llets = build_class_lets ~scopes cl in
@@ -764,7 +764,7 @@ let transl_class ~scopes ids cl_id pub_meths cl vflag =
   in
   assert (inh_init' = []);
   let table = Ident.create_local "table"
-  and class_init = Ident.create_local (Ident.name cl_id ^ "_init")
+  and class_init = Ident.create_local (Ident.name cl_id @-@ "_init")
   and env_init = Ident.create_local "env_init"
   and obj_init = Ident.create_local "obj_init" in
   let pub_meths =

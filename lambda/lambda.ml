@@ -663,7 +663,7 @@ let rec transl_address loc = function
 let transl_path find loc env path =
   match find path env with
   | exception Not_found ->
-      fatal_error ("Cannot find address for: " ^ (Path.name path))
+      fatal_error ("Cannot find address for: " @-@ (Path.name path))
   | addr -> transl_address loc addr
 
 (* Translation of identifiers *)
@@ -687,7 +687,7 @@ let transl_prim mod_name name =
   match Env.find_value_by_name lid env with
   | path, _ -> transl_value_path Loc_unknown env path
   | exception Not_found ->
-      fatal_error ("Primitive " ^ name ^ " not found.")
+      fatal_error ("Primitive " @-@ name @-@ " not found.")
 
 (* Compile a sequence of expressions *)
 

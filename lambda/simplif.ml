@@ -727,7 +727,7 @@ let split_default_wrapper ~id:fun_id ~kind ~params ~return ~body ~attr ~loc =
         let fv = Lambda.free_variables body in
         List.iter (fun (id, _) -> if Ident.Set.mem id fv then raise Exit) map;
 
-        let inner_id = Ident.create_local (Ident.name fun_id ^ "_inner") in
+        let inner_id = Ident.create_local (Ident.name fun_id @-@ "_inner") in
         let map_param p = try List.assoc p map with Not_found -> p in
         let args = List.map (fun (p, _) -> Lvar (map_param p)) params in
         let wrapper_body =

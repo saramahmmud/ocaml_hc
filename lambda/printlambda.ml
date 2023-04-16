@@ -84,7 +84,7 @@ let print_boxed_integer name ppf bi =
 
 let print_bigarray name unsafe kind ppf layout =
   fprintf ppf "Bigarray.%s[%s,%s]"
-    (if unsafe then "unsafe_"^ name else name)
+    (if unsafe then "unsafe_"@-@ name else name)
     (match kind with
      | Pbigarray_unknown -> "generic"
      | Pbigarray_float32 -> "float32"

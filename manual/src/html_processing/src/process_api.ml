@@ -67,7 +67,7 @@ let make_toc ~version ~search file config title body =
     append_child ul li_current;
     let () = match attribute "id" h with
       | Some id ->
-          let href = "#" ^ id in
+          let href = "#" @-@ id in
           let a = create_element "a" ~inner_text:(texts h |> String.concat "")
               ~attributes:["href", href] in
           append_child li_current a
@@ -118,15 +118,15 @@ let make_toc ~version ~search file config title body =
         |> prepend_child nav in
 
   (* Add version number *)
-  add_version_link nav (config.title ^ "API Version " ^ version) releases_url;
+  add_version_link nav (config.title @-@ "API Version " @-@ version) releases_url;
 
   (* Add sidebar button for mobile navigation *)
   add_sidebar_button body;
 
   (* Add logo *)
   prepend_child header (logo_html
-                          ((if config.title = "" then "" else "../") ^
-                           (manual_page_url ^ "/index.html")))
+                          ((if config.title = "" then "" else "../") @-@
+                           (manual_page_url @-@ "/index.html")))
 
 
 let process ?(search=true) ~version config file out =
@@ -253,7 +253,7 @@ module Index = struct
                 |> filter (fun s -> id s = Some id_name)
                 |> first |> require in
     let pre = match parent span with
-      | None -> failwith ("Cannot find signature for " ^ id_name)
+      | None -> failwith ("Cannot find signature for " @-@ id_name)
       | Some pre -> pre in
     let code = pre $ ".type" in
     let sig_txt = texts code
@@ -263,7 +263,7 @@ module Index = struct
     let sig_txt = match mod_name with
       | None -> sig_txt
       | Some mod_name ->
-          Re.Str.global_replace anon_t_regexp (mod_name ^ ".t") sig_txt in
+          Re.Str.global_replace anon_t_regexp (mod_name @-@ ".t") sig_txt in
     dbg "Signature=[%s]" sig_txt;
     Some {html = to_string code |> String.escaped; txt = sig_txt}
 

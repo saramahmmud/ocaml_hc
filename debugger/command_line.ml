@@ -81,7 +81,7 @@ let error text =
 let check_not_windows feature =
   match Sys.os_type with
   | "Win32" ->
-      error ("\'"^feature^"\' feature not supported on Windows")
+      error ("\'"@-@feature@-@"\' feature not supported on Windows")
   | _ ->
       ()
 
@@ -113,9 +113,9 @@ let find_ident name matcher action alternative ppf lexbuf =
   | None -> alternative ppf
   | Some ident ->
       match matcher ident with
-      | [] -> error ("Unknown " ^ name ^ ".")
+      | [] -> error ("Unknown " @-@ name @-@ ".")
       | [a] -> action a ppf lexbuf
-      | _ -> error ("Ambiguous " ^ name ^ ".")
+      | _ -> error ("Ambiguous " @-@ name @-@ ".")
 
 let find_variable action alternative ppf lexbuf =
   find_ident "variable name" matching_variables action alternative ppf lexbuf
@@ -212,7 +212,7 @@ let line_loop ppf line_buffer =
     | Exit ->
         ()
 (*    | Sys_error s ->
-        error ("System error: " ^ s) *)
+        error ("System error: " @-@ s) *)
 
 (** Instructions. **)
 let instr_cd _ppf lexbuf =
@@ -454,7 +454,7 @@ let instr_help ppf lexbuf =
       | [ {instr_name = "set"} ] ->
           find_variable
             (fun v _ _ ->
-               print_help ("set " ^ v.var_name) ("set " ^ v.var_help))
+               print_help ("set " @-@ v.var_name) ("set " @-@ v.var_help))
             (fun ppf ->
                print_help "set" "set debugger variable.";
                print_variable_list ppf)
@@ -463,7 +463,7 @@ let instr_help ppf lexbuf =
       | [ {instr_name = "show"} ] ->
           find_variable
             (fun v _ _ ->
-               print_help ("show " ^ v.var_name) ("show " ^ v.var_help))
+               print_help ("show " @-@ v.var_name) ("show " @-@ v.var_help))
             (fun _v ->
                print_help "show" "display debugger variable.";
                print_variable_list ppf)
@@ -471,7 +471,7 @@ let instr_help ppf lexbuf =
             lexbuf
       | [ {instr_name = "info"} ] ->
           find_info
-            (fun i _ _ -> print_help ("info " ^ i.info_name) i.info_help)
+            (fun i _ _ -> print_help ("info " @-@ i.info_name) i.info_help)
             (fun ppf ->
                print_help "info"
                  "display infos about the program being debugged.";
@@ -691,7 +691,7 @@ let instr_frame ppf lexbuf =
       show_current_frame ppf true
     with
     | Not_found ->
-        error ("No frame number " ^ Int.to_string frame_number ^ ".")
+        error ("No frame number " @-@ Int.to_string frame_number @-@ ".")
 
 let instr_backtrace ppf lexbuf =
   let number =
@@ -784,7 +784,7 @@ let instr_list _ppf lexbuf =
       let pos = Lexing.dummy_pos in
       let buffer =
         try get_buffer pos mdle with
-        | Not_found -> error ("No source file for " ^ mdle ^ ".") in
+        | Not_found -> error ("No source file for " @-@ mdle @-@ ".") in
       let point =
         if column <> -1 then
           try
@@ -950,7 +950,7 @@ let info_events _ppf lexbuf =
   let mdle =
     convert_module (module_of_longident (opt_longident_eol Lexer.lexeme lexbuf))
   in
-    print_endline ("Module: " ^ mdle);
+    print_endline ("Module: " @-@ mdle);
     print_endline "   Address  Characters        Kind      Repr.";
     let frag, events = events_in_module mdle in
     List.iter
@@ -973,7 +973,7 @@ let info_events _ppf lexbuf =
                Event_before   -> "before"
              | Event_after _  -> "after"
              | Event_pseudo   -> "pseudo")
-            ^
+            @-@
             (match ev.ev_info with
                Event_function -> "/fun"
              | Event_return _ -> "/ret"

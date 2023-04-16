@@ -52,7 +52,7 @@ let rec loadfiles ppf name =
     true
   with
   | Dynlink.Error (Dynlink.Unavailable_unit unit) ->
-      loadfiles ppf (String.uncapitalize_ascii unit ^ ".cmo")
+      loadfiles ppf (String.uncapitalize_ascii unit @-@ ".cmo")
         &&
       loadfiles ppf name
   | Not_found ->
@@ -86,7 +86,7 @@ let eval_value_path env path =
   match Env.find_value_address path env with
   | addr -> eval_address addr
   | exception Not_found ->
-      fatal_error ("Cannot find address for: " ^ (Path.name path))
+      fatal_error ("Cannot find address for: " @-@ (Path.name path))
 
 (* Install, remove a printer (as in toplevel/topdirs) *)
 

@@ -209,11 +209,11 @@ let main () =
     socket_name :=
       (match Sys.os_type with
         "Win32" ->
-          (Unix.string_of_inet_addr Unix.inet_addr_loopback)^
-          ":"^
+          (Unix.string_of_inet_addr Unix.inet_addr_loopback)@-@
+          ":"@-@
           (Int.to_string (10000 + ((Unix.getpid ()) mod 10000)))
       | _ -> Filename.concat (Filename.get_temp_dir_name ())
-                                ("camldebug" ^ (Int.to_string (Unix.getpid ())))
+                                ("camldebug" @-@ (Int.to_string (Unix.getpid ())))
       );
     begin try
       Arg.parse speclist anonymous "";
@@ -224,7 +224,7 @@ let main () =
       exit 2
     with Found_program_name ->
       for j = !Arg.current + 1 to Array.length Sys.argv - 1 do
-        arguments := !arguments ^ " " ^ (Filename.quote Sys.argv.(j))
+        arguments := !arguments @-@ " " @-@ (Filename.quote Sys.argv.(j))
       done
     end;
     if !Parameters.version

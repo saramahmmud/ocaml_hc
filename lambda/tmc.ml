@@ -565,7 +565,7 @@ let declare_binding ctx (var, def) =
   | None -> ctx
   | Some lfun ->
   let arity = List.length lfun.params in
-  let dps_id = Ident.create_local (Ident.name var ^ "_dps") in
+  let dps_id = Ident.create_local (Ident.name var @-@ "_dps") in
   let direct_kind = lfun.kind in
   let cand = { arity; dps_id; direct_kind; } in
   { specialized = Ident.Map.add var cand ctx.specialized }

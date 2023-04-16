@@ -42,7 +42,7 @@ let find_named_value name =
 let check_depth depth obj ty =
   if depth <= 0 then begin
     let n = name_value obj ty in
-    Some (Outcometree.Oval_stuff ("$" ^ Int.to_string n))
+    Some (Outcometree.Oval_stuff ("$" @-@ Int.to_string n))
   end else None
 
 module EvalPath =

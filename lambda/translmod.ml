@@ -969,7 +969,7 @@ let nat_toplevel_name id =
     | Lprim(Pfield pos, [Lprim(Pgetglobal glob, [], _)], _) -> (glob,pos)
     | _ -> raise Not_found
   with Not_found ->
-    fatal_error("Translmod.nat_toplevel_name: " ^ Ident.unique_name id)
+    fatal_error("Translmod.nat_toplevel_name: " @-@ Ident.unique_name id)
 
 let field_of_str loc str =
   let ids = Array.of_list (defined_idents str.str_items) in
@@ -1272,7 +1272,7 @@ let transl_store_structure ~scopes glob map prims aliases str =
             [Lprim(Pgetglobal glob, [], loc); init_val],
             loc)
     with Not_found ->
-      fatal_error("Translmod.store_ident: " ^ Ident.unique_name id)
+      fatal_error("Translmod.store_ident: " @-@ Ident.unique_name id)
 
   and store_idents loc idlist =
     make_sequence (store_ident loc) idlist
