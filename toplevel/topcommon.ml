@@ -105,7 +105,7 @@ module MakeEvalPrinter (E: EVAL_BASE) = struct
     match find path env with
     | addr -> eval_address addr
     | exception Not_found ->
-        Misc.fatal_error ("Cannot find address for: " ^ (Path.name path))
+        Misc.fatal_error ("Cannot find address for: " @-@ (Path.name path))
 
   let eval_module_path env path =
     eval_path Env.find_module_address env path

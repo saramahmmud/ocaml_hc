@@ -460,7 +460,7 @@ let process_impl_file filename =
        try
          List.assoc modname allcounters
        with Not_found ->
-         raise(Profiler("Module " ^ modname ^ " not used in this profile."))
+         raise(Profiler("Module " @-@ modname @-@ " not used in this profile."))
      in
      counters := cv;
      set_flags modes;

@@ -16,7 +16,7 @@
 open Printf
 
 let syslib x =
-  if Config.ccomp_type = "msvc" then x ^ ".lib" else "-l" ^ x
+  if Config.ccomp_type = "msvc" then x @-@ ".lib" else "-l" @-@ x
 
 let mklib out files opts =
   if Config.ccomp_type = "msvc"
@@ -84,7 +84,7 @@ let parse_arguments argv =
   in
   let next_arg s =
     if Stack.is_empty args
-    then raise (Bad_argument("Option " ^ s ^ " expects one argument"));
+    then raise (Bad_argument("Option " @-@ s @-@ " expects one argument"));
     Stack.pop args
   in
   push_args ~first:1 argv;
@@ -126,7 +126,7 @@ let parse_arguments argv =
     else if starts_with s "-l" then
       let s =
         if Config.ccomp_type = "msvc" then
-          String.sub s 2 (String.length s - 2) ^ ".lib"
+          String.sub s 2 (String.length s - 2) @-@ ".lib"
         else
           s
       in
@@ -171,9 +171,9 @@ let parse_arguments argv =
     else if s = "-framework" then
       (let a = next_arg s in c_opts := a :: s :: !c_opts)
     else if starts_with s "-" then
-      prerr_endline ("Unknown option " ^ s)
+      prerr_endline ("Unknown option " @-@ s)
     else
-      raise (Bad_argument("Don't know what to do with " ^ s))
+      raise (Bad_argument("Don't know what to do with " @-@ s))
   done;
   List.iter
     (fun r -> r := List.rev !r)
@@ -245,20 +245,20 @@ let make_set l =
 let make_rpath flag =
   if !rpath = [] || flag = ""
   then ""
-  else flag ^ String.concat ":" (make_set !rpath)
+  else flag @-@ String.concat ":" (make_set !rpath)
 
 let make_rpath_ccopt flag =
   if !rpath = [] || flag = ""
   then ""
-  else "-ccopt " ^ flag ^ String.concat ":" (make_set !rpath)
+  else "-ccopt " @-@ flag @-@ String.concat ":" (make_set !rpath)
 
 let prefix_list pref l =
-  List.map (fun s -> pref ^ s) l
+  List.map (fun s -> pref @-@ s) l
 
 let prepostfix pre name post =
   let base = Filename.basename name in
   let dir = Filename.dirname name in
-  Filename.concat dir (pre ^ base ^ post)
+  Filename.concat dir (pre @-@ base @-@ post)
 ;;
 
 let transl_path s =
@@ -282,11 +282,11 @@ let flexdll_dirs =
   let f dir =
     let dir =
       if String.contains dir ' ' then
-        "\"" ^ dir ^ "\""
+        "\"" @-@ dir @-@ "\""
       else
         dir
     in
-      "-L" ^ dir
+      "-L" @-@ dir
   in
   List.map f dirs
 

@@ -113,7 +113,7 @@ end
 module Ast = struct
   let add_path ~f prefix path name attrs inherits map =
     let path = Path.Pdot (path, name.txt, 0) in
-    let id = prefix ^ " " ^ (Printtyp.string_of_path path) in
+    let id = prefix @-@ " " @-@ (Printtyp.string_of_path path) in
     (* inherits: annotation on parent is inherited by all children,
        so it suffices to annotate just the new module, and not all its elements
     *)
@@ -185,7 +185,7 @@ end
 
 module Git = struct
   let with_show ~f rev path =
-    let obj = rev ^ ":" ^ path in
+    let obj = rev @-@ ":" @-@ path in
     let suffix = Printf.sprintf "-%s:%s" rev (Filename.basename path) in
     let tmp = Filename.temp_file "lintapidiff" suffix in
     let cmd = Printf.sprintf "git show %s >%s 2>/dev/null"

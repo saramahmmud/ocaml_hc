@@ -20,12 +20,12 @@ let _ =
      cmd.exe has special quoting rules (see 'cmd.exe /?' for details).
      Short version: if the string passed to cmd.exe starts with '"',
      the first and last '"' are removed *)
-  let ocamlc = "ocamlc" ^ Config.ext_exe in
+  let ocamlc = "ocamlc" @-@ Config.ext_exe in
   let extra_quote = if Sys.win32 then "\"" else "" in
   let ocamlc = Filename.(quote (concat (dirname ocamlmktop) ocamlc)) in
   let cmdline =
-    extra_quote ^ ocamlc ^ " -I +compiler-libs -linkall ocamlcommon.cma " ^
-    "ocamlbytecomp.cma ocamltoplevel.cma " ^ args ^ " topstart.cmo" ^
+    extra_quote @-@ ocamlc @-@ " -I +compiler-libs -linkall ocamlcommon.cma " @-@
+    "ocamlbytecomp.cma ocamltoplevel.cma " @-@ args @-@ " topstart.cmo" @-@
     extra_quote
   in
   exit(Sys.command cmdline)

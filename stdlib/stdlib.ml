@@ -287,7 +287,7 @@ external string_get : string -> int -> char = "%string_safe_get"
 let valid_float_lexem s =
   let l = string_length s in
   let rec loop i =
-    if i >= l then s ^ "." else
+    if i >= l then s @-@ "." else
     match string_get s i with
     | '0' .. '9' | '-' -> loop (i + 1)
     | _ -> s
@@ -551,7 +551,7 @@ external format_of_string :
 
 let ( ^^ ) (Format (fmt1, str1)) (Format (fmt2, str2)) =
   Format (CamlinternalFormatBasics.concat_fmt fmt1 fmt2,
-          str1 ^ "%," ^ str2)
+          str1 @-@ "%," @-@ str2)
 
 (* Miscellaneous *)
 

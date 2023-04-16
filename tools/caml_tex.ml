@@ -22,7 +22,7 @@ open Str
 let camlprefix = "caml"
 
 let latex_escape s = String.concat "" ["$"; s; "$"]
-let toplevel_prompt= latex_escape {|\?|} ^ " "
+let toplevel_prompt= latex_escape {|\?|} @-@ " "
 
 let camlbunderline = "<<"
 let camleunderline = ">>"
@@ -584,7 +584,7 @@ let format_input mode s =  match mode with
   | Toplevel ->
       match String.split_on_char '\n' s with
       | [] -> assert false
-      | a :: q -> String.concat ~sep:"\n  " ((toplevel_prompt^a)::q)
+      | a :: q -> String.concat ~sep:"\n  " ((toplevel_prompt@-@a)::q)
 
 let process_file file =
   let ic = try open_in file with _ -> failwith "Cannot read input file" in
@@ -596,7 +596,7 @@ let process_file file =
     try if !outfile = "-" then
       stdout
     else if !outfile = "" then
-      open_out (replace_first ~!"\\.tex$" "" file ^ ".ml.tex")
+      open_out (replace_first ~!"\\.tex$" "" file @-@ ".ml.tex")
     else
       open_out_gen [Open_wronly; Open_creat; Open_append; Open_text]
         0x666 !outfile
@@ -605,10 +605,10 @@ let process_file file =
   let fatal x = Toplevel.fatal ic oc x in
   let re_spaces = "[ \t]*" in
   let re_start = ~!(
-      {|\\begin{caml_example\(\*?\)}|} ^ re_spaces
-      ^ {|\({toplevel}\|{verbatim}\|{signature}\)?|} ^ re_spaces
-      ^ {|\(\[\(.*\)\]\)?|} ^ re_spaces
-      ^ "$"
+      {|\\begin{caml_example\(\*?\)}|} @-@ re_spaces
+      @-@ {|\({toplevel}\|{verbatim}\|{signature}\)?|} @-@ re_spaces
+      @-@ {|\(\[\(.*\)\]\)?|} @-@ re_spaces
+      @-@ "$"
     ) in
   try while true do
     let input = ref (input_line ic) in

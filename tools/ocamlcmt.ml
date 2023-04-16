@@ -113,7 +113,7 @@ let generate_ml target_filename filename cmt =
           exit 2
   in
   let target_filename = match target_filename with
-      None -> Some (filename ^ ext)
+      None -> Some (filename @-@ ext)
     | Some "-" -> None
     | Some _ -> target_filename
   in
@@ -169,7 +169,7 @@ let main () =
         if !save_cmt_info then record_cmt_info cmt;
         let target_filename =
           match !target_filename with
-          | None -> Some (filename ^ ".annot")
+          | None -> Some (filename @-@ ".annot")
           | Some "-" -> None
           | Some _ as x -> x
         in
