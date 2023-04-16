@@ -82,13 +82,13 @@ module Naming =
           | _ -> "-c"
         with Not_found -> ""
       in
-      let prefix = name^qual in
-      let html_file = prefix^".html" in
-      let html_frame_file = prefix^"-frame.html" in
+      let prefix = name@-@qual in
+      let html_file = prefix@-@".html" in
+      let html_frame_file = prefix@-@"-frame.html" in
       (html_file, html_frame_file)
 
     (** Return the target for the given prefix and simple name. *)
-    let target pref simple_name = pref^simple_name
+    let target pref simple_name = pref@-@simple_name
 
     (** Return the complete link target (file#target) for the given prefix string and complete name.*)
     let complete_target pref complete_name =
@@ -98,7 +98,7 @@ module Naming =
         if s = "" then simple_name else s
       in
       let (html_file, _) = html_files module_name in
-      html_file^"#"^(target pref simple_name)
+      html_file@-@"#"@-@(target pref simple_name)
 
     (**return the link target for the given module. *)
     let module_target m = target mark_module (Name.simple m.m_name)
@@ -186,7 +186,7 @@ module Naming =
 
     (** Return the complete filename for the code of the given value. *)
     let file_code_value_complete_target v =
-      code_prefix^mark_value^(subst_infix_symbols v.val_name)^".html"
+      code_prefix@-@mark_value@-@(subst_infix_symbols v.val_name)@-@".html"
 
     (** Return the link target for the given attribute. *)
     let attribute_target a = target mark_attribute (Name.simple a.att_value.val_name)
@@ -196,7 +196,7 @@ module Naming =
 
     (** Return the complete filename for the code of the given attribute. *)
     let file_code_attribute_complete_target a =
-      code_prefix^mark_attribute^a.att_value.val_name^".html"
+      code_prefix@-@mark_attribute@-@a.att_value.val_name@-@".html"
 
     (** Return the link target for the given method. *)
     let method_target m = target mark_method (Name.simple m.met_value.val_name)
@@ -206,7 +206,7 @@ module Naming =
 
     (** Return the complete filename for the code of the given method. *)
     let file_code_method_complete_target m =
-      code_prefix^mark_method^m.met_value.val_name^".html"
+      code_prefix@-@mark_method@-@m.met_value.val_name@-@".html"
 
     (** Return the link target for the given label section. *)
     let label_target l = target "" l
@@ -217,17 +217,17 @@ module Naming =
     (** Return the complete filename for the code of the type of the
        given module or module type name. *)
     let file_type_module_complete_target name =
-      type_prefix^name^".html"
+      type_prefix@-@name@-@".html"
 
     (** Return the complete filename for the code of the
        given module name. *)
     let file_code_module_complete_target name =
-      code_prefix^name^".html"
+      code_prefix@-@name@-@".html"
 
     (** Return the complete filename for the code of the type of the
        given class or class type name. *)
     let file_type_class_complete_target name =
-      type_prefix^name^".html"
+      type_prefix@-@name@-@".html"
   end
 
 (** A class with a method to colorize a string which represents OCaml code. *)
@@ -523,7 +523,7 @@ class virtual text =
               None -> [text]
             | Some text -> text
           in
-          bs b ("<a href=\""^target^"\">");
+          bs b ("<a href=\""@-@target@-@"\">");
           self#html_of_text b text;
           bs b "</a>"
 
@@ -737,14 +737,14 @@ class virtual info =
           ()
       | Some info ->
           let module M = Odoc_info in
-          if indent then bs b ("<div class=\"info "^cls^"\">\n");
+          if indent then bs b ("<div class=\"info "@-@cls@-@"\">\n");
           (
            match info.M.i_deprecated with
             None -> ()
           | Some d ->
                bs b "<div class=\"info-deprecated\">\n";
                bs b "<span class=\"warning\">";
-               bs b (Odoc_messages.deprecated^". ");
+               bs b (Odoc_messages.deprecated@-@". ");
                bs b "</span>" ;
                self#html_of_text b d;
                bs b "</div>\n"
@@ -875,44 +875,44 @@ class html =
 
         "h2 { font-size : 20pt ; text-align: center; }" ;
 
-        "h3 { font-size : 20pt ; border: 1px solid #000000; "^
-        "margin-top: 5px; margin-bottom: 2px;"^
-        "text-align: center; background-color: #90BDFF ;"^
+        "h3 { font-size : 20pt ; border: 1px solid #000000; "@-@
+        "margin-top: 5px; margin-bottom: 2px;"@-@
+        "text-align: center; background-color: #90BDFF ;"@-@
         "padding: 2px; }" ;
 
-        "h4 { font-size : 20pt ; border: 1px solid #000000; "^
-        "margin-top: 5px; margin-bottom: 2px;"^
-        "text-align: center; background-color: #90DDFF ;"^
+        "h4 { font-size : 20pt ; border: 1px solid #000000; "@-@
+        "margin-top: 5px; margin-bottom: 2px;"@-@
+        "text-align: center; background-color: #90DDFF ;"@-@
         "padding: 2px; }" ;
 
-        "h5 { font-size : 20pt ; border: 1px solid #000000; "^
-        "margin-top: 5px; margin-bottom: 2px;"^
-        "text-align: center; background-color: #90EDFF ;"^
+        "h5 { font-size : 20pt ; border: 1px solid #000000; "@-@
+        "margin-top: 5px; margin-bottom: 2px;"@-@
+        "text-align: center; background-color: #90EDFF ;"@-@
         "padding: 2px; }" ;
 
-        "h6 { font-size : 20pt ; border: 1px solid #000000; "^
-        "margin-top: 5px; margin-bottom: 2px;"^
-        "text-align: center; background-color: #90FDFF ;"^
+        "h6 { font-size : 20pt ; border: 1px solid #000000; "@-@
+        "margin-top: 5px; margin-bottom: 2px;"@-@
+        "text-align: center; background-color: #90FDFF ;"@-@
         "padding: 2px; }" ;
 
-        "div.h7 { font-size : 20pt ; border: 1px solid #000000; "^
-        "margin-top: 5px; margin-bottom: 2px;"^
-        "text-align: center; background-color: #90BDFF ; "^
+        "div.h7 { font-size : 20pt ; border: 1px solid #000000; "@-@
+        "margin-top: 5px; margin-bottom: 2px;"@-@
+        "text-align: center; background-color: #90BDFF ; "@-@
         "padding: 2px; }" ;
 
-        "div.h8 { font-size : 20pt ; border: 1px solid #000000; "^
-        "margin-top: 5px; margin-bottom: 2px;"^
-        "text-align: center; background-color: #E0FFFF ; "^
+        "div.h8 { font-size : 20pt ; border: 1px solid #000000; "@-@
+        "margin-top: 5px; margin-bottom: 2px;"@-@
+        "text-align: center; background-color: #E0FFFF ; "@-@
         "padding: 2px; }" ;
 
-        "div.h9 { font-size : 20pt ; border: 1px solid #000000; "^
-        "margin-top: 5px; margin-bottom: 2px;"^
-        "text-align: center; background-color: #F0FFFF ; "^
+        "div.h9 { font-size : 20pt ; border: 1px solid #000000; "@-@
+        "margin-top: 5px; margin-bottom: 2px;"@-@
+        "text-align: center; background-color: #F0FFFF ; "@-@
         "padding: 2px; }" ;
 
-        "div.h10 { font-size : 20pt ; border: 1px solid #000000; "^
-        "margin-top: 5px; margin-bottom: 2px;"^
-        "text-align: center; background-color: #FFFFFF ; "^
+        "div.h10 { font-size : 20pt ; border: 1px solid #000000; "@-@
+        "margin-top: 5px; margin-bottom: 2px;"@-@
+        "text-align: center; background-color: #FFFFFF ; "@-@
         "padding: 2px; }" ;
 
         "a {color: #416DFF; text-decoration: none}";
@@ -1068,14 +1068,14 @@ class html =
       | Some f ->
           style_file <- f
       );
-      style <- "<link rel=\"stylesheet\" href=\""^style_file^"\" type=\"text/css\">\n"
+      style <- "<link rel=\"stylesheet\" href=\""@-@style_file@-@"\" type=\"text/css\">\n"
 
     (** Get the title given by the user *)
     method title = match !Global.title with None -> "" | Some t -> self#escape t
 
     (** Get the title given by the user completed with the given subtitle. *)
     method inner_title s =
-      (match self#title with "" -> "" | t -> t^" : ")^
+      (match self#title with "" -> "" | t -> t@-@" : ")@-@
       (self#escape s)
 
     (** Get the page header. *)
@@ -1219,10 +1219,10 @@ class html =
 
     (** Return html code with the given string in the keyword style.*)
     method keyword s =
-      "<span class=\"keyword\">"^s^"</span>"
+      "<span class=\"keyword\">"@-@s@-@"</span>"
 
     (** Return html code with the given string in the constructor style. *)
-    method constructor s = "<span class=\"constructor\">"^s^"</span>"
+    method constructor s = "<span class=\"constructor\">"@-@s@-@"</span>"
 
     (** Output the given ocaml code to the given file name. *)
     method private output_code ?(with_pre=true) in_title file code =
@@ -1263,14 +1263,14 @@ class html =
         in
         if known_type ||
            (retry && String.Set.mem match_s known_types_names) then
-           "<a href=\""^(Naming.complete_target Naming.mark_type match_s)^"\">"^
-           s_final^
+           "<a href=\""@-@(Naming.complete_target Naming.mark_type match_s)@-@"\">"@-@
+           s_final@-@
            "</a>"
         else
         if known_class ||
            (retry && String.Set.mem match_s known_classes_names) then
             let (html_file, _) = Naming.html_files match_s in
-            "<a href=\""^html_file^"\">"^s_final^"</a>"
+            "<a href=\""@-@html_file@-@"\">"@-@s_final@-@"</a>"
           else
             s_final
       in
@@ -1300,7 +1300,7 @@ class html =
         if known_module ||
            (retry && String.Set.mem match_s known_modules_names) then
           let (html_file, _) = Naming.html_files match_s in
-          "<a href=\""^html_file^"\">"^s_final^"</a>"
+          "<a href=\""@-@html_file@-@"\">"@-@s_final@-@"</a>"
         else
           s_final
       in
@@ -1446,12 +1446,12 @@ class html =
       in
       self#html_of_text b
         [
-          Code (s_functor^"(");
+          Code (s_functor@-@"(");
           Code p.mp_name ;
           Code " : ";
         ] ;
       self#html_of_module_type_kind b father p.mp_kind;
-      self#html_of_text b [ Code (") "^s_arrow)]
+      self#html_of_text b [ Code (") "@-@s_arrow)]
 
     method html_of_module_element b m_name ele =
       match ele with
@@ -1566,7 +1566,7 @@ class html =
     method html_of_type_extension b m_name te =
       Odoc_info.reset_type_names ();
       bs b "<pre><code>";
-      bs b ((self#keyword "type")^" ");
+      bs b ((self#keyword "type")@-@" ");
       let s = Odoc_info.string_of_type_extension_param_list te in
       let s2 = text_to_html s in
       bs b "<code class=\"type\">";
@@ -1593,15 +1593,15 @@ class html =
           match x.xt_args, x.xt_ret with
               Cstr_tuple [], None -> ()
             | l,None ->
-                bs b (" " ^ (self#keyword "of") ^ " ");
+                bs b (" " @-@ (self#keyword "of") @-@ " ");
                 self#html_of_cstr_args ~par: false b father cname " * " l;
             | Cstr_tuple [],Some r ->
-                bs b (" " ^ (self#keyword ":") ^ " ");
+                bs b (" " @-@ (self#keyword ":") @-@ " ");
                 self#html_of_type_expr b father r;
             | l,Some r ->
-                bs b (" " ^ (self#keyword ":") ^ " ");
+                bs b (" " @-@ (self#keyword ":") @-@ " ");
                 self#html_of_cstr_args ~par: false b father cname " * " l;
-                bs b (" " ^ (self#keyword "->") ^ " ");
+                bs b (" " @-@ (self#keyword "->") @-@ " ");
                 self#html_of_type_expr b father r;
         );
         (
@@ -1656,17 +1656,17 @@ class html =
         match e.ex_args, e.ex_ret with
           Cstr_tuple [], None -> ()
         | _,None ->
-            bs b (" "^(self#keyword "of")^" ");
+            bs b (" "@-@(self#keyword "of")@-@" ");
             self#html_of_cstr_args
                    ~par:false b father cname " * " e.ex_args
         | Cstr_tuple [],Some r ->
-            bs b (" " ^ (self#keyword ":") ^ " ");
+            bs b (" " @-@ (self#keyword ":") @-@ " ");
             self#html_of_type_expr b father r;
         | l,Some r ->
-            bs b (" " ^ (self#keyword ":") ^ " ");
+            bs b (" " @-@ (self#keyword ":") @-@ " ");
             self#html_of_cstr_args
                    ~par:false b father cname " * " l;
-            bs b (" " ^ (self#keyword "->") ^ " ");
+            bs b (" " @-@ (self#keyword "->") @-@ " ");
             self#html_of_type_expr b father r;
       );
       (
@@ -1750,7 +1750,7 @@ class html =
         | Some _, Type_record _ -> "\n<pre>"
         );
       bp b "<span id=\"%s\">" (Naming.type_target t);
-      bs b ((self#keyword "type")^" ");
+      bs b ((self#keyword "type")@-@" ");
       self#html_of_type_expr_param_list b father t;
       (match t.ty_parameters with [] -> () | _ -> bs b " ");
       bs b (Name.simple t.ty_name);
@@ -1810,15 +1810,15 @@ class html =
              match constr.vc_args, constr.vc_ret with
                Cstr_tuple [], None -> ()
              | l,None ->
-                 bs b (" " ^ (self#keyword "of") ^ " ");
+                 bs b (" " @-@ (self#keyword "of") @-@ " ");
                  self#html_of_cstr_args ~par:false b father constr.vc_name " * " l;
              | Cstr_tuple [],Some r ->
-                 bs b (" " ^ (self#keyword ":") ^ " ");
+                 bs b (" " @-@ (self#keyword ":") @-@ " ");
                  self#html_of_type_expr b father r;
              | l,Some r ->
-                 bs b (" " ^ (self#keyword ":") ^ " ");
+                 bs b (" " @-@ (self#keyword ":") @-@ " ");
                  self#html_of_cstr_args ~par: false b father constr.vc_name " * " l;
-                 bs b (" " ^ (self#keyword "->") ^ " ");
+                 bs b (" " @-@ (self#keyword "->") @-@ " ");
                  self#html_of_type_expr b father r;
             );
             bs b "</code></td>\n";
@@ -1868,13 +1868,13 @@ class html =
       bs b " ";
       (
        if a.att_virtual then
-         bs b ((self#keyword "virtual")^ " ")
+         bs b ((self#keyword "virtual")@-@ " ")
        else
          ()
       );
       (
        if a.att_mutable then
-         bs b ((self#keyword Odoc_messages.mutab)^ " ")
+         bs b ((self#keyword Odoc_messages.mutab)@-@ " ")
        else
          ()
       );(
@@ -1897,9 +1897,9 @@ class html =
       bs b "\n<pre>";
       (* html mark *)
       bp b "<span id=\"%s\">" (Naming.method_target m);
-     bs b ((self#keyword "method")^" ");
-       if m.met_private then bs b ((self#keyword "private")^" ");
-      if m.met_virtual then bs b ((self#keyword "virtual")^" ");
+     bs b ((self#keyword "method")@-@" ");
+       if m.met_private then bs b ((self#keyword "private")@-@" ");
+      if m.met_virtual then bs b ((self#keyword "virtual")@-@" ");
       (
        match m.met_value.val_code with
          None -> bs b  (Name.simple m.met_value.val_name)
@@ -2044,7 +2044,7 @@ class html =
       let father = Name.father m.m_name in
       bs b "\n<pre>";
       bp b "<span id=\"%s\">" (Naming.module_target m);
-      bs b ((self#keyword "module")^" ");
+      bs b ((self#keyword "module")@-@" ");
       (
        if with_link then
          bp b "<a href=\"%s\">%s</a>" html_file (Name.simple m.m_name)
@@ -2076,7 +2076,7 @@ class html =
       let father = Name.father mt.mt_name in
       bs b "\n<pre>";
       bp b "<span id=\"%s\">" (Naming.module_type_target mt);
-      bs b (self#keyword "module type" ^ " ");
+      bs b (self#keyword "module type" @-@ " ");
       (
        if with_link then
          bp b "<a href=\"%s\">%s</a>" html_file (Name.simple mt.mt_name)
@@ -2104,7 +2104,7 @@ class html =
     (** Print html code for an included module. *)
     method html_of_included_module b im =
       bs b "\n<pre>";
-      bs b ((self#keyword "include")^" ");
+      bs b ((self#keyword "include")@-@" ");
       (
        match im.im_module with
          None ->
@@ -2227,8 +2227,8 @@ class html =
              ty_code = None ;
            }
         );
-      bs b ((self#keyword "class")^" ");
-      if c.cl_virtual then bs b ((self#keyword "virtual")^" ");
+      bs b ((self#keyword "class")@-@" ");
+      if c.cl_virtual then bs b ((self#keyword "virtual")@-@" ");
       (
        match c.cl_type_parameters with
          [] -> ()
@@ -2271,8 +2271,8 @@ class html =
              ty_code = None ;
            }
         );
-      bs b ((self#keyword "class type")^" ");
-      if ct.clt_virtual then bs b ((self#keyword "virtual")^" ");
+      bs b ((self#keyword "class type")@-@" ");
+      if ct.clt_virtual then bs b ((self#keyword "virtual")@-@" ");
       (
        match ct.clt_type_parameters with
         [] -> ()
@@ -2310,8 +2310,8 @@ class html =
           | Some (Cltype (ct, _)) -> (ct.clt_name, fst (Naming.html_files ct.clt_name))
         in
         let new_v =
-          "<table border=1>\n<tr><td>"^
-          "<a href=\""^html_file^"\">"^name2^"</a>"^
+          "<table border=1>\n<tr><td>"@-@
+          "<a href=\""@-@html_file@-@"\">"@-@name2@-@"</a>"@-@
           "</td></tr>\n</table>\n"
         in
         { n with Odoc_dag2html.valu = new_v }
@@ -2488,7 +2488,7 @@ class html =
         bs b "<body>\n";
         self#print_navbar b pre_name post_name cl.cl_name;
         bs b "<h1>";
-        bs b (Odoc_messages.clas^" ");
+        bs b (Odoc_messages.clas@-@" ");
         if cl.cl_virtual then bs b "virtual " ;
         bp b "<a href=\"%s\">%s</a>" type_file cl.cl_name;
         bs b "</h1>\n";
@@ -2536,7 +2536,7 @@ class html =
         bs b "<body>\n";
         self#print_navbar b pre_name post_name clt.clt_name;
         bs b "<h1>";
-        bs b (Odoc_messages.class_type^" ");
+        bs b (Odoc_messages.class_type@-@" ");
         if clt.clt_virtual then bs b "virtual ";
         bp b "<a href=\"%s\">%s</a>" type_file clt.clt_name;
         bs b "</h1>\n";
@@ -2581,7 +2581,7 @@ class html =
         bs b "<body>\n";
         self#print_navbar b pre_name post_name mt.mt_name;
         bp b "<h1>";
-        bs b (Odoc_messages.module_type^" ");
+        bs b (Odoc_messages.module_type@-@" ");
         (
          match mt.mt_type with
            Some _ -> bp b "<a href=\"%s\">%s</a>" type_file mt.mt_name
@@ -2632,7 +2632,7 @@ class html =
        @raise Failure if an error occurs.*)
     method generate_for_module pre post modu =
       try
-        Odoc_info.verbose ("Generate for module "^modu.m_name);
+        Odoc_info.verbose ("Generate for module "@-@modu.m_name);
         let (html_file, _) = Naming.html_files modu.m_name in
         let type_file = Naming.file_type_module_complete_target modu.m_name in
         let code_file = Naming.file_code_module_complete_target modu.m_name in

@@ -670,7 +670,7 @@ let query module_list name =
      | [] ->
          (
          try
-           let re = Str.regexp ("^"^(Str.quote name)^"$") in
+           let re = Str.regexp ("^"@-@(Str.quote name)@-@"$") in
             let t = Odoc_search.find_section module_list re in
             let v2 = (name, Some (RK_section t)) in
             add_verified v2 ;
@@ -820,7 +820,7 @@ let rec assoc_comments_text_elements parent_name module_list t_ele =
                  (
                   (* we just verify that we find an element of this kind with this name *)
                   try
-                    let re = Str.regexp ("^"^(Str.quote name)^"$") in
+                    let re = Str.regexp ("^"@-@(Str.quote name)@-@"$") in
                     let t = Odoc_search.find_section module_list re in
                     let v2 = (name, Some (RK_section t)) in
                     add_verified v2 ;

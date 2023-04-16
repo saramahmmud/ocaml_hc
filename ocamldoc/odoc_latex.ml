@@ -71,7 +71,7 @@ let rec merge_codepre = function
     [] -> []
   | [e] -> [e]
   | (CodePre s1) :: (CodePre s2) :: q ->
-      merge_codepre ((CodePre (s1^"\n"^s2)) :: q)
+      merge_codepre ((CodePre (s1@-@"\n"@-@s2)) :: q)
   | e :: q ->
       e :: (merge_codepre q)
 
@@ -94,7 +94,7 @@ class text =
     method section_style level s =
       try
         let sec = List.assoc level !latex_titles in
-        "\\"^sec^"{"^s^"}\n"
+        "\\"@-@sec@-@"{"@-@s@-@"}\n"
       with Not_found -> s
 
     (** Associations of strings to substitute in latex code. *)
@@ -212,46 +212,46 @@ class text =
       Buffer.contents buf
 
     (** Make a correct label from a value name. *)
-    method value_label ?no_ name = !latex_value_prefix^(self#label ?no_ name)
+    method value_label ?no_ name = !latex_value_prefix@-@(self#label ?no_ name)
 
     (** Make a correct label from an attribute name. *)
-    method attribute_label ?no_ name = !latex_attribute_prefix^(self#label ?no_ name)
+    method attribute_label ?no_ name = !latex_attribute_prefix@-@(self#label ?no_ name)
 
     (** Make a correct label from a method name. *)
-    method method_label ?no_ name = !latex_method_prefix^(self#label ?no_ name)
+    method method_label ?no_ name = !latex_method_prefix@-@(self#label ?no_ name)
 
     (** Make a correct label from a class name. *)
-    method class_label ?no_ name = !latex_class_prefix^(self#label ?no_ name)
+    method class_label ?no_ name = !latex_class_prefix@-@(self#label ?no_ name)
 
     (** Make a correct label from a class type name. *)
-    method class_type_label ?no_ name = !latex_class_type_prefix^(self#label ?no_ name)
+    method class_type_label ?no_ name = !latex_class_type_prefix@-@(self#label ?no_ name)
 
     (** Make a correct label from a module name. *)
-    method module_label ?no_ name = !latex_module_prefix^(self#label ?no_ name)
+    method module_label ?no_ name = !latex_module_prefix@-@(self#label ?no_ name)
 
     (** Make a correct label from a module type name. *)
-    method module_type_label ?no_ name = !latex_module_type_prefix^(self#label ?no_ name)
+    method module_type_label ?no_ name = !latex_module_type_prefix@-@(self#label ?no_ name)
 
     (** Make a correct label from an extension name. *)
-    method extension_label ?no_ name = !latex_extension_prefix^(self#label ?no_ name)
+    method extension_label ?no_ name = !latex_extension_prefix@-@(self#label ?no_ name)
 
     (** Make a correct label from an exception name. *)
-    method exception_label ?no_ name = !latex_exception_prefix^(self#label ?no_ name)
+    method exception_label ?no_ name = !latex_exception_prefix@-@(self#label ?no_ name)
 
     (** Make a correct label from a type name. *)
-    method type_label ?no_ name = !latex_type_prefix^(self#label ?no_ name)
+    method type_label ?no_ name = !latex_type_prefix@-@(self#label ?no_ name)
 
     (** Make a correct label from a record field. *)
-    method recfield_label ?no_ name = !latex_type_elt_prefix^(self#label ?no_ name)
+    method recfield_label ?no_ name = !latex_type_elt_prefix@-@(self#label ?no_ name)
 
     (** Make a correct label from a variant constructor. *)
-    method const_label ?no_ name = !latex_type_elt_prefix^(self#label ?no_ name)
+    method const_label ?no_ name = !latex_type_elt_prefix@-@(self#label ?no_ name)
 
     (** Return latex code for the label of a given label. *)
-    method make_label label = "\\label{"^label^"}"
+    method make_label label = "\\label{"@-@label@-@"}"
 
     (** Return latex code for the ref to a given label. *)
-    method make_ref label = "\\ref{"^label^"}"
+    method make_ref label = "\\ref{"@-@label@-@"}"
 
     (** Print the LaTeX code corresponding to the [text] parameter.*)
     method latex_of_text fmt t =
@@ -406,7 +406,7 @@ class text =
             | Some x -> x in
           let label= self#make_ref (self#label ~no_:false (Name.simple name)) in
           self#latex_of_text fmt
-            (text @ [Latex ("["^label^"]")] )
+            (text @ [Latex ("["@-@label@-@"]")] )
       | Some kind ->
           let f_label =
             match kind with
@@ -430,7 +430,7 @@ class text =
             | Some t -> t
           in
           self#latex_of_text fmt
-             (text @ [Latex ("["^(self#make_ref (f_label name))^"]")])
+             (text @ [Latex ("["@-@(self#make_ref (f_label name))@-@"]")])
 
     method latex_of_Superscript fmt t =
       ps fmt "$^{";
@@ -611,11 +611,11 @@ class latex =
                Type_abstract ->
                 begin match t.ty_manifest with
                 | Some (Object_type _) ->
-                  "= " ^ (if priv then "private" else "") ^ " <"
+                  "= " @-@ (if priv then "private" else "") @-@ " <"
                 | _ -> ""
                 end
-             | Type_variant _ -> "="^(if priv then " private" else "")
-             | Type_record _ -> "= "^(if priv then "private " else "")
+             | Type_variant _ -> "="@-@(if priv then " private" else "")
+             | Type_record _ -> "= "@-@(if priv then "private " else "")
              | Type_open -> "= .."
             ) ;
           flush2 ()
@@ -659,7 +659,7 @@ class latex =
         in
         let defs2 = (CodePre s_type3) :: defs in
         (merge_codepre defs2) @
-        [Latex ("\\index{"^(self#label s_name)^"@\\verb`"^(self#label ~no_:false s_name)^"`}\n")] @
+        [Latex ("\\index{"@-@(self#label s_name)@-@"@\\verb`"@-@(self#label ~no_:false s_name)@-@"`}\n")] @
         (self#text_of_info t.ty_info)
       in
       self#latex_of_text fmt
@@ -750,7 +750,7 @@ class latex =
         in
         Latex ( self#make_label (self#exception_label e.ex_name) ) ::
        merge_codepre (l @ s ) @
-      [Latex ("\\index{"^(self#label s_name)^"@\\verb`"^(self#label ~no_:false s_name)^"`}\n")]
+      [Latex ("\\index{"@-@(self#label s_name)@-@"@\\verb`"@-@(self#label ~no_:false s_name)@-@"`}\n")]
        @ (self#text_of_info e.ex_info) in
       self#latex_of_text fmt text
 
@@ -888,16 +888,16 @@ class latex =
     method latex_for_module_index fmt m =
       let s_name = Name.simple m.m_name in
       self#latex_of_text fmt
-        [Latex ("\\index{"^(self#label s_name)^"@\\verb`"^
-                (self#label ~no_:false s_name)^"`}\n"
+        [Latex ("\\index{"@-@(self#label s_name)@-@"@\\verb`"@-@
+                (self#label ~no_:false s_name)@-@"`}\n"
                )
         ]
 
     method latex_for_module_type_index fmt mt =
       let s_name = Name.simple mt.mt_name in
       self#latex_of_text fmt
-        [Latex ("\\index{"^(self#label s_name)^"@\\verb`"^
-                (self#label ~no_:false (Name.simple s_name))^"`}\n"
+        [Latex ("\\index{"@-@(self#label s_name)@-@"@\\verb`"@-@
+                (self#label ~no_:false (Name.simple s_name))@-@"`}\n"
                )
         ]
 
@@ -911,16 +911,16 @@ class latex =
     method latex_for_class_index fmt c =
       let s_name = Name.simple c.cl_name in
       self#latex_of_text fmt
-        [Latex ("\\index{"^(self#label s_name)^"@\\verb`"^
-                (self#label ~no_:false s_name)^"`}\n"
+        [Latex ("\\index{"@-@(self#label s_name)@-@"@\\verb`"@-@
+                (self#label ~no_:false s_name)@-@"`}\n"
                )
         ]
 
     method latex_for_class_type_index fmt ct =
       let s_name = Name.simple ct.clt_name in
       self#latex_of_text fmt
-        [Latex ("\\index{"^(self#label s_name)^"@\\verb`"^
-                (self#label ~no_:false s_name)^"`}\n"
+        [Latex ("\\index{"@-@(self#label s_name)@-@"@\\verb`"@-@
+                (self#label ~no_:false s_name)@-@"`}\n"
                )
         ]
 
@@ -1053,7 +1053,7 @@ class latex =
       let type_params =
         match c.cl_type_parameters with
           [] -> ""
-        | l -> (self#normal_class_type_param_list father l)^" "
+        | l -> (self#normal_class_type_param_list father l)@-@" "
       in
       let t =
         [
@@ -1095,7 +1095,7 @@ class latex =
       let type_params =
         match ct.clt_type_parameters with
           [] -> ""
-        | l -> (self#normal_class_type_param_list father l)^" "
+        | l -> (self#normal_class_type_param_list father l)@-@" "
       in
       let t =
         [
@@ -1152,7 +1152,7 @@ class latex =
         match inh.ic_class with
           None -> (* we can't make the reference *)
             Newline ::
-            Code ("inherit "^inh.ic_name) ::
+            Code ("inherit "@-@inh.ic_name) ::
             (match inh.ic_text with
               None -> []
             | Some t -> Newline :: t
@@ -1165,8 +1165,8 @@ class latex =
             in
             (* we can create the reference *)
             Newline ::
-            Odoc_info.Code ("inherit "^inh.ic_name) ::
-            (Odoc_info.Latex (" ["^(self#make_ref label)^"]")) ::
+            Odoc_info.Code ("inherit "@-@inh.ic_name) ::
+            (Odoc_info.Latex (" ["@-@(self#make_ref label)@-@"]")) ::
             (match inh.ic_text with
               None -> []
             | Some t -> Newline :: t
@@ -1206,7 +1206,7 @@ class latex =
       let text =
         let title =
           if m.m_text_only then [Raw m.m_name]
-          else [ Raw (Odoc_messages.modul^" ") ; Code m.m_name ] in
+          else [ Raw (Odoc_messages.modul@-@" ") ; Code m.m_name ] in
         let subtitle = match first_t with
           | [] -> []
           | t -> (Raw " : ") :: t in
@@ -1290,7 +1290,7 @@ class latex =
          let f m =
            try
              let chanout =
-               open_out ((Filename.concat dir (Name.simple m.m_name))^".tex")
+               open_out ((Filename.concat dir (Name.simple m.m_name))@-@".tex")
              in
              let fmt = Format.formatter_of_out_channel chanout in
              self#generate_for_top_module fmt m ;
@@ -1312,7 +1312,7 @@ class latex =
         List.iter
           (fun m ->
             if !separate_files then
-              ps fmt ("\\input{"^((Name.simple m.m_name))^".tex}\n")
+              ps fmt ("\\input{"@-@((Name.simple m.m_name))@-@".tex}\n")
             else
               self#generate_for_top_module fmt m
           )

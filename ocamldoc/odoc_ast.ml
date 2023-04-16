@@ -431,7 +431,7 @@ module Analyser =
              [] ->
                (* it is not a function since there are no parameters *)
                (* we can't get here normally *)
-               raise (Failure (Odoc_messages.bad_tree^" "^(Odoc_messages.method_without_param current_method_name)))
+               raise (Failure (Odoc_messages.bad_tree@-@" "@-@(Odoc_messages.method_without_param current_method_name)))
            | l ->
                match l with
                  [] ->

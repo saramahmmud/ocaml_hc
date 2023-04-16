@@ -38,7 +38,7 @@ module Info_retriever =
       | Odoc_text.Text_syntax (l, c, s) ->
           raise (Failure (Odoc_messages.text_parse_error l c s))
       | _ ->
-          raise (Failure ("Unknown error while parsing @see tag: "^s))
+          raise (Failure ("Unknown error while parsing @see tag: "@-@s))
 
     let retrieve_info fun_lex file (s : string) =
       try
@@ -93,7 +93,7 @@ module Info_retriever =
           | _other -> (0, 0, Odoc_messages.parse_error)
         in begin
           incr Odoc_global.errors;
-          prerr_endline (Odoc_messages.error_location file l c ^ message);
+          prerr_endline (Odoc_messages.error_location file l c @-@ message);
           (0, None)
         end
 
@@ -101,7 +101,7 @@ module Info_retriever =
     (** Return true if the given string contains a blank line. *)
     let blank_line s =
       try
-        let _ = Str.search_forward (Str.regexp ("['\n']"^simple_blank^"*['\n']")) s 0 in
+        let _ = Str.search_forward (Str.regexp ("['\n']"@-@simple_blank@-@"*['\n']")) s 0 in
         (* a blank line was before the comment *)
         true
       with

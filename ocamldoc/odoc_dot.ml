@@ -46,11 +46,11 @@ class dot =
 
     (** Graph header. *)
     method header =
-      "digraph G {\n"^
-      "  size=\"10,7.5\";\n"^
-      "  ratio=\"fill\";\n"^
-      "  rotate=90;\n"^
-      "  fontsize=\"12pt\";\n"^
+      "digraph G {\n"@-@
+      "  size=\"10,7.5\";\n"@-@
+      "  ratio=\"fill\";\n"@-@
+      "  rotate=90;\n"@-@
+      "  fontsize=\"12pt\";\n"@-@
       "  rankdir = TB ;\n"
 
     method get_one_color =
