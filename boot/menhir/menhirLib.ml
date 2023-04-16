@@ -2189,8 +2189,8 @@ let shorten k text =
   if n <= 2 * k + 3 then
     text
   else
-    String.sub text 0 k ^
-    "..." ^
+    String.sub text 0 k @-@
+    "..." @-@
     String.sub text (n - k) k
 
 let is_digit c =
