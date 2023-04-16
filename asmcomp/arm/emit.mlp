@@ -107,7 +107,7 @@ let record_frame_label env live dbg =
       | {typ = Val; loc = Stack s} as reg ->
           live_offset := slot_offset env s (register_class reg) :: !live_offset
       | {typ = Addr} as r ->
-          Misc.fatal_error ("bad GC root " ^ Reg.name r)
+          Misc.fatal_error ("bad GC root " @-@ Reg.name r)
       | _ -> ())
     live;
   record_frame_descr ~label:lbl ~frame_size:(frame_size env)

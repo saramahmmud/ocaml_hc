@@ -211,7 +211,7 @@ let record_frame_label env live dbg =
       | {typ = Val; loc = Stack s} as reg ->
           live_offset := slot_offset env s (register_class reg) :: !live_offset
       | {typ = Addr} as r ->
-          Misc.fatal_error ("bad GC root " ^ Reg.name r)
+          Misc.fatal_error ("bad GC root " @-@ Reg.name r)
       | _ -> ())
     live;
   record_frame_descr ~label:lbl ~frame_size:(frame_size env)
@@ -459,7 +459,7 @@ let emit_named_text_section func_name =
   if !Clflags.function_sections then
     begin match system with
     | S_macosx | S_mingw | S_cygwin | S_win32 -> D.text ()
-    | _ -> D.section [ ".text.caml."^(emit_symbol func_name) ]
+    | _ -> D.section [ ".text.caml."@-@(emit_symbol func_name) ]
              (Some "ax") ["@progbits"]
     end
   else D.text ()
@@ -1000,7 +1000,7 @@ let end_assembly() =
                        ConstThis),
               const_32 ofs)));
       efa_def_label = (fun l -> _label (emit_label l));
-      efa_string = (fun s -> D.bytes (s ^ "\000"))
+      efa_string = (fun s -> D.bytes (s @-@ "\000"))
     };
 
   if system = S_linux_elf then
