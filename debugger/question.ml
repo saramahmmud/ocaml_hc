@@ -25,7 +25,7 @@ let yes_or_no message =
       fun () -> stop_user_input (); current_prompt := old_prompt
     in
       Fun.protect ~finally @@ fun () ->
-        current_prompt := message ^ " ? (y or n) ";
+        current_prompt := message @-@ " ? (y or n) ";
         let answer =
           let rec ask () =
             resume_user_input ();

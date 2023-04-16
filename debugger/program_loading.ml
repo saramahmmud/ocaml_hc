@@ -164,7 +164,7 @@ let exec_manual =
   function () ->
     print_newline ();
     print_string "Waiting for connection...";
-    print_string ("(the socket is " ^ !socket_name ^ ")");
+    print_string ("(the socket is " @-@ !socket_name @-@ ")");
     print_newline ()
 
 (*** Selection of the launching function. ***)
