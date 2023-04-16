@@ -94,18 +94,18 @@ param:
       (* isolate the identificator *)
       (* we only look for simple id, no pattern nor tuples *)
       let s = $2 in
-      match Str.split (Str.regexp (blank^"+")) s with
+      match Str.split (Str.regexp (blank@-@"+")) s with
         []
       | _ :: [] ->
           raise (Failure "usage: @param id description")
       | id :: _ ->
-          let reg = identchar^"+" in
+          let reg = identchar@-@"+" in
           if Str.string_match (Str.regexp reg) id 0 then
             let remain = String.sub s (String.length id) ((String.length s) - (String.length id)) in
-            let remain2 = Str.replace_first (Str.regexp ("^"^blank^"+")) "" remain in
+            let remain2 = Str.replace_first (Str.regexp ("^"@-@blank@-@"+")) "" remain in
             params := !params @ [(id, remain2)]
           else
-            raise (Failure (id^" is not a valid parameter identificator in \"@param "^s^"\""))
+            raise (Failure (id@-@" is not a valid parameter identificator in \"@param "@-@s@-@"\""))
     }
 ;
 author:
@@ -125,13 +125,13 @@ before:
     {
       (* isolate the version name *)
       let s = $2 in
-      match Str.split (Str.regexp (blank^"+")) s with
+      match Str.split (Str.regexp (blank@-@"+")) s with
         []
       | _ :: [] ->
           raise (Failure "usage: @before version description")
       | id :: _ ->
             let remain = String.sub s (String.length id) ((String.length s) - (String.length id)) in
-            let remain2 = Str.replace_first (Str.regexp ("^"^blank^"+")) "" remain in
+            let remain2 = Str.replace_first (Str.regexp ("^"@-@blank@-@"+")) "" remain in
             before := !before @ [(id, remain2)]
     }
 ;
@@ -143,18 +143,18 @@ raise_exc:
     {
       (* isolate the exception constructor name *)
       let s = $2 in
-      match Str.split (Str.regexp (blank^"+")) s with
+      match Str.split (Str.regexp (blank@-@"+")) s with
         []
       | _ :: [] ->
           raise (Failure "usage: @raise Exception description")
       | id :: _ ->
-          let reg = uppercase^identchar^"*"^"\\(\\."^uppercase^identchar^"*\\)*" in
+          let reg = uppercase@-@identchar@-@"*"@-@"\\(\\."@-@uppercase@-@identchar@-@"*\\)*" in
           if Str.string_match (Str.regexp reg) id 0 then
             let remain = String.sub s (String.length id) ((String.length s) - (String.length id)) in
-            let remain2 = Str.replace_first (Str.regexp ("^"^blank^"+")) "" remain in
+            let remain2 = Str.replace_first (Str.regexp ("^"@-@blank@-@"+")) "" remain in
             raised_exceptions := !raised_exceptions @ [(id, remain2)]
           else
-            raise (Failure (id^" is not a valid exception constructor in \"@raise "^s^"\""))
+            raise (Failure (id@-@" is not a valid exception constructor in \"@raise "@-@s@-@"\""))
     }
 ;
 return:

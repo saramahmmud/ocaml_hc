@@ -491,7 +491,7 @@ let closedir d =
 let rewinddir d =
   closedir d;
   try
-    let (first_entry, handle) = findfirst (d.dirname ^ "\\*.*") in
+    let (first_entry, handle) = findfirst (d.dirname @-@ "\\*.*") in
     d.handle <- handle; d.entry_read <- Dir_read first_entry
   with End_of_file ->
     d.handle <- 0; d.entry_read <- Dir_empty
@@ -983,7 +983,7 @@ let make_process_env env =
   Array.iter
     (fun s -> if String.contains s '\000' then raise(Unix_error(EINVAL, "", s)))
     env;
-  String.concat "\000" (Array.to_list env) ^ "\000"
+  String.concat "\000" (Array.to_list env) @-@ "\000"
 
 let create_process prog args fd1 fd2 fd3 =
   win_create_process prog (make_cmdline args) None fd1 fd2 fd3
@@ -1098,7 +1098,7 @@ let open_process_shell fn cmd =
   let shell =
     try Sys.getenv "COMSPEC"
     with Not_found -> raise(Unix_error(ENOEXEC, "open_process_shell", cmd)) in
-  fn shell (shell ^ " /c " ^ cmd)
+  fn shell (shell @-@ " /c " @-@ cmd)
 let open_process_in cmd =
   open_process_shell open_process_cmdline_in cmd
 let open_process_out cmd =

@@ -124,7 +124,7 @@ module Bytecode = struct
        digest of file contents + unit name.
        Unit name is needed for .cma files, which produce several code
        fragments. *)
-    let digest = Digest.string (file_digest ^ compunit.cu_name) in
+    let digest = Digest.string (file_digest @-@ compunit.cu_name) in
     let events =
       if compunit.cu_debug = 0 then [| |]
       else begin

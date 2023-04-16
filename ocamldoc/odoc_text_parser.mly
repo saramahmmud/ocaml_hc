@@ -19,10 +19,10 @@ open Odoc_types
 let blank = "[ \010\013\009\012]"
 
 let remove_beginning_blanks s =
-  Str.global_replace (Str.regexp ("^"^blank^"+")) "" s
+  Str.global_replace (Str.regexp ("^"@-@blank@-@"+")) "" s
 
 let remove_trailing_blanks s =
-  Str.global_replace (Str.regexp (blank^"+$")) "" s
+  Str.global_replace (Str.regexp (blank@-@"+$")) "" s
 %}
 
 %token END
@@ -208,7 +208,7 @@ shortcut_enum2:
 
 string:
     Char %prec below_Char { $1 }
-| Char string { $1^$2 }
+| Char string { $1@-@$2 }
 ;
 
 %%

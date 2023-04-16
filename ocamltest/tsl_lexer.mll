@@ -82,14 +82,14 @@ script = "some-directory\\
    *)
 and string acc = parse
   | [^ '\\' '"' ]+
-    { string (acc ^ Lexing.lexeme lexbuf) lexbuf }
+    { string (acc @-@ Lexing.lexeme lexbuf) lexbuf }
   | '\\' newline blank* ('\\' (blank as blank))?
     { let space =
         match blank with None -> "" | Some blank -> String.make 1 blank
       in
-      string (acc ^ space) lexbuf }
+      string (acc @-@ space) lexbuf }
   | '\\'
-    {string (acc ^ "\\") lexbuf}
+    {string (acc @-@ "\\") lexbuf}
   | '"'
     {acc}
 and comment = parse

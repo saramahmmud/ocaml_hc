@@ -268,7 +268,7 @@ let add_comment com =
 
 let add_docstring_comment ds =
   let com =
-    ("*" ^ Docstrings.docstring_body ds, Docstrings.docstring_loc ds)
+    ("*" @-@ Docstrings.docstring_body ds, Docstrings.docstring_loc ds)
   in
     add_comment com
 
@@ -476,13 +476,13 @@ rule token = parse
         if !handle_docstrings then
           DOCSTRING (Docstrings.docstring s loc)
         else
-          COMMENT ("*" ^ s, loc)
+          COMMENT ("*" @-@ s, loc)
       }
   | "(**" (('*'+) as stars)
       { let s, loc =
           wrap_comment_lexer
             (fun lexbuf ->
-               store_string ("*" ^ stars);
+               store_string ("*" @-@ stars);
                comment lexbuf)
             lexbuf
         in
@@ -594,7 +594,7 @@ and directive = parse
         | exception _ ->
             (* PR#7165 *)
             let explanation = "line number out of range" in
-            error lexbuf (Invalid_directive ("#" ^ directive, Some explanation))
+            error lexbuf (Invalid_directive ("#" @-@ directive, Some explanation))
         | line_num ->
            (* Documentation says that the line number should be
               positive, but we have never guarded against this and it

@@ -77,8 +77,8 @@ let print ?(esc=true) s =
 ;;
 
 let print_class ?(esc=true) cl s =
-  print ~esc: false ("<span class=\""^cl^"\">"^
-                     (if esc then escape s else s)^
+  print ~esc: false ("<span class=\""@-@cl@-@"\">"@-@
+                     (if esc then escape s else s)@-@
                      "</span>")
 ;;
 
@@ -173,7 +173,7 @@ let add_comment_string = Buffer.add_string comment_buffer
 let make_margin () =
   let rec iter n =
     if n <= 0 then ""
-    else "&nbsp;"^(iter (n-1))
+    else "&nbsp;"@-@(iter (n-1))
   in
   iter !margin
 
@@ -182,24 +182,24 @@ let print_comment () =
   let len = String.length s in
   let code =
     if len < 1 then
-      "<span class=\""^comment_class^"\">(*"^(escape s)^"*)</span>"
+      "<span class=\""@-@comment_class@-@"\">(*"@-@(escape s)@-@"*)</span>"
     else
       match s.[0] with
         '*' ->
           (
            try
              let html = !html_of_comment (String.sub s 1 (len-1)) in
-             "</code><table><tr><td>"^(make_margin ())^"</td><td>"^
-             "<span class=\""^comment_class^"\">"^
-             "(**"^html^"*)"^
-             "</span></td></tr></table><code class=\""^code_class^"\">"
+             "</code><table><tr><td>"@-@(make_margin ())@-@"</td><td>"@-@
+             "<span class=\""@-@comment_class@-@"\">"@-@
+             "(**"@-@html@-@"*)"@-@
+             "</span></td></tr></table><code class=\""@-@code_class@-@"\">"
            with
              e ->
                prerr_endline (Printexc.to_string e);
-               "<span class=\""^comment_class^"\">(*"^(escape s)^"*)</span>"
+               "<span class=\""@-@comment_class@-@"\">(*"@-@(escape s)@-@"*)</span>"
           )
       | _ ->
-          "<span class=\""^comment_class^"\">(*"^(escape s)^"*)</span>"
+          "<span class=\""@-@comment_class@-@"\">(*"@-@(escape s)@-@"*)</span>"
   in
   print ~esc: false code
 
@@ -321,7 +321,7 @@ rule token = parse
         string lexbuf;
         lexbuf.Lexing.lex_start_pos <-
           string_start - lexbuf.Lexing.lex_abs_pos;
-        print_class string_class ("\""^(get_stored_string())^"\"") ;
+        print_class string_class ("\""@-@(get_stored_string())@-@"\"") ;
         token lexbuf }
   | "'" [^ '\\' '\''] "'"
       { print_class string_class (Lexing.lexeme lexbuf) ;
@@ -520,7 +520,7 @@ let html_of_code b ?(with_pre=true) code =
   pre := with_pre;
   margin := 0;
 
-  let start = "<code class=\""^code_class^"\">" in
+  let start = "<code class=\""@-@code_class@-@"\">" in
   let ending = "</code>" in
   let html =
     (
@@ -536,7 +536,7 @@ let html_of_code b ?(with_pre=true) code =
          (* flush str_formatter because we already output
             something in it *)
          Format.pp_print_flush !fmt () ;
-         start^code^ending
+         start@-@code@-@ending
     )
   in
   pre := old_pre;

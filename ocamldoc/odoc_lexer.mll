@@ -51,7 +51,7 @@ let remove_blanks s =
     let rec iter liste =
       match liste with
         h :: q ->
-          let h2 = Str.global_replace (Str.regexp ("^"^blank^"+")) "" h in
+          let h2 = Str.global_replace (Str.regexp ("^"@-@blank@-@"+")) "" h in
           if h2 = "" then
             (
              (* we remove this line and must remove leading blanks of the next one *)
@@ -68,7 +68,7 @@ let remove_blanks s =
     let rec iter liste =
       match liste with
         h :: q ->
-          let h2 = Str.global_replace (Str.regexp (blank^"+$")) "" h in
+          let h2 = Str.global_replace (Str.regexp (blank@-@"+$")) "" h in
           if h2 = "" then
             (
              (* we remove this line and must remove trailing blanks of the next one *)
@@ -86,7 +86,7 @@ let remove_blanks s =
 
 (** Remove first blank characters of each line of a string, until the first '*' *)
 let remove_stars s =
-  Str.global_replace (Str.regexp ("^"^blank^"*\\*")) "" s
+  Str.global_replace (Str.regexp ("^"@-@blank@-@"*\\*")) "" s
 }
 
 let lowercase = ['a'-'z' '\223'-'\246' '\248'-'\255' '_']
@@ -340,7 +340,7 @@ and elements = parse
       }
   | _ {
         let s = Lexing.lexeme lexbuf in
-        failwith ("Unexpected character '"^s^"'")
+        failwith ("Unexpected character '"@-@s@-@"'")
       }
 
 

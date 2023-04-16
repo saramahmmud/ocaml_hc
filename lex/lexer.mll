@@ -210,7 +210,7 @@ rule main = parse
   | eof  { Tend }
   | _
     { raise_lexical_error lexbuf
-        ("illegal character " ^ String.escaped(Lexing.lexeme lexbuf))
+        ("illegal character " @-@ String.escaped(Lexing.lexeme lexbuf))
     }
 
 

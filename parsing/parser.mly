@@ -145,7 +145,7 @@ let mkinfix arg1 op arg2 =
 let neg_string f =
   if String.length f > 0 && f.[0] = '-'
   then String.sub f 1 (String.length f - 1)
-  else "-" ^ f
+  else "-" @-@ f
 
 let mkuminus ~oploc name arg =
   match name, arg.pexp_desc with
@@ -154,7 +154,7 @@ let mkuminus ~oploc name arg =
   | ("-" | "-."), Pexp_constant(Pconst_float (f, m)) ->
       Pexp_constant(Pconst_float(neg_string f, m))
   | _ ->
-      Pexp_apply(mkoperator ~loc:oploc ("~" ^ name), [Nolabel, arg])
+      Pexp_apply(mkoperator ~loc:oploc ("~" @-@ name), [Nolabel, arg])
 
 let mkuplus ~oploc name arg =
   let desc = arg.pexp_desc in
@@ -162,7 +162,7 @@ let mkuplus ~oploc name arg =
   | "+", Pexp_constant(Pconst_integer _)
   | ("+" | "+."), Pexp_constant(Pconst_float _) -> desc
   | _ ->
-      Pexp_apply(mkoperator ~loc:oploc ("~" ^ name), [Nolabel, arg])
+      Pexp_apply(mkoperator ~loc:oploc ("~" @-@ name), [Nolabel, arg])
 
 (* TODO define an abstraction boundary between locations-as-pairs
    and locations-as-Location.t; it should be clear when we move from
@@ -301,7 +301,7 @@ let bigarray_untuplify = function
 
 let builtin_arraylike_name loc _ ~assign paren_kind n =
   let opname = if assign then "set" else "get" in
-  let opname = if !Clflags.unsafe then "unsafe_" ^ opname else opname in
+  let opname = if !Clflags.unsafe then "unsafe_" @-@ opname else opname in
   let prefix = match paren_kind with
     | Paren -> Lident "Array"
     | Bracket -> Lident "String"
@@ -3521,8 +3521,8 @@ constant:
 ;
 signed_constant:
     constant     { $1 }
-  | MINUS INT    { let (n, m) = $2 in Pconst_integer("-" ^ n, m) }
-  | MINUS FLOAT  { let (f, m) = $2 in Pconst_float("-" ^ f, m) }
+  | MINUS INT    { let (n, m) = $2 in Pconst_integer("-" @-@ n, m) }
+  | MINUS FLOAT  { let (f, m) = $2 in Pconst_float("-" @-@ f, m) }
   | PLUS INT     { let (n, m) = $2 in Pconst_integer (n, m) }
   | PLUS FLOAT   { let (f, m) = $2 in Pconst_float(f, m) }
 ;
@@ -3547,12 +3547,12 @@ operator:
     PREFIXOP                                    { $1 }
   | LETOP                                       { $1 }
   | ANDOP                                       { $1 }
-  | DOTOP LPAREN index_mod RPAREN               { "."^ $1 ^"(" ^ $3 ^ ")" }
-  | DOTOP LPAREN index_mod RPAREN LESSMINUS     { "."^ $1 ^ "(" ^ $3 ^ ")<-" }
-  | DOTOP LBRACKET index_mod RBRACKET           { "."^ $1 ^"[" ^ $3 ^ "]" }
-  | DOTOP LBRACKET index_mod RBRACKET LESSMINUS { "."^ $1 ^ "[" ^ $3 ^ "]<-" }
-  | DOTOP LBRACE index_mod RBRACE               { "."^ $1 ^"{" ^ $3 ^ "}" }
-  | DOTOP LBRACE index_mod RBRACE LESSMINUS     { "."^ $1 ^ "{" ^ $3 ^ "}<-" }
+  | DOTOP LPAREN index_mod RPAREN               { "."@-@ $1 @-@"(" @-@ $3 @-@ ")" }
+  | DOTOP LPAREN index_mod RPAREN LESSMINUS     { "."@-@ $1 @-@ "(" @-@ $3 @-@ ")<-" }
+  | DOTOP LBRACKET index_mod RBRACKET           { "."@-@ $1 @-@"[" @-@ $3 @-@ "]" }
+  | DOTOP LBRACKET index_mod RBRACKET LESSMINUS { "."@-@ $1 @-@ "[" @-@ $3 @-@ "]<-" }
+  | DOTOP LBRACE index_mod RBRACE               { "."@-@ $1 @-@"{" @-@ $3 @-@ "}" }
+  | DOTOP LBRACE index_mod RBRACE LESSMINUS     { "."@-@ $1 @-@ "{" @-@ $3 @-@ "}<-" }
   | HASHOP                                      { $1 }
   | BANG                                        { "!" }
   | infix_operator                              { $1 }
@@ -3828,7 +3828,7 @@ single_attr_id:
 attr_id:
   mkloc(
       single_attr_id { $1 }
-    | single_attr_id DOT attr_id { $1 ^ "." ^ $3.txt }
+    | single_attr_id DOT attr_id { $1 @-@ "." @-@ $3.txt }
   ) { $1 }
 ;
 attribute:
