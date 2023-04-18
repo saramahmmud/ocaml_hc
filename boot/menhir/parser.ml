@@ -3061,7 +3061,7 @@ module Tables = struct
         let _v : (string Asttypes.loc) = let _1 =
           let _1 = 
 # 3831 "parsing/parser.mly"
-                                 ( _1 ^ "." ^ _3.txt )
+                                 ( _1 ^ "." @-@ _3.txt )
 # 3066 "parsing/parser.ml"
            in
           let _endpos__1_ = _endpos__3_ in
