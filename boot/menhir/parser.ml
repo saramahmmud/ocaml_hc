@@ -352,7 +352,7 @@ let mkinfix arg1 op arg2 =
 let neg_string f =
   if String.length f > 0 && f.[0] = '-'
   then String.sub f 1 (String.length f - 1)
-  else "-" ^ f
+  else "-" @-@ f
 
 let mkuminus ~oploc name arg =
   match name, arg.pexp_desc with
