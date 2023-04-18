@@ -24622,7 +24622,7 @@ module Tables = struct
         let _endpos = _endpos__4_ in
         let _v : (Asttypes.label) = 
 # 3550 "parsing/parser.mly"
-                                                ( "."^ _1 ^"(" ^ _3 ^ ")" )
+                                                ( "."@-@ _1 @-@"(" @-@ _3 @-@ ")" )
 # 24627 "parsing/parser.ml"
          in
         {
