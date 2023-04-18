@@ -52,19 +52,39 @@ let rec subst e y m =
       let e' = subst e x (Var z) in (* replace x with z in e *)
       Lam (z,subst e' y m) (* substitute for y in the adjusted term, e' *)
 
+(*
+   
+Below is my implementation of beta normal order reduction
+- it does only one step at a time
 
-(* beta reduction. *)
+bigstep_reduce will continue to reduce until a normal form is reached
+- can optionally see how many reductions this took
+*)
+
+
 let rec reduce e =
   match e with
-    | App (Lam (x,e), e2) -> reduce (subst e x e2)  (* direct beta rule *)
-    | App (e1,e2) -> 
-      let e1' = reduce e1 in (* try to reduce a term in the lhs *)
-      if e1'<> e1 then reduce (App(e1',e2))
-      else 
-        let e2' = reduce e2 in
-        App (e1,e2') (* didn't work; try rhs *)
-    | Lam (x,e) -> Lam (x, reduce e) (* reduce under the lambda (!) *)
-    | _ -> e (* no opportunity to reduce *)
+  | App (Lam (x,e), e2) -> (subst e x e2)  (* direct beta rule *)
+  | App (e1, e2) ->
+    let e1' = reduce e1 in
+    if e1' <> e1 then App(e1', e2)
+    else 
+      let e2' = reduce e2 in App(e1, e2')
+  | Lam (x,e) -> Lam (x, reduce e) (* reduce under the lambda (!) *)
+  | _ -> e
+
+let rec bigstep_reduce e =
+  let e' = reduce e in
+  if e' = e then e
+  else bigstep_reduce e'
+
+
+let bigstep_reduce_with_count e =
+  let rec helper e count =
+    let e' = reduce e in
+    if e' = e then (e, count)
+    else helper e' (count+1)
+  in helper e 0
 
 (* pretty printing *)
 
@@ -99,26 +119,78 @@ let num n =
       App(Var "f", (helper (n-1)))
     in Lam("f", Lam ("x", (helper n)));;
 
-let pair = Lam("a", Lam("b", Lam ("z", App(App(Var "z", Var "a"), Var "b"))));;
+(*Y*)
+let y = Lam("f", App(Lam("x", App(Var"f", App(Var "x", Var"x"))), Lam("x", App(Var"f", App(Var "x", Var"x")))))
 
+let id = Lam("x", Var "x");;
+
+(*Booleans*)
+let t = Lam("a", Lam("b", Var "a"));;
+let f = Lam("a", Lam("b", Var "b"));;
+let logical_not = Lam("b", App(App(Var "b", f), t))
+let logical_and = Lam("x", Lam("y", App(App(Var"x", Var"y"), f)))
+
+(*arithmetic*)
+let zero = num 0
+let isZero = Lam("n", App(App(Var"n", Lam("x", f)), t))
+let succ = Lam("n", Lam("f", Lam("x", App(Var"f", App(App(Var"n", Var"f"), Var"x")))))
+let pred = Lam("n", Lam("f", Lam("x", App(App(App(Var"n", Lam("g", Lam("h", App(Var"h", App(Var"g", Var"f"))))), Lam("u", Var "x")), Lam("u", Var "u")))))
+let subtract = Lam("m", Lam("n", App(App(Var"n", pred), Var"m")))
+let leq = Lam("m", Lam("n", App(isZero, App(App(subtract, Var"m"), Var"n"))))
+let gre = Lam("m", Lam("n", App(logical_not, App(App(leq, Var"m"), Var"n"))))
+let eq = Lam("m", Lam("n", App(App(logical_and, App(App(leq, Var"m"), Var"n")), App(App(leq, Var"n"), Var"m"))))
+
+
+(*Pairs*)
+let pair = Lam("a", Lam("b", Lam ("z", App(App(Var "z", Var "a"), Var "b"))))
 let first = Lam("p", App(Var "p", Lam("x", Lam("y", Var "x"))))
 let second = Lam("p", App(Var "p", Lam("x", Lam("y", Var "y"))))
 
-let t = Lam("a", Lam("b", Var "a"));;
-let f = Lam("a", Lam("b", Var "b"));;
 
-let nil = App(App(pair, t), t);;
-let isnil = first;;
-let cons = Lam("h", Lam("t", App(App(pair, f), App(App(pair, Var "h"), Var "t"))));;
-let head = Lam("z", App(first, App(second, Var "z")));;
-let tail = Lam("z", App(second, App(second, Var "z")));;
+(*Lists*)
+let empty = Lam("f", Lam("l", Var "f"))
+let cons = Lam("h", Lam("t", Lam("f", Lam("l", App(App(Var"l", Var"h"), Var"t")))))
 
-let one = num 1;;
-let two = num 2;;
-let my_pair = App(App(pair, one), two);;
-let first_one_two = App(first, my_pair);;
-let should_be_one = reduce first_one_two;;
+let head = Lam("l", App(App(Var"l", f), t))
+let tail = Lam("l", App(App(Var"l", f), f))
+let isEmpty = Lam("l", App(App(Var "l", t), Lam("x", Lam("y", f))))
 
+let flip = Lam("p", Lam("x", Lam("y", App(App(Var"p", Var"y"), Var"x"))))
+
+let rec list_builder = function
+  | [] -> empty
+  | h::t -> App(App(cons, (num h)), (list_builder t))
+
+(*Find church numeral x in list l
+  - it returns the index of the item in the list if it exists
+  - if the item is not in the list it returns the empty list, i.e. Lam ("f", Lam ("l", Var "f"))
+*)
+let fFind = Lam("f", Lam("x", Lam("l", Lam("c", App(App(App(isEmpty, Var"l"), empty), App(App(App(App(eq, Var"x"), App(head, Var"l")), Var"c"), App(App(App(Var"f", Var"x"), App(tail, Var"l")), App(succ, Var"c"))))))))
+let find = Lam("x", Lam("l", App(App(App(App(y, fFind), Var"x"), Var"l"), zero)))
+
+(*Get list element at index i*)
+let fGet = Lam("f", Lam("i", Lam("l", Lam ("c", App(App(App(isEmpty, Var"l"), empty), App(App(App(App(eq, Var"i"), Var"c"), App(head, Var"l")), App(App(App(Var"f", Var"i"), App(tail, Var"l")), App(succ, Var"c"))))))))
+let get = Lam("i", Lam("l", App(App(App(App(y, fGet), Var"i"), Var"l"), zero)))
+
+(*Merge lists x and y*)
+let fMerge = Lam("f", Lam("x", Lam("y", App(App(Var"x", Var"y"), Lam("h", Lam("t", App(App(cons, Var"h"), App(App(Var"f", Var"t"), Var"y"))))))))
+let merge = App(y, fMerge)
+
+(*Reverse list l*)
+let fReverse = Lam("f", Lam("l", Lam("r", App(App(App(isEmpty, Var"l"), Var"r"), App(App(Var"f", App(tail, Var"l")), App(App(cons, App(head, Var"l")), Var"r"))))))
+let reverse = Lam("l", App(App(App(y, fReverse), Var"l"), empty))
+
+(*Remove elements of list l that satisfy condition p*)
+let fRemove = Lam("f", Lam("p", Lam("l", App(App(Var"l", empty), Lam("h", Lam("t", App(App(App(App(Var"p", Var"h"), id), App(cons, Var"h")), App(App(Var"f", Var"p"), Var"t"))))))))
+let remove = App(y, fRemove)
+
+(*quick sort a list l of Church numerals in ascending order*)
+let fQuickSort = Lam("f", Lam("l", App(App(Var"l", empty), Lam("h", Lam("t", App(App(merge, App(Var"f", App(App(remove, App(App(flip, gre), Var"h")), Var"t"))), App(App(cons, Var"h"), App(Var"f", App(App(remove, App(App(flip, leq), Var"h")), Var"t")))))))))
+let quickSort = App(y, fQuickSort)
+
+
+let my_list = bigstep_reduce (list_builder  [9; 1; 4; 2; 7; 6])
+let sort_with_count = bigstep_reduce_with_count (App(quickSort, my_list))
 
 (* TESTS
 fvs (Var "x") = ["x"];;
@@ -145,5 +217,18 @@ let m13sred = reduce m1_m3fory
 
 print_lambda m1; print_newline ();;
 print_lambda m2; print_newline ();;
+
+let is_there_a_2 = App(App(find, (num 2)), my_list)
+let is_there_a_3 = App(App(find, (num 3)), my_list)
+let is_there_a_4 = App(App(find,(num 4)), my_list)
+let is_there_a_5 = App(App(find, (num 5)), my_list)
+
+let should_be_empty_list = bigstep_reduce is_there_a_2
+let should_be_one = bigstep_reduce is_there_a_3
+let should_be_empty_list = bigstep_reduce is_there_a_4
+let should_be_empty_list = bigstep_reduce (App(App(find, (num 2)), empty))
+let should_be_two = bigstep_reduce is_there_a_5
+
+let is_5_with_count = bigstep_reduce_with_count is_there_a_5 (*see that reductions are 315*)
 
 *)
