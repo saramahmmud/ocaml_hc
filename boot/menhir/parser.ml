@@ -24679,7 +24679,7 @@ module Tables = struct
         let _endpos = _endpos__5_ in
         let _v : (Asttypes.label) = 
 # 3551 "parsing/parser.mly"
-                                                ( "."^ _1 ^ "(" ^ _3 ^ ")<-" )
+                                                ( "."@-@ _1 @-@ "(" @-@ _3 @-@ ")<-" )
 # 24684 "parsing/parser.ml"
          in
         {
@@ -24729,7 +24729,7 @@ module Tables = struct
         let _endpos = _endpos__4_ in
         let _v : (Asttypes.label) = 
 # 3552 "parsing/parser.mly"
-                                                ( "."^ _1 ^"[" ^ _3 ^ "]" )
+                                                ( "."@-@ _1 @-@"[" @-@ _3 @-@ "]" )
 # 24734 "parsing/parser.ml"
          in
         {
@@ -24786,7 +24786,7 @@ module Tables = struct
         let _endpos = _endpos__5_ in
         let _v : (Asttypes.label) = 
 # 3553 "parsing/parser.mly"
-                                                ( "."^ _1 ^ "[" ^ _3 ^ "]<-" )
+                                                ( "."@-@ _1 @-@ "[" @-@ _3 @-@ "]<-" )
 # 24791 "parsing/parser.ml"
          in
         {
@@ -24836,7 +24836,7 @@ module Tables = struct
         let _endpos = _endpos__4_ in
         let _v : (Asttypes.label) = 
 # 3554 "parsing/parser.mly"
-                                                ( "."^ _1 ^"{" ^ _3 ^ "}" )
+                                                ( "."@-@ _1 @-@"{" @-@ _3 @-@ "}" )
 # 24841 "parsing/parser.ml"
          in
         {
@@ -24893,7 +24893,7 @@ module Tables = struct
         let _endpos = _endpos__5_ in
         let _v : (Asttypes.label) = 
 # 3555 "parsing/parser.mly"
-                                                ( "."^ _1 @-@ "{" @-@ _3 @-@ "}<-" )
+                                                ( "."@-@ _1 @-@ "{" @-@ _3 @-@ "}<-" )
 # 24898 "parsing/parser.ml"
          in
         {
