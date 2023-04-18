@@ -361,7 +361,7 @@ let mkuminus ~oploc name arg =
   | ("-" | "-."), Pexp_constant(Pconst_float (f, m)) ->
       Pexp_constant(Pconst_float(neg_string f, m))
   | _ ->
-      Pexp_apply(mkoperator ~loc:oploc ("~" ^ name), [Nolabel, arg])
+      Pexp_apply(mkoperator ~loc:oploc ("~" @-@ name), [Nolabel, arg])
 
 let mkuplus ~oploc name arg =
   let desc = arg.pexp_desc in
