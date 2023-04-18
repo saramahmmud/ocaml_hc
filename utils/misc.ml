@@ -783,7 +783,7 @@ let delete_eol_spaces src =
         loop (i_src + 1) (i_dst + spaces + 1)
   in
   let stop = loop 0 0 in
-  Bytes.sub_string dst 0 stop
+  Bytes.safe_sub_string dst 0 stop
 
 let pp_two_columns ?(sep = "|") ?max_lines ppf (lines: (string * string) list) =
   let left_column_size =

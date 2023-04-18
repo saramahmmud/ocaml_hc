@@ -51,7 +51,7 @@ let name_at ?max_len buf start =
   let rec loop pos =
     if pos >= max_pos || Bytes.get buf pos = '\000'
     then
-      Bytes.sub_string buf start (pos - start)
+      Bytes.safe_sub_string buf start (pos - start)
     else
       loop (succ pos)
   in
@@ -622,7 +622,7 @@ module FlexDLL = struct
     in
     LargeFile.seek_in ic e_lfanew;
     let buf = really_input_bytes ic header_size in
-    let magic = Bytes.sub_string buf 0 4 in
+    let magic = Bytes.safe_sub_string buf 0 4 in
     if magic <> "PE\000\000" then raise (Error (Unrecognized magic));
     let machine =
       match Bytes.get_uint16_le buf 4 with
