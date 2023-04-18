@@ -210,7 +210,8 @@ external string_blit : string -> int -> bytes -> int -> int -> unit
 external bytes_blit : bytes -> int -> bytes -> int -> int -> unit
                         = "caml_blit_bytes" [@@noalloc]
 external bytes_unsafe_to_string : bytes -> string = "%bytes_to_string"
-external bytes_to_string_tag : bytes -> string = "caml_unsafe_string_of_bytes"
+(*external bytes_to_string_tag : bytes -> string = "caml_unsafe_string_of_bytes"*)
+external bytes_to_string : bytes -> string = "caml_safe_bytes_to_string"
 
 let ( ^ ) s1 s2 =
   let l1 = string_length s1 and l2 = string_length s2 in
@@ -224,7 +225,7 @@ let ( @-@ ) s1 s2 =
   let s = bytes_create (l1 + l2) in
   string_blit s1 0 s 0 l1;
   string_blit s2 0 s l1 l2;
-  bytes_to_string_tag s
+  bytes_to_string s
 
 (* Character operations -- more in module Char *)
 
@@ -446,7 +447,7 @@ let really_input ic s ofs len =
 let really_input_string ic len =
   let s = bytes_create len in
   really_input ic s 0 len;
-  bytes_to_string_tag s
+  bytes_to_string s
 
 external input_scan_line : in_channel -> int = "caml_ml_input_scan_line"
 
@@ -476,7 +477,7 @@ let input_line chan =
       ignore(unsafe_input chan beg 0 (-n));
       scan (beg :: accu) (len - n)
     end
-  in bytes_to_string_tag (scan [] 0)
+  in bytes_to_string (scan [] 0)
 
 external input_byte : in_channel -> int = "caml_ml_input_char"
 external input_binary_int : in_channel -> int = "caml_ml_input_int"

@@ -57,7 +57,7 @@ let to_hex d =
     Bytes.unsafe_set result (i*2) (char_hex (x lsr 4));
     Bytes.unsafe_set result (i*2+1) (char_hex (x land 0x0f));
   done;
-  Bytes.to_string_tag result
+  Bytes.to_string result
 
 let from_hex s =
   if String.length s <> 32 then invalid_arg "Digest.from_hex";
@@ -73,4 +73,4 @@ let from_hex s =
   for i = 0 to 15 do
     Bytes.set result i (Char.chr (byte (2 * i)));
   done;
-  Bytes.to_string_tag result
+  Bytes.to_string result

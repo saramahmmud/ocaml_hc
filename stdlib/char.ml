@@ -24,8 +24,8 @@ let chr n =
 external bytes_create: int -> bytes = "caml_create_bytes"
 external bytes_unsafe_set : bytes -> int -> char -> unit
                            = "%bytes_unsafe_set"
-external to_string_tag : bytes -> string = "caml_unsafe_string_of_bytes"
-
+(*external to_string_tag : bytes -> string = "caml_unsafe_string_of_bytes"*)
+external to_string : bytes -> string = "caml_safe_bytes_to_string"
 let escaped = function
   | '\'' -> "\\'"
   | '\\' -> "\\\\"
@@ -36,7 +36,7 @@ let escaped = function
   | ' ' .. '~' as c ->
       let s = bytes_create 1 in
       bytes_unsafe_set s 0 c;
-      to_string_tag s
+      to_string s
   | c ->
       let n = code c in
       let s = bytes_create 4 in
@@ -44,7 +44,7 @@ let escaped = function
       bytes_unsafe_set s 1 (unsafe_chr (48 + n / 100));
       bytes_unsafe_set s 2 (unsafe_chr (48 + (n / 10) mod 10));
       bytes_unsafe_set s 3 (unsafe_chr (48 + n mod 10));
-      to_string_tag s
+      to_string s
 
 let lowercase = function
   | 'A' .. 'Z'
