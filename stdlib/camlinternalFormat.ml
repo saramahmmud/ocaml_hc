@@ -281,7 +281,7 @@ let buffer_add_string buf s =
 
 (* Get the content of the buffer. *)
 let buffer_contents buf =
-  Bytes.to_string (Bytes.unsafe_of_string ( Bytes.sub_string buf.bytes 0 buf.ind))
+ Bytes.safe_sub_string buf.bytes 0 buf.ind
 
 (***)
 

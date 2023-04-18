@@ -578,7 +578,7 @@ let quote s =
         Bytes.set buf !pos c;
         pos := !pos + 1
   done;
-  Bytes.to_string (Bytes.unsafe_of_string (Bytes.sub_string buf 0 !pos))
+  (Bytes.safe_sub_string buf 0 !pos)
 
 let regexp_string s = compile false (String s)
 

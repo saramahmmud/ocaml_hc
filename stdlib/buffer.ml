@@ -34,13 +34,13 @@ let create n =
  let s = Bytes.create n in
  {buffer = s; position = 0; length = n; initial_buffer = s}
 
-let contents b = Bytes.to_string (Bytes.unsafe_of_string (Bytes.sub_string b.buffer 0 b.position))
+let contents b = (Bytes.safe_sub_string b.buffer 0 b.position)
 let to_bytes b = Bytes.sub b.buffer 0 b.position
 
 let sub b ofs len =
   if ofs < 0 || len < 0 || ofs > b.position - len
   then invalid_arg "Buffer.sub"
-  else Bytes.to_string (Bytes.unsafe_of_string (Bytes.sub_string b.buffer ofs len))
+  else (Bytes.safe_sub_string b.buffer ofs len)
 
 
 let blit src srcoff dst dstoff len =
