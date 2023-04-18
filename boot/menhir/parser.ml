@@ -24893,7 +24893,7 @@ module Tables = struct
         let _endpos = _endpos__5_ in
         let _v : (Asttypes.label) = 
 # 3555 "parsing/parser.mly"
-                                                ( "."^ _1 ^ "{" ^ _3 ^ "}<-" )
+                                                ( "."^ _1 @-@ "{" @-@ _3 @-@ "}<-" )
 # 24898 "parsing/parser.ml"
          in
         {
@@ -34153,7 +34153,7 @@ module Tables = struct
         let _endpos = _endpos__2_ in
         let _v : (Parsetree.constant) = 
 # 3524 "parsing/parser.mly"
-                 ( let (n, m) = _2 in Pconst_integer("-" ^ n, m) )
+                 ( let (n, m) = _2 in Pconst_integer("-" @-@ n, m) )
 # 34158 "parsing/parser.ml"
          in
         {
@@ -34189,7 +34189,7 @@ module Tables = struct
         let _endpos = _endpos__2_ in
         let _v : (Parsetree.constant) = 
 # 3525 "parsing/parser.mly"
-                 ( let (f, m) = _2 in Pconst_float("-" ^ f, m) )
+                 ( let (f, m) = _2 in Pconst_float("-" @-@ f, m) )
 # 34194 "parsing/parser.ml"
          in
         {
