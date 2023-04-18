@@ -2177,7 +2177,7 @@ let rec compress n b i j skipping =
         let skipping = false in
         compress n b i j skipping
   else
-    Bytes.to_string (Bytes.unsafe_of_string (Bytes.sub_string b 0 i))
+    (Bytes.safe_sub_string b 0 i)
 
 let compress text =
   let b = Bytes.of_string text in
