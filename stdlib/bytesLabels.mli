@@ -104,6 +104,9 @@ val sub : bytes -> pos:int -> len:int -> bytes
 val sub_string : bytes -> pos:int -> len:int -> string
 (** Same as {!sub} but return a string instead of a byte sequence. *)
 
+val safe_sub_string : bytes -> pos:int -> len:int -> string
+(** returns a copy **)
+
 val extend : bytes -> left:int -> right:int -> bytes
 (** [extend s ~left ~right] returns a new byte sequence that contains
     the bytes of [s], with [left] uninitialized bytes prepended and

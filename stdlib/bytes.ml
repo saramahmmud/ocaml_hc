@@ -72,6 +72,8 @@ let sub s ofs len =
 
 let sub_string b ofs len = unsafe_to_string (sub b ofs len)
 
+let safe_sub_string b ofs len = to_string (sub b ofs len)
+
 (* addition with an overflow check *)
 let (++) a b =
   let c = a + b in
