@@ -92,7 +92,7 @@ let constructor_args ~current_unit priv cd_args cd_res path rep =
       Some tdecl
   
 let hashConsedDecl : type_declaration option ref = ref None
-exception Multiple_hashconsed of Location.t * string
+exception Multiple_hashconsed of string
 
 let constructor_descrs ~current_unit ty_path decl cstrs rep =
   let ty_res = newgenconstr ty_path decl.type_params in
@@ -100,7 +100,7 @@ let constructor_descrs ~current_unit ty_path decl cstrs rep =
   if (Builtin_attributes.has_hashconsed (decl.type_attributes)) then 
     (match !hashConsedDecl with
     | None -> hashConsedDecl := Some decl
-    | Some existing -> if (existing = decl) then () else raise (Multiple_hashconsed(decl.type_loc, "Cannot hashcons multiple constructors")));
+    | Some existing -> if (existing = decl) then () else raise (Multiple_hashconsed "Cannot hashcons multiple constructors"));
   List.iter
     (fun {cd_args; _} ->
       if cd_args = Cstr_tuple [] then incr num_consts else incr num_nonconsts)
