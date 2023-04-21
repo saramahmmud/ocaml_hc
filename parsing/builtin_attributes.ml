@@ -287,3 +287,6 @@ let has_unboxed attr =
 
 let has_boxed attr =
   List.exists (check ["ocaml.boxed"; "boxed"]) attr
+
+let has_hashconsed attr =
+  List.exists (check ["ocaml.hashconsed"; "hashconsed"]) attr
