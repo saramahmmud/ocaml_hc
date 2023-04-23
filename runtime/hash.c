@@ -301,6 +301,11 @@ CAMLprim value caml_hash(value count, value limit, value seed, value obj)
   return Val_int(h & 0x3FFFFFFFU);
 }
 
+CAMLexport value caml_hash_generic(value count, value limit, value seed, value obj)
+{
+  return caml_hash(count, limit, seed, obj);
+}
+
 /* Hashing variant tags */
 
 CAMLexport value caml_hash_variant(char const * tag)

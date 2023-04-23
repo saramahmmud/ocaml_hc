@@ -30,6 +30,8 @@ CAMLextern uint32_t caml_hash_mix_int64(uint32_t h, int64_t d);
 CAMLextern uint32_t caml_hash_mix_double(uint32_t h, double d);
 CAMLextern uint32_t caml_hash_mix_float(uint32_t h, float d);
 CAMLextern uint32_t caml_hash_mix_string(uint32_t h, value s);
+CAMLextern value caml_hash_generic(value count, value limit, value seed,
+                                      value obj);
 
 #ifdef __cplusplus
 }
