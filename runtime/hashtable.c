@@ -120,10 +120,9 @@ value create_item(value eph_key, value eph_data) {
     CAMLreturn(item);
 }
 
-void ht_insert(value table, value pointer) {
+void ht_insert(value table, value pointer, uint32_t hash_val) {
   CAMLparam2(table, pointer);
   CAMLlocal2(item, cur_item);
-  uint32_t hash_val;
   int index;
   // Inserts a new item into the hash table
   if (debug) {
@@ -133,10 +132,7 @@ void ht_insert(value table, value pointer) {
   if (Tag_val(pointer) == String_tag){
     hash_val = caml_hash_mix_string(SEED, pointer);
   }
-  else if (Tag_val(pointer)==243){
-    hash_val = caml_hash_generic(Val_int(10), Val_int(1000), SEED, pointer);
-  }
-  else{
+  else if (Tag_val(pointer) != 243){
     CAMLreturn0;
   }
   
@@ -152,7 +148,6 @@ void ht_insert(value table, value pointer) {
     fprintf(stderr, "inserting item %lx at index %d\n", item, index);
     fprintf(stderr, "get field at index %d: %lx\n", index, Field(Field(table, 0), index));
   }
-
   caml_modify(&Field(table, 2), Val_int(Int_val(Field(table, 2))+1));
 
   if (debug) fprintf(stderr, "inserted\n");
@@ -176,6 +171,15 @@ value ht_search(value table, value pointer) {
     fflush(stderr);
   }
 
+  /*
+  What currently happens
+  - if the variant is not in the hash table,
+    - we alloc on the major heap
+    - but we then compute the hash of this alloc
+    - this does not work as we have not copied all blocks
+      - so the hash will be different
+  - must pass in the hash value if it is not in the table and use that
+  */
 
   existing_pointer = caml_alloc_shr_for_minor_gc(1, 0, Make_header(1, 0, Caml_white));
   Field(existing_pointer, 0) = Val_unit;
@@ -222,6 +226,7 @@ value ht_search(value table, value pointer) {
             }
           }
           else if (Tag_val(pointer)==243){
+            fprintf(stderr, "result of caml_equal: %d\n", caml_equal(existing_pointer, pointer));
             if (caml_equal(existing_pointer, pointer)){
               if (debug) fprintf(stderr, "values match\n");
               // return the pointer
@@ -229,8 +234,8 @@ value ht_search(value table, value pointer) {
             }
           }
         }
-        prev = item;
       }
+      prev = item;
     }
     else {
       if (prev != Val_unit) {

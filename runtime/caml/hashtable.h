@@ -13,11 +13,11 @@ struct HashTable {
 
 /* Hash table to store hash-consed values*/
 extern value hc_table;
-
+extern uint32_t SEED;
 extern int debug;
 
 /*The hashTable is stored outside of the heap*/
 value create_table(int size);
-void ht_insert(value table, value pointer);
+void ht_insert(value table, value pointer, uint32_t hash_val);
 value ht_search(value table, value pointer);
 void caml_display_string(value s);

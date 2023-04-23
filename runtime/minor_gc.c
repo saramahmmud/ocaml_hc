@@ -22,6 +22,7 @@
 #include "caml/finalise.h"
 #include "caml/gc.h"
 #include "caml/gc_ctrl.h"
+#include "caml/hash.h"
 #include "caml/hashtable.h"
 #include "caml/major_gc.h"
 #include "caml/memory.h"
@@ -204,7 +205,37 @@ void caml_oldify_one (value v, value *p)
     }else{
       CAMLassert_young_header(hd);
       tag = Tag_hd (hd);
-      if (tag < Infix_tag){
+      if (tag==243){
+        value field0;
+        result = ht_search(hc_table, v);
+        fprintf(stderr, "result: %ld\n", result);
+        if (result==Val_false){
+          sz = Wosize_hd (hd);
+          result = caml_alloc_shr_for_minor_gc (sz, tag, hd);
+          ht_insert(hc_table, result, 
+            caml_hash_generic(Val_int(10), Val_int(1000), SEED, v));
+          *p = result;
+          field0 = Field (v, 0);
+          Hd_val (v) = 0;            /* Set forward flag */
+          Field (v, 0) = result;     /*  and forward pointer. */
+          if (sz > 1){
+            Field (result, 0) = field0;
+            Field (result, 1) = oldify_todo_list;    /* Add this block */
+            oldify_todo_list = v;                    /*  to the "to do" list. */
+          }else{
+            CAMLassert (sz == 1);
+            p = &Field (result, 0);
+            v = field0;
+            goto tail_call;
+          }
+        }
+        else{
+          *p = result;
+          Hd_val (v) = 0;            /* Set forward flag */
+          Field (v, 0) = result;     /*  and forward pointer. */
+        }
+      }
+      else if (tag < Infix_tag){
         value field0;
 
         sz = Wosize_hd (hd);
@@ -240,7 +271,7 @@ void caml_oldify_one (value v, value *p)
           result = caml_alloc_shr_for_minor_gc (sz, tag, hd); /*allocate a block in major heap of same size, tag and header*/
           for (i = 0; i < sz; i++) Field (result, i) = Field (v, i); /*copy all fields across*/
           /* add the new pointer to table*/
-          ht_insert(hc_table, result);
+          ht_insert(hc_table, result, 0);
         }
 
         Hd_val (v) = 0;            /* Set forward flag (set entire header to 0) to show the value has been forwarded*/
