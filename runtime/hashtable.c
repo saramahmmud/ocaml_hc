@@ -1,4 +1,5 @@
 #include "caml/alloc.h"
+#include "caml/compare.h"
 #include "caml/hash.h"
 #include "caml/hashtable.h"
 #include "caml/memory.h"
@@ -112,7 +113,8 @@ value create_item(value eph_key, value eph_data) {
     if (debug) {
       fprintf(stderr, "Created ephemeron %lx : ", ephemeron); 
       caml_display_string(eph_key);
-      fprintf(stderr, "creating item: %lx, ephemeron: %lx, next: %lx, eph_key: %s\n", item, Field(item, 0), Field(item, 1), String_val(eph_key));
+      fprintf(stderr, "creating item: %lx, ephemeron: %lx, next: %lx, eph_key: %s\n", 
+      item, Field(item, 0), Field(item, 1), String_val(eph_key));
       fflush(stderr);
     }
     CAMLreturn(item);
@@ -122,30 +124,37 @@ void ht_insert(value table, value pointer) {
   CAMLparam2(table, pointer);
   CAMLlocal2(item, cur_item);
   uint32_t hash_val;
+  int index;
   // Inserts a new item into the hash table
   if (debug) {
     fprintf(stderr, "table count: %d \n", Int_val(Field(table, 2)));
     fflush(stderr);
   }
   if (Tag_val(pointer) == String_tag){
-    int index;
     hash_val = caml_hash_mix_string(SEED, pointer);
-    index = abs((int)(hash_val % Int_val(Field(table, 1))));
-    item = create_item(pointer, hash_val);
-    cur_item = Field(Field(table, 0), index);
-    
+  }
+  else if (Tag_val(pointer)==243){
+    hash_val = caml_hash_generic(Val_int(10), Val_int(1000), SEED, pointer);
+  }
+  else{
+    CAMLreturn0;
+  }
+  
+  index = abs((int)(hash_val % Int_val(Field(table, 1))));
+  item = create_item(pointer, hash_val);
+  cur_item = Field(Field(table, 0), index);
+  
 
-    caml_modify(&Field(item, 1), cur_item);
-    caml_modify(&Field(Field(table, 0), index), item);  
-    
-    if (debug) {
-      fprintf(stderr, "inserting item %lx at index %d\n", item, index);
-      fprintf(stderr, "get field at index %d: %lx\n", index, Field(Field(table, 0), index));
-    }
+  caml_modify(&Field(item, 1), cur_item);
+  caml_modify(&Field(Field(table, 0), index), item);  
+  
+  if (debug) {
+    fprintf(stderr, "inserting item %lx at index %d\n", item, index);
+    fprintf(stderr, "get field at index %d: %lx\n", index, Field(Field(table, 0), index));
+  }
 
-    caml_modify(&Field(table, 2), Val_int(Int_val(Field(table, 2))+1));
+  caml_modify(&Field(table, 2), Val_int(Int_val(Field(table, 2))+1));
 
-    }
   if (debug) fprintf(stderr, "inserted\n");
   CAMLreturn0;
 }
@@ -154,6 +163,7 @@ value ht_search(value table, value pointer) {
   CAMLparam2(table, pointer);
   CAMLlocal4(existing_pointer, data,item, prev);
   uint32_t hash_val;
+  int index;
   /* Searches for a value in the hashtable and returns the 
   stored pointer if it exists.
   Returns the OCaml value encoding of false if it doesn't exist.
@@ -173,50 +183,65 @@ value ht_search(value table, value pointer) {
   data = caml_alloc_shr_for_minor_gc(1, 0, Make_header(1, 0, Caml_white));
   Field(data, 0) = Val_unit;
 
-    if (Tag_val(pointer) == String_tag){
-        int index;
-        hash_val = caml_hash_mix_string(SEED, pointer);
-        index = abs((int)(hash_val % Int_val(Field(table, 1))));
-        item = Field(Field(table, 0), index);
-	
-        if (debug) {
-          fprintf(stderr, "\n\nsearching for string %s, pointer %lx\n\n", String_val(pointer), pointer);
-          /*for (int ind = 0; ind<Int_val(Field(table, 1)); ind++){
-            fprintf(stderr, "index: %d, item: %lx\n", ind, Field(Field(table, 0), ind));
-          }*/
-        }
-        prev = Val_unit;
-        while (item != Val_unit) {
-            // if data is set
-            if (caml_ephemeron_get_data(Field(item, 0), &data)){
-                // and data is the same as the hash_val
-                if (data == hash_val){
-                  if (debug) fprintf(stderr, "eph data = hash_val\n");
-                    // if the key is set
-                    if (caml_ephemeron_get_key(Field(item, 0), 0, &existing_pointer)){
-                        if (debug) fprintf(stderr, "eph key found: %s\n", String_val(existing_pointer));
-                        // and the key matches the string we are searching for
-                        if (caml_compare_strings(existing_pointer, pointer)){
-                          if (debug) fprintf(stderr, "strings match\n");
-                          // return the pointer
-                          CAMLreturn(existing_pointer);
-                        }
-		                    
-                    }
-              }
-            }
-            else {
-              if (prev != Val_unit) {
-                caml_modify(&Field(prev, 1), Field(item, 1));
-              }
-              else {
-                caml_modify(&Field(Field(table, 0), index), Field(item, 1));
-              }
-            }
-            // otherwise, check the next item
-            prev = item;
-            item = Field(item, 1);
-        }
-    }
+  if (Tag_val(pointer) == String_tag){
+    hash_val = caml_hash_mix_string(SEED, pointer);
+  }
+  else if (Tag_val(pointer)==243){
+    hash_val = caml_hash_generic(Val_int(10), Val_int(1000), SEED, pointer);
+  }
+  else {
     CAMLreturn(Val_false);
+  }
+  index = abs((int)(hash_val % Int_val(Field(table, 1))));
+  item = Field(Field(table, 0), index);
+
+  if (debug) {
+    fprintf(stderr, "\n\nsearching for string %s, pointer %lx\n\n", String_val(pointer), pointer);
+    /*for (int ind = 0; ind<Int_val(Field(table, 1)); ind++){
+      fprintf(stderr, "index: %d, item: %lx\n", ind, Field(Field(table, 0), ind));
+    }*/
+  }
+
+  prev = Val_unit;
+  while (item != Val_unit) {
+    // if data is set
+    if (caml_ephemeron_get_data(Field(item, 0), &data)){
+      // and data is the same as the hash_val
+      if (data == hash_val){
+        if (debug) fprintf(stderr, "eph data = hash_val\n");
+        // if the key is set
+        if (caml_ephemeron_get_key(Field(item, 0), 0, &existing_pointer)){
+          if (debug) fprintf(stderr, "eph key found: %s\n", String_val(existing_pointer));
+          // and the key matches the item we are searching for
+
+          if (Tag_val(pointer) == String_tag){
+            if (caml_compare_strings(existing_pointer, pointer)){
+              if (debug) fprintf(stderr, "strings match\n");
+              // return the pointer
+              CAMLreturn(existing_pointer);
+            }
+          }
+          else if (Tag_val(pointer)==243){
+            if (caml_equal(existing_pointer, pointer)){
+              if (debug) fprintf(stderr, "values match\n");
+              // return the pointer
+              CAMLreturn(existing_pointer);
+            }
+          }
+        }
+        prev = item;
+      }
+    }
+    else {
+      if (prev != Val_unit) {
+        caml_modify(&Field(prev, 1), Field(item, 1));
+      }
+      else {
+        caml_modify(&Field(Field(table, 0), index), Field(item, 1));
+      }
+    } 
+    // otherwise, check the next item
+    item = Field(item, 1);
+  }
+  CAMLreturn(Val_false);
 }

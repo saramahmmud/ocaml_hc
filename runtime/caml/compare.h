@@ -22,4 +22,9 @@ CAMLextern int caml_compare_unordered;
 
 #endif /* CAML_INTERNALS */
 
+#include "misc.h"
+#include "mlvalues.h"
+CAMLextern int caml_equal (value v1, value v2);
 #endif /* CAML_COMPARE_H */
+
+
