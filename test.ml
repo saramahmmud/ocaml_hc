@@ -3,14 +3,16 @@ type s =
 | Baz of int
 | Bar of string
 type t =
-CoolConstructor of s [@@hashconsed]
+CoolConstructor of s * s [@@hashconsed]
 
 let test a = 
-  let _ = CoolConstructor (Foo (a mod 2 == 0)) in
-  let _ = CoolConstructor (Baz a) in
-  Gc.minor()
+  let x = CoolConstructor ((Foo (a mod 2 == 0)) , (Baz (a*a))) in
+  Gc.minor();
+  Printf.printf "Tag is %d \n" (Obj.tag (Obj.repr x))
 
-let _ =
-  for i = 0 to 10 do 
+let test2 n =
+  for i = 0 to n do 
     test i 
-  done;
+  done
+
+let _ = test2 10;
