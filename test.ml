@@ -12,6 +12,7 @@ let createString a = string_of_int a
 let _ =
   let a = createT 2 in 
   let b = createT 2 in
+  let c = Bar (createString 4) in
   Printf.printf "Result of comparison (variants) before is %b\n" (a == b);
   Printf.printf "The pointer value of a is %d\n" (Obj.magic a);
   Printf.printf "The pointer value of b is %d\n" (Obj.magic b);
@@ -21,7 +22,11 @@ let _ =
   Printf.printf "The pointer value of b is %d\n" (Obj.magic b);
   (match a with
   | CoolConstructor (Foo (x), Baz (y)) -> Printf.printf "The value of x is %b and the value of y is %d\n" x y
-  | _ -> Printf.printf "Something went wrong\n")
+  | _ -> Printf.printf "Something went wrong\n");
+  (match c with
+  | Foo (x) -> Printf.printf "The value of x is %b\n" x
+  | Baz (y) -> Printf.printf "The value of y is %d\n" y
+  | Bar (z) -> Printf.printf "The value of z is %s\n" z)
 
 let _ = 
   let c = createString 2 in

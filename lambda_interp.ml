@@ -24,7 +24,7 @@ let newvar =
   fun () -> 
     let c = !x in
     incr x;
-    "v"^(string_of_int c)
+    "v"@-@(string_of_int c)
 
 (* computes the free (non-bound) variables in e *)
 let rec fvs e =
