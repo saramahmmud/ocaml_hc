@@ -208,7 +208,6 @@ void caml_oldify_one (value v, value *p)
       if (tag==243){
         value field0;
         result = ht_search(hc_table, v);
-        fprintf(stderr, "result: %ld\n", result);
         if (result==Val_false){
           sz = Wosize_hd (hd);
           result = caml_alloc_shr_for_minor_gc (sz, tag, hd);

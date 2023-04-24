@@ -226,7 +226,6 @@ value ht_search(value table, value pointer) {
             }
           }
           else if (Tag_val(pointer)==243){
-            fprintf(stderr, "result of caml_equal: %d\n", caml_equal(existing_pointer, pointer));
             if (caml_equal(existing_pointer, pointer)){
               if (debug) fprintf(stderr, "values match\n");
               // return the pointer
