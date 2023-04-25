@@ -123,5 +123,7 @@ let quickSort = App(y, fQuickSort)
 
 
 let my_list = match bigstep_reduce_with_count (list_builder  [9; 1; 4; 2; 7; 6]) with | (x, _) -> x
-let sort_with_count = bigstep_reduce_with_count (App(quickSort, my_list))
+let _ = print_term my_list; print_endline ""
+let sort_with_count = match bigstep_reduce_with_count (App(quickSort, my_list)) with | (x, _) -> x
+let _ = print_term sort_with_count; print_endline ""
 
