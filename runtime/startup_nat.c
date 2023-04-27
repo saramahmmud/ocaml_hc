@@ -139,7 +139,7 @@ value caml_startup_common(char_os **argv, int pooling)
                 caml_init_custom_major_ratio, caml_init_custom_minor_ratio,
                 caml_init_custom_minor_max_bsz, caml_init_policy);
   if (!hc_table){
-    hc_table = create_table(8192);
+    hc_table = create_table(1009);
     caml_register_global_root(&hc_table);
   }
   init_static();

@@ -545,7 +545,7 @@ CAMLexport void caml_main(char_os **argv)
                 caml_init_custom_major_ratio, caml_init_custom_minor_ratio,
                 caml_init_custom_minor_max_bsz, caml_init_policy);
   if (!hc_table){
-    hc_table = create_table(8192);
+    hc_table = create_table(1009);
     caml_register_global_root(&hc_table);
   }
   caml_init_stack (caml_init_max_stack_wsz);
@@ -648,7 +648,7 @@ CAMLexport value caml_startup_code_exn(
                 caml_init_custom_major_ratio, caml_init_custom_minor_ratio,
                 caml_init_custom_minor_max_bsz, caml_init_policy);
   if (!hc_table){
-    hc_table = create_table(8192);
+    hc_table = create_table(1009);
     caml_register_global_root(&hc_table);
   }
   caml_init_stack (caml_init_max_stack_wsz);
