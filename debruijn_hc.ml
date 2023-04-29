@@ -140,4 +140,5 @@ let quickSort = app(y, fQuickSort)
 let my_list = match bigstep_reduce_with_count (list_builder [6;5;4;3;2;1]) with | (x, _) -> x
 let sort_with_count = match bigstep_reduce_with_count (app(quickSort, my_list)) with | (x, _) -> x
 let _ = print_term sort_with_count
+let _ = Gc.full_major()
 let _ = Gc.print_stat(stdout)
