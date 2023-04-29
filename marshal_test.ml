@@ -7,9 +7,7 @@ for i = 0 to 10000 - 2 do
   x :=  y :: !x;   
 done;
 
-
-
-let () =
-  let oc = open_out "filename.txt" in
-  Marshal.to_channel oc !x [];
-  close_out oc;
+Gc.minor ();
+let oc = open_out "filename.txt" in
+Marshal.to_channel oc !x [];
+close_out oc;
