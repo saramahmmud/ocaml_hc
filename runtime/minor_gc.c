@@ -206,27 +206,33 @@ void caml_oldify_one (value v, value *p)
       CAMLassert_young_header(hd);
       tag = Tag_hd (hd);
       if (tag==243){
-        value field0;
+        value field0, f;
         result = ht_search(hc_table, v);
         if (result==Val_false){
           sz = Wosize_hd (hd);
           result = caml_alloc_shr_for_minor_gc (sz, tag, hd);
-          ht_insert(hc_table, result, 
-            caml_hash_generic(Val_int(10), Val_int(1000), SEED, v));
           *p = result;
           field0 = Field (v, 0);
           Hd_val (v) = 0;            /* Set forward flag */
           Field (v, 0) = result;     /*  and forward pointer. */
-          if (sz > 1){
-            Field (result, 0) = field0;
-            Field (result, 1) = oldify_todo_list;    /* Add this block */
-            oldify_todo_list = v;                    /*  to the "to do" list. */
-          }else{
-            CAMLassert (sz == 1);
-            p = &Field (result, 0);
-            v = field0;
-            goto tail_call;
+
+          if (Is_block(field0) && Is_young(field0)) {
+            caml_oldify_one (field0, &Field (result, 0));
           }
+          else {
+            Field (result, 0) = field0;
+          }
+          for (int i = 1; i < sz; i++) {
+            f = Field (v, i);
+            if (Is_block(f) && Is_young(f)) {
+              caml_oldify_one (f, &Field (result, i));
+            }
+            else {
+              Field (result, i) = f;
+            }
+          }
+          ht_insert(hc_table, result, 
+            caml_hash_generic(Val_int(10), Val_int(1000), SEED, result));
         }
         else{
           *p = result;
@@ -235,24 +241,36 @@ void caml_oldify_one (value v, value *p)
         }
       }
       else if (tag < Infix_tag){
-        value field0;
-
+        value f, field0;
         sz = Wosize_hd (hd);
         result = caml_alloc_shr_for_minor_gc (sz, tag, hd);
         *p = result;
         field0 = Field (v, 0);
         Hd_val (v) = 0;            /* Set forward flag */
-        Field (v, 0) = result;     /*  and forward pointer. */
-        if (sz > 1){
-          Field (result, 0) = field0;
-          Field (result, 1) = oldify_todo_list;    /* Add this block */
-          oldify_todo_list = v;                    /*  to the "to do" list. */
-        }else{
-          CAMLassert (sz == 1);
+        Field (v, 0) = result;
+
+        if (sz == 1) {
           p = &Field (result, 0);
           v = field0;
           goto tail_call;
         }
+        else {
+          if (Is_block(field0) && Is_young(field0)) {
+            caml_oldify_one (field0, &Field (result, 0));
+          }
+          else {
+            Field (result, 0) = field0;
+          }
+          for (int i = 1; i < Wosize_val (result); i++){
+            f = Field (v, i);
+            if (Is_block (f) && Is_young (f)){
+              caml_oldify_one (f, &Field (result, i));
+            }else{
+              Field (result, i) = f;
+            }
+          }
+        }
+        
       }else if (tag == String_tag){
         /* string */
         /* Check if string is in hc_table*/
