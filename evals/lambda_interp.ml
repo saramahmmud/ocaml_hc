@@ -1,3 +1,15 @@
+(**************************************************************************)
+(*                                                                        *)
+(*                                 OCaml                                  *)
+(*                                                                        *)
+(*                             Sara Mahmmud                               *)
+(*                                                                        *)
+(*   All rights reserved.  This file is distributed under the terms of    *)
+(*   the GNU Lesser General Public License version 2.1, with the          *)
+(*   special exception on linking described in the file LICENSE.          *)
+(*                                                                        *)
+(**************************************************************************)
+
 external bytes_to_string_tag : bytes -> string = "caml_unsafe_string_of_bytes"
 external string_length : string -> int = "%string_length"
 external bytes_create : int -> bytes = "caml_create_bytes"
